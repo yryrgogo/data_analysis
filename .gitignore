@@ -5,3 +5,7 @@ tabelog/input/*
 tabelog/output/*
 tabelog/log/*
 .ipynb*
+*.csv
+*.tsv
+*.xlsx
+*.vec
