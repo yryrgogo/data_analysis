@@ -1,0 +1,7 @@
+input/*
+log/*
+__pycache__/*
+tabelog/input/*
+tabelog/output/*
+tabelog/log/*
+.ipynb*
