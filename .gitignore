@@ -1,6 +1,8 @@
 input/*
+output/*
 log/*
 __pycache__/*
+__pycache__
 tabelog/input/*
 tabelog/output/*
 tabelog/log/*

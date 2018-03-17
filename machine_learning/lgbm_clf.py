@@ -1,78 +1,71 @@
 import numpy as np
 import pandas as pd
 import lightgbm as lgb
-from sklearn.model_selection import ParameterGrid
-from sklearn.metrics import log_loss
-import sys
-import glob
+from sklearn.model_selection import ParameterGrid, StratifiedKFold, train_test_split
+from sklearn.metrics import log_loss, roc_auc_score
 import datetime
 from tqdm import tqdm
 from logging import StreamHandler, DEBUG, Formatter, FileHandler, getLogger
-from load_data import load_data
+import sys
+sys.path.append('../module')
+from load_data import load_data, x_y_split, extract_set
 
 
-logger = getLogger(__name__)
-start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
+# *********load_data*********
+rawdata, fs_name = load_data(input_path, fn_list, None, None)
 
+# indexカラムにより範囲指定してデータセットを作成
+#  df_range = extract_set(data, index, row_list)
 
-input_path = ''
-fn = re.search(r'/([^/.]*).csv', inpu_path).group(1)
+#  sys.exit()
 
 # feature selection
-feim_result = pd.read_csv('../feature_enginering/2017_9.79468578925634_feature_importances.csv')
-fe_sel = feim_result.groupby(['feature'], as_index=False)['importance'].mean()
-fe_sel.sort_values(by='importance', ascending=False, inplace=True)
-fe_list1 = list(fe_sel['feature'].values[:100])
-fe_list2 = list(fe_sel['feature'].values[:200])
-
-metric = 'logloss'
-categorical_feature = []
-early_stopping_rounds = 1000
-all_params = {
-    'objective': ['binary'],
-    'num_leaves': [31, 63, 127, 255, 511, 1023],
-    #  'learning_rate': [0.05, 0.01],
-    'learning_rate': [0.05],
-    'n_estimators': [100, 300, 500],
-    'feature_fraction': [0.7, 0.8, 0.9],
-    'random_state': [2018]
-}
-
-fix_params = {
-    'objective': 'binary',
-    #  'num_leaves': 1023,
-    'num_leaves': 511,
-    'learning_rate': 0.05,
-    'n_estimators': 120,
-    'feature_fraction': 0.7,
-    'random_state': 2018
-}
-
+#  feim = pd.read_csv('../feim/.csv')
+#  feim.sort_values(by='importance', ascending=False, inplace=True)
+#  fe_list1 = list(feim['feature'].values[:100])
+#  fe_list2 = list(feim['feature'].values[:200])
 
 
 def sc_metrics(test, pred):
     if metric == 'logloss':
         return logloss(test, pred)
     elif metric == 'auc':
-        return auc(test, pred)
+        return roc_auc_score(test, pred)
     else:
         print('score caliculation error!')
 
 
-def tuning(x_train, y_train):
+def tuning(data, feature_set=[]):
 
-    now = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
-    logger.debug('tuning start {}'.format(now))
-    use_cols = x_train.columns.values
-
-    logger.debug('train columns: {} {}'.format(use_cols.shape, use_cols))
-    logger.info('data preparation end {}'.format(x_train.shape))
-
+    df = data.copy()
     list_score = []
     list_best_iterations = []
-    best_score = 100
     best_params = None
-    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=0)
+    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=seed)
+
+    if metric == 'auc':
+        best_score = 0
+    elif metric == 'logloss':
+        best_score = 100
+
+# feature_setが決まっていたらそれのみで学習させる
+    if len(feature_set) == 0:
+        use_cols = df.columns.values
+    elif len(feature_set) > 0:
+        use_cols = feature_set
+
+    train, test = train_test_split(
+        df[use_cols], test_size=test_size, random_state=seed)
+    x_train, y_train = x_y_split(train, target)
+    x_test, y_test = x_y_split(test, target)
+
+    now = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
+    logger.info('tuning start {}'.format(now))
+    logger.debug('tuning start {}'.format(now))
+
+    logger.info('Pre Setting \nmetric:{}'.format(metric))
+    logger.info('train columns: {} \n{}'.format(use_cols.shape, use_cols))
+    logger.debug('train columns: {} \n{}'.format(use_cols.shape, use_cols))
 
     for params in tqdm(list(ParameterGrid(all_params))):
         logger.info('params: {}'.format(params))
@@ -108,26 +101,32 @@ def tuning(x_train, y_train):
             if best_score > sc_score:
                 best_score = sc_score
                 best_params = params
-        elif metric == 'auc'
+        elif metric == 'auc':
             if best_score < sc_score:
                 best_score = sc_score
                 best_params = params
 
         logger.info('{}: {}'.format(metric, sc_score))
-        logger.debug('   {}: {}'.format(metric, sc_score))
-        logger.info('current best score: {}  best params: {}'.format(
-            best_score, best_params))
+        logger.info('current {}: {}  best params: {}'.format(
+            metric, best_score, best_params))
+        logger.debug('current {}: {}  best params: {}'.format(
+            metric, best_score, best_params))
 
-    logger.info('best score : {}'.format(best_score))
-    logger.info('best params: {}'.format(best_params))
-    df_params = pd.DataFrame(min_params, index=['params'])
-    df_params.to_csv('../output/{}_best_params_{}_{}_{}.csv'.format(start_time[:11], metric, best_score, fn))
+    logger.info('CV best score : {}'.format(best_score))
+    logger.debug('CV best score : {}'.format(best_score))
+    logger.info('CV best params: {}'.format(best_params))
+    logger.debug('CV best params: {}'.format(best_params))
+
+    # params output file
+    df_params = pd.DataFrame(best_params, index=['params'])
+    df_params.to_csv('../output/{}_best_params_{}_{}_{}.csv'.format(
+        start_time[:11], metric, best_score, fs_name), index=False)
 
     logger.info('tuning end')
     now = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
     logger.debug('tuning end {}'.format(now))
 
-    clf = lgb.LGBMClassifier(**min_params)
+    clf = lgb.LGBMClassifier(**best_params)
     clf.fit(x_train, y_train,
             eval_set=[(x_test, y_test)],
             eval_metric=metric,
@@ -136,120 +135,106 @@ def tuning(x_train, y_train):
 
     y_pred = clf.predict(x_test, num_iteration=clf.best_iteration_)
 
-    feim = pd.Series(clf.feature_importances_, name='importance')
+    # feature importance output file
+    feim_result = pd.Series(clf.feature_importances_, name='importance')
     feature_name = pd.Series(use_cols, name='feature')
-    features = pd.concat([feature_name, feim], axis=1)
+    features = pd.concat([feature_name, feim_result], axis=1)
     features.sort_values(by='importance', ascending=False, inplace=True)
 
     sc_score = sc_metrics(y_test, y_pred)
     list_score.append(sc_score)
-    features.to_csv('../output/{}_feature_importances_{}_{}_{}.csv'.format(start_time[:11], metric, sc_score, fn))
+    features.to_csv('../output/{}_feature_importances_{}_{}_{}.csv'.format(
+        start_time[:11], metric, sc_score, fs_name), index=False)
 
     mean_score = np.mean(list_score)
-    logger.info('CV & TEST mean_score: {}'.format(mean_score))
-    logger.debug('CV & TEST mean_score: {}'.format(mean_score))
+    logger.info('CV & TEST mean {}: {}'.format(metric, mean_score))
+    logger.debug('CV & TEST mean {}: {}'.format(metric, mean_score))
 
 
-def prediction(feature_list):
-    global data
+def prediction(data, feature_set=[]):
 
-    feature_list = list(submit_feature.columns.values)
-    start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
-    pred_dict = {}
-    feature_dict = {}
-    score_list = []
+    df = data.copy()
 
-    #  for season in tqdm(train_season_list):
-    output = data.reset_index().copy()
-    #  df = data[feature_list+['result', 'daynum', 'pred_flg']].copy()
-    df = data[feature_list+['result']].copy()
-    df = df.loc[train_season_list, :]
-    df.reset_index(inplace=True)
-    test_season = df['season'].max()
+# feature_setが決まっていたらそれのみで学習させる
+    if len(feature_set) == 0:
+        use_cols = df.columns.values
+    elif len(feature_set) > 0:
+        use_cols = feature_set
 
-    tmp_train = df[df['season'] != test_season]
-    tmp_test = df[df['season'] == test_season]
-    tmp_train2 = tmp_test[tmp_test['daynum'] < 133]
+    x, y = x_y_split(df[use_cols], target)
 
-    train = pd.concat([tmp_train, tmp_train2], axis=0)
-    test = tmp_test[tmp_test['daynum'] >= 133]
-
-    x_train = train.drop(['result', 'season'], axis=1).copy()
-    y_train = train['result'].values
-    x_test = test.drop(['result', 'season'], axis=1).copy()
-    y_test = test['result'].values
-
-    use_cols = x_train.columns.values
-    use_cols = submit_feature.columns.values
-
-    print('***TRAIN COLUMN NUMBER***')
-    print(len(x_train.columns))
-    print('***TRAIN ROW NUMBER***')
-    print(len(x_train))
-    print('***TEST ROW NUMBER***')
-    print(len(x_test))
+    now = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 
     clf = lgb.LGBMClassifier(**fix_params)
-    clf.fit(x_train, y_train,
-            eval_set=[(x_test, y_test)],
-            eval_metric='logloss',
-            early_stopping_rounds=early_stopping_rounds,
+    clf.fit(x, y,
+            #  eval_set=[(x_test, y_test)],
+            eval_metric=metric,
+            #  early_stopping_rounds=early_stopping_rounds,
             categorical_feature=categorical_feature)
 
-    tmp_y_pred = clf.predict_proba(
-        x_test, num_iteration=clf.best_iteration_)[:, 1]
-    sc_logloss = log_loss(y_test, tmp_y_pred)
+    y_pred = clf.predict_proba(x)[:, 1]
+    sc_score = sc_metrics(y, y_pred)
 
-    #  out_train = output[use_cols]
-    #  out_test  = output['result'].values
-
-    #  print('***PREDICTION COLUMN NUMBER***')
-    #  print(len(out_train.columns))
-    #  print('**************************')
-    #  print('***PEDICTION ROW NUMBER***')
-    #  print(len(out_train))
-    #  print('**************************')
-
-    #  y_pred = clf.predict_proba(out_train, num_iteration=clf.best_iteration_)[:,1]
-
-    #  pred = pd.Series(y_pred, name='prediction_result').to_frame()
-    #  pred['observation'] = out_test
-    #  train_result = pd.concat([output[['teamid', 'teamid_2', 'season', 'daynum', 'daynum_2', 'result']], pred], axis=1)
-    #  train_result.to_csv('../output/{}_{}_ncaa_pred_score_8ver_viz.csv'.format(start_time, test_season), index=False)
-
-    #  return
-
-    submit_data = submit_feature[submit_feature['season']
-                                 == 2018][use_cols].copy()
-    submit_pred = clf.predict_proba(
-        submit_data[use_cols], num_iteration=clf.best_iteration_)[:, 1]
-
-    submit_score = submit_base[submit_base['season'] == 2018].copy()
-    submit_score['Pred'] = submit_pred
-    submit_result = submit.merge(
-        submit_score, on=['teamid', 'teamid_2', 'season'], how='inner')[['ID', 'Pred']]
-
-    submit_result.to_csv(
-        '../output/{}_2018_ncaa_submit.csv'.format(start_time), index=False)
-
-    #  submit_result['Pred'] = submit_result['Pred'].map(lambda x: x*1.35 if x>0.7 else x*0.1 if x<0.3 else x)
-    #  submit_result['Pred'] = submit_result['Pred'].map(lambda x: 0.99 if x>1.0 else 0.01 if x<0.0 else x)
-
-    submit_result.to_csv(
-        '../output/{}_2018_ncaa_submit_adjust.csv'.format(start_time), index=False)
+    result = df[use_cols]
+    result['pred'] = y_pred
+    result['obs'] = y
+    result.to_csv(
+        '../output/{}_pred_and_obs_viz_{}.csv'.format(start_time[:11], fs_name), index=False)
 
 
 def main():
 
-    #  for f in [fe_list2, fe_list3]:
-    prediction(fe_list2)
-    #  continue
+    tuning(rawdata)
     sys.exit()
+    #  for f in feature_list:
+    #  prediction(rawdata)
 
 
 if __name__ == '__main__':
 
-    # for log visualization
+    # Pre Setting
+    start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
+
+    # path
+    input_path = '../input/*.csv'
+
+    # dataset info
+    fn_list = ['feature_set', 'submit']
+    fn_list = []
+    target = 'result'
+    test_size = 0.2
+    seed = 2018
+
+    # model params
+    #  metric = 'logloss'
+    metric = 'auc'
+    categorical_feature = []
+    early_stopping_rounds = 1000
+    all_params = {
+        'objective': ['binary'],
+        'num_leaves': [31],
+        #  'num_leaves': [31, 63, 127, 255, 511, 1023],
+        #  'learning_rate': [0.05, 0.01],
+        'learning_rate': [0.05],
+        #  'n_estimators': [100, 300, 500],
+        'n_estimators': [100],
+        #  'feature_fraction': [0.7, 0.8, 0.9],
+        'feature_fraction': [0.7],
+        'random_state': [seed]
+    }
+
+    fix_params = {
+        'objective': 'binary',
+        #  'num_leaves': 1023,
+        'num_leaves': 511,
+        'learning_rate': 0.05,
+        'n_estimators': 120,
+        'feature_fraction': 0.7,
+        'random_state': seed
+    }
+
+    # logger
+    logger = getLogger(__name__)
     log_fmt = Formatter('%(asctime)s %(name)s %(lineno)d [%(levelname)s]\
     [%(funcName)s] %(message)s ')
     handler = StreamHandler()
@@ -257,7 +242,7 @@ if __name__ == '__main__':
     handler.setFormatter(log_fmt)
     logger.addHandler(handler)
 
-    handler = FileHandler('../output/ncaa_train.py.log', 'a')
+    handler = FileHandler('../output/py_train.py.log', 'a')
     handler.setLevel(DEBUG)
     handler.setFormatter(log_fmt)
     logger.setLevel(DEBUG)
