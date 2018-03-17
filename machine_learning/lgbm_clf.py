@@ -8,21 +8,25 @@ import glob
 import datetime
 from tqdm import tqdm
 from logging import StreamHandler, DEBUG, Formatter, FileHandler, getLogger
+from load_data import load_data
+
 
 logger = getLogger(__name__)
 start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 
 
+input_path = ''
+fn = re.search(r'/([^/.]*).csv', inpu_path).group(1)
+
 # feature selection
-feim_result = pd.read_csv(
-    '../feature_enginering/2017_9.79468578925634_feature_importances.csv')
+feim_result = pd.read_csv('../feature_enginering/2017_9.79468578925634_feature_importances.csv')
 fe_sel = feim_result.groupby(['feature'], as_index=False)['importance'].mean()
 fe_sel.sort_values(by='importance', ascending=False, inplace=True)
 fe_list1 = list(fe_sel['feature'].values[:100])
 fe_list2 = list(fe_sel['feature'].values[:200])
 
-metric                = 'logloss'
-categorical_feature   = []
+metric = 'logloss'
+categorical_feature = []
 early_stopping_rounds = 1000
 all_params = {
     'objective': ['binary'],
@@ -45,30 +49,11 @@ fix_params = {
 }
 
 
-def make_dataset():
-    df = data.loc[season, :]
-    df.reset_index(inplace=True)
-    test_season = df['season'].max()
-
-    tmp_train = df[df['season'] != test_season]
-    tmp_test = df[df['season'] == test_season]
-    tmp_train2 = tmp_test[tmp_test['daynum'] < 133]
-
-    train = pd.concat([tmp_train, tmp_train2], axis=0)
-    test = tmp_test[tmp_test['daynum'] >= 133]
-
-    x_train = train.drop(
-        ['result', 'teamid', 'teamid_2', 'season'], axis=1).copy()
-    y_train = train['result'].values
-    x_test = test.drop(
-        ['result', 'teamid', 'teamid_2', 'season'], axis=1).copy()
-    y_test = test['result'].values
-
 
 def sc_metrics(test, pred):
-    if metric=='logloss':
+    if metric == 'logloss':
         return logloss(test, pred)
-    elif metric=='auc':
+    elif metric == 'auc':
         return auc(test, pred)
     else:
         print('score caliculation error!')
@@ -92,47 +77,51 @@ def tuning(x_train, y_train):
     for params in tqdm(list(ParameterGrid(all_params))):
         logger.info('params: {}'.format(params))
 
-        for train_idx, valid_idx in cv.split(x_train, y_train):
+        for train_idx, valid_idx in tqdm(cv.split(x_train, y_train)):
             trn_x = x_train.iloc[train_idx, :]
             val_x = x_train.iloc[valid_idx, :]
 
             trn_y = y_train[train_idx]
             val_y = y_train[valid_idx]
 
+            clf = lgb.LGBMClassifier(**params)
+            clf.fit(x_train, y_train,
+                    eval_set=[(x_test, y_test)],
+                    eval_metric=metric,
+                    early_stopping_rounds=early_stopping_rounds,
+                    categorical_feature=categorical_feature)
 
-        clf = lgb.LGBMClassifier(**params)
-        clf.fit(x_train, y_train,
-                eval_set=[(x_test, y_test)],
-                eval_metric=metric,
-                early_stopping_rounds=early_stopping_rounds,
-                categorical_feature=categorical_feature)
+            y_pred = clf.predict_proba(
+                x_test, num_iteration=clf.best_iteration_)[:, 1]
+            sc_score = sc_metrics(y_test, y_pred)
 
+            list_score.append(sc_score)
+            list_best_iterations.append(clf.best_iteration_)
+            logger.debug('{}: {}'.format(metric, sc_score))
+            logger.debug('   {}: {}'.format(metric, sc_score))
 
-        y_pred = clf.predict_proba(x_test, num_iteration=clf.best_iteration_)[:,1]
-        sc_score = sc_metrics(y_test, y_pred)
-
-        list_score.append(sc_score)
-        list_best_iterations.append(clf.best_iteration_)
+        logger.info('CV end')
 
         params['n_estimators'] = int(np.mean(list_best_iterations))
         sc_score = np.mean(list_score)
-        if metric=='logloss':
+        if metric == 'logloss':
             if best_score > sc_score:
                 best_score = sc_score
                 best_params = params
-        elif metric=='auc'
+        elif metric == 'auc'
             if best_score < sc_score:
                 best_score = sc_score
                 best_params = params
 
         logger.info('{}: {}'.format(metric, sc_score))
         logger.debug('   {}: {}'.format(metric, sc_score))
-        logger.info('current best score: {}  best params: {}'.format(best_score, best_params))
+        logger.info('current best score: {}  best params: {}'.format(
+            best_score, best_params))
 
     logger.info('best score : {}'.format(best_score))
     logger.info('best params: {}'.format(best_params))
     df_params = pd.DataFrame(min_params, index=['params'])
-    df_params.to_csv('../output/{}_{}_{}_'.format(start_time, pjname, best_score) + 'best_params.csv')
+    df_params.to_csv('../output/{}_best_params_{}_{}_{}.csv'.format(start_time[:11], metric, best_score, fn))
 
     logger.info('tuning end')
     now = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
@@ -141,23 +130,24 @@ def tuning(x_train, y_train):
     clf = lgb.LGBMClassifier(**min_params)
     clf.fit(x_train, y_train,
             eval_set=[(x_test, y_test)],
-            eval_metric='logloss',
+            eval_metric=metric,
             early_stopping_rounds=early_stopping_rounds,
             categorical_feature=categorical_feature)
 
     y_pred = clf.predict(x_test, num_iteration=clf.best_iteration_)
-    sc_logloss = log_loss(y_test, y_pred)
+
     feim = pd.Series(clf.feature_importances_, name='importance')
     feature_name = pd.Series(use_cols, name='feature')
     features = pd.concat([feature_name, feim], axis=1)
     features.sort_values(by='importance', ascending=False, inplace=True)
-    features.to_csv('../output/{}_{}_'.format(test_season,
-                    sc_logloss) + 'feature_importances.csv')
-    season_score.append(min_score)
 
-    mean_score = np.mean(season_score)
-    logger.info('mean_score: {}'.format(mean_score))
-    logger.debug('mean_score: {}'.format(mean_score))
+    sc_score = sc_metrics(y_test, y_pred)
+    list_score.append(sc_score)
+    features.to_csv('../output/{}_feature_importances_{}_{}_{}.csv'.format(start_time[:11], metric, sc_score, fn))
+
+    mean_score = np.mean(list_score)
+    logger.info('CV & TEST mean_score: {}'.format(mean_score))
+    logger.debug('CV & TEST mean_score: {}'.format(mean_score))
 
 
 def prediction(feature_list):
@@ -177,16 +167,16 @@ def prediction(feature_list):
     df.reset_index(inplace=True)
     test_season = df['season'].max()
 
-    tmp_train  = df[df['season'] != test_season]
-    tmp_test   = df[df['season'] == test_season]
-    tmp_train2 = tmp_test[tmp_test['daynum']<133]
+    tmp_train = df[df['season'] != test_season]
+    tmp_test = df[df['season'] == test_season]
+    tmp_train2 = tmp_test[tmp_test['daynum'] < 133]
 
     train = pd.concat([tmp_train, tmp_train2], axis=0)
-    test = tmp_test[tmp_test['daynum']>=133]
+    test = tmp_test[tmp_test['daynum'] >= 133]
 
     x_train = train.drop(['result', 'season'], axis=1).copy()
     y_train = train['result'].values
-    x_test = test.drop(['result', 'season'] , axis=1).copy()
+    x_test = test.drop(['result', 'season'], axis=1).copy()
     y_test = test['result'].values
 
     use_cols = x_train.columns.values
@@ -206,7 +196,8 @@ def prediction(feature_list):
             early_stopping_rounds=early_stopping_rounds,
             categorical_feature=categorical_feature)
 
-    tmp_y_pred = clf.predict_proba(x_test, num_iteration=clf.best_iteration_)[:,1]
+    tmp_y_pred = clf.predict_proba(
+        x_test, num_iteration=clf.best_iteration_)[:, 1]
     sc_logloss = log_loss(y_test, tmp_y_pred)
 
     #  out_train = output[use_cols]
@@ -228,26 +219,31 @@ def prediction(feature_list):
 
     #  return
 
-    submit_data = submit_feature[submit_feature['season'] == 2018][use_cols].copy()
-    submit_pred = clf.predict_proba(submit_data[use_cols], num_iteration=clf.best_iteration_)[:,1]
+    submit_data = submit_feature[submit_feature['season']
+                                 == 2018][use_cols].copy()
+    submit_pred = clf.predict_proba(
+        submit_data[use_cols], num_iteration=clf.best_iteration_)[:, 1]
 
-    submit_score = submit_base[submit_base['season']==2018].copy()
+    submit_score = submit_base[submit_base['season'] == 2018].copy()
     submit_score['Pred'] = submit_pred
-    submit_result = submit.merge(submit_score, on= ['teamid', 'teamid_2', 'season'], how='inner')[['ID', 'Pred']]
+    submit_result = submit.merge(
+        submit_score, on=['teamid', 'teamid_2', 'season'], how='inner')[['ID', 'Pred']]
 
-    submit_result.to_csv('../output/{}_2018_ncaa_submit.csv'.format(start_time), index=False)
+    submit_result.to_csv(
+        '../output/{}_2018_ncaa_submit.csv'.format(start_time), index=False)
 
     #  submit_result['Pred'] = submit_result['Pred'].map(lambda x: x*1.35 if x>0.7 else x*0.1 if x<0.3 else x)
     #  submit_result['Pred'] = submit_result['Pred'].map(lambda x: 0.99 if x>1.0 else 0.01 if x<0.0 else x)
 
-    submit_result.to_csv('../output/{}_2018_ncaa_submit_adjust.csv'.format(start_time), index=False)
+    submit_result.to_csv(
+        '../output/{}_2018_ncaa_submit_adjust.csv'.format(start_time), index=False)
 
 
 def main():
 
     #  for f in [fe_list2, fe_list3]:
     prediction(fe_list2)
-        #  continue
+    #  continue
     sys.exit()
 
 
