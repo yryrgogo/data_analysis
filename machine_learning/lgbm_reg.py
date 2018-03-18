@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import lightgbm as lgb
 from sklearn.model_selection import ParameterGrid, StratifiedKFold, train_test_split
-from sklearn.metrics import log_loss, roc_auc_score
+from sklearn.metrics import r2_score
 import datetime
 from tqdm import tqdm
 from logging import StreamHandler, DEBUG, Formatter, FileHandler, getLogger
@@ -10,6 +10,48 @@ import sys
 sys.path.append('../module')
 from load_data import load_data, x_y_split, extract_set
 
+# Pre Setting
+start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
+
+# path
+input_path = '../input/*.csv'
+
+# dataset info
+fn_list = ['feature_set', 'submit']
+fn_list = []
+target = 'score'
+test_size = 0.2
+seed = 2018
+
+# model params
+#  metric = 'logloss'
+#  metric = 'auc'
+#  metric = 'rmsle'
+metric = 'l2'
+categorical_feature = []
+early_stopping_rounds = 1000
+all_params = {
+    'objective': ['regression'],
+    'num_leaves': [31],
+    #  'num_leaves': [31, 63, 127, 255, 511, 1023],
+    #  'learning_rate': [0.05, 0.01],
+    'learning_rate': [0.05],
+    #  'n_estimators': [100, 300, 500],
+    'n_estimators': [100],
+    #  'feature_fraction': [0.7, 0.8, 0.9],
+    'feature_fraction': [0.7],
+    'random_state': [seed]
+}
+
+fix_params = {
+    'objective': 'regression',
+    #  'num_leaves': 1023,
+    'num_leaves': 511,
+    'learning_rate': 0.05,
+    'n_estimators': 120,
+    'feature_fraction': 0.7,
+    'random_state': seed
+}
 
 # *********load_data*********
 rawdata, fs_name = load_data(input_path, fn_list, None, None)
@@ -27,26 +69,30 @@ rawdata, fs_name = load_data(input_path, fn_list, None, None)
 
 
 def sc_metrics(test, pred):
-    if metric == 'logloss':
-        return logloss(test, pred)
-    elif metric == 'auc':
-        return roc_auc_score(test, pred)
+    if metric == 'l2':
+        return r2_score(test, pred)
+    if metric == 'rmsle':
+        return rmsle(test, pred)
     else:
         print('score caliculation error!')
+
+
+def rmsle(test, pred):
+    return (((pred - test) ** 2.0)/len(test)) ** 0.5
+
+
+def outlier(x):
+    return x*1.96
 
 
 def tuning(data, feature_set=[]):
 
     df = data.copy()
-    list_score = []
+    score_list = []
     list_best_iterations = []
     best_params = None
     cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=seed)
-
-    if metric == 'auc':
-        best_score = 0
-    elif metric == 'logloss':
-        best_score = 100
+    best_score = 100
 
 # feature_setが決まっていたらそれのみで学習させる
     if len(feature_set) == 0:
@@ -76,36 +122,33 @@ def tuning(data, feature_set=[]):
 
             trn_y = y_train[train_idx]
             val_y = y_train[valid_idx]
+            trn_y = np.log1p(trn_y)
+            val_y = np.log1p(val_y)
 
-            clf = lgb.LGBMClassifier(**params)
+            clf = lgb.LGBMRegressor(**params)
             clf.fit(trn_x, trn_y,
                     eval_set=[(val_x, val_y)],
                     eval_metric=metric,
                     early_stopping_rounds=early_stopping_rounds,
                     categorical_feature=categorical_feature)
 
-            y_pred = clf.predict_proba(val_x, num_iteration=clf.best_iteration_)[:, 1]
+            y_pred = clf.predict(val_x, num_iteration=clf.best_iteration_)
             sc_score = sc_metrics(val_y, y_pred)
 
-            list_score.append(sc_score)
+            score_list.append(sc_score)
             list_best_iterations.append(clf.best_iteration_)
             logger.debug('{}: {}'.format(metric, sc_score))
-            logger.debug('   {}: {}'.format(metric, sc_score))
 
         logger.info('CV end')
 
         params['n_estimators'] = int(np.mean(list_best_iterations))
-        sc_score = np.mean(list_score)
-        if metric == 'logloss':
-            if best_score > sc_score:
-                best_score = sc_score
-                best_params = params
-        elif metric == 'auc':
-            if best_score < sc_score:
-                best_score = sc_score
-                best_params = params
+        mean_score = np.mean(score_list)
 
-        logger.info('{}: {}'.format(metric, sc_score))
+        if best_score > mean_score:
+            best_score = mean_score
+            best_params = params
+
+        logger.info('{}: {}'.format(metric, mean_score))
         logger.info('current {}: {}  best params: {}'.format(
             metric, best_score, best_params))
         logger.debug('current {}: {}  best params: {}'.format(
@@ -125,7 +168,7 @@ def tuning(data, feature_set=[]):
     now = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
     logger.debug('tuning end {}'.format(now))
 
-    clf = lgb.LGBMClassifier(**best_params)
+    clf = lgb.LGBMRegressor(**best_params)
     clf.fit(x_train, y_train,
             eval_set=[(x_test, y_test)],
             eval_metric=metric,
@@ -141,11 +184,11 @@ def tuning(data, feature_set=[]):
     features.sort_values(by='importance', ascending=False, inplace=True)
 
     sc_score = sc_metrics(y_test, y_pred)
-    list_score.append(sc_score)
+    score_list.append(sc_score)
     features.to_csv('../output/{}_feature_importances_{}_{}_{}.csv'.format(
         start_time[:11], metric, sc_score, fs_name), index=False)
 
-    mean_score = np.mean(list_score)
+    mean_score = np.mean(score_list)
     logger.info('CV & TEST mean {}: {}'.format(metric, mean_score))
     logger.debug('CV & TEST mean {}: {}'.format(metric, mean_score))
 
@@ -161,76 +204,38 @@ def prediction(data, feature_set=[]):
         use_cols = feature_set
 
     x, y = x_y_split(df[use_cols], target)
+    y = np.log1p(y)
 
     now = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 
-    clf = lgb.LGBMClassifier(**fix_params)
+    clf = lgb.LGBMRegressor(**fix_params)
     clf.fit(x, y,
             #  eval_set=[(x_test, y_test)],
             eval_metric=metric,
             #  early_stopping_rounds=early_stopping_rounds,
             categorical_feature=categorical_feature)
 
-    y_pred = clf.predict_proba(x)[:, 1]
+    y_pred = clf.predict(x)
     sc_score = sc_metrics(y, y_pred)
+
+    y = np.expm1(y)
+    y_pred = np.expm1(y_pred)
 
     result = df[use_cols]
     result['pred'] = y_pred
     result['obs'] = y
-    result.to_csv(
-        '../output/{}_pred_and_obs_viz_{}.csv'.format(start_time[:11], fs_name), index=False)
+    result.to_csv('../output/{}_pred_and_obs_viz_{}.csv'.format(start_time[:11], fs_name), index=False)
 
 
 def main():
 
     tuning(rawdata)
-    sys.exit()
+    #  sys.exit()
     #  for f in feature_list:
-    #  prediction(rawdata)
+    prediction(rawdata)
 
 
 if __name__ == '__main__':
-
-    # Pre Setting
-    start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
-
-    # path
-    input_path = '../input/*.csv'
-
-    # dataset info
-    fn_list = ['feature_set', 'submit']
-    fn_list = []
-    target = 'result'
-    test_size = 0.2
-    seed = 2018
-
-    # model params
-    #  metric = 'logloss'
-    metric = 'auc'
-    categorical_feature = []
-    early_stopping_rounds = 1000
-    all_params = {
-        'objective': ['binary'],
-        'num_leaves': [31],
-        #  'num_leaves': [31, 63, 127, 255, 511, 1023],
-        #  'learning_rate': [0.05, 0.01],
-        'learning_rate': [0.05],
-        #  'n_estimators': [100, 300, 500],
-        'n_estimators': [100],
-        #  'feature_fraction': [0.7, 0.8, 0.9],
-        'feature_fraction': [0.7],
-        'random_state': [seed]
-    }
-
-    fix_params = {
-        'objective': 'binary',
-        #  'num_leaves': 1023,
-        'num_leaves': 511,
-        'learning_rate': 0.05,
-        'n_estimators': 120,
-        'feature_fraction': 0.7,
-        'random_state': seed
-    }
 
     # logger
     logger = getLogger(__name__)
