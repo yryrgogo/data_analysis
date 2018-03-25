@@ -40,6 +40,7 @@ def x_y_split(data, target):
     return x, y
 
 
+# rowはリストでインデックスの範囲を指定する
 def extract_set(data, index, row):
     tmp = data.set_index(index)
     return tmp.loc[row, :].reset_index()
