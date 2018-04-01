@@ -6,28 +6,22 @@ import sys
 sys.path.append('../module')
 sys.path.append('../clustering')
 from load_data import load_data, x_y_split, extract_set
-import plsa_core
-from plsa_kmeans import plsa_kmeans
 
 start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 input_path = '../input/*.csv'
 #  delimiter = '\t'
 
 # main value*******************************
-ID = 'teamid'
 key_list = []
 
 # load_data********************************
 data, fs_name = load_data(input_path, key_list)
 #  print(data.head())
-sys.exit()
+#  sys.exit()
 
 
 # preprocessing****************************
 
-cluster = plsa_kmeans(data, ID, 8, 10)
-#  print(cluster.head())
-#  sys.exit()
 
 def standard(data, value):
     val = data[value].values
@@ -59,13 +53,6 @@ def stats_select_range(data, start, end, range_col, value):
 
     result.fillna(-1, inplace=True)  # varは成分が一つだとNaNになるため
     return result
-
-    #  # range分のdataをもたない場合、-1とする
-    #  result.set_index(ID, inplace=True)
-    #  columns = result.columns
-    #  exclude = 
-    #  result.loc[exclude, columns] = -1
-    #  return result.reset_index()
 
 
 # 重み付き平均
