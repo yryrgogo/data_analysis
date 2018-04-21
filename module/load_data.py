@@ -8,6 +8,7 @@ import re
 def load_data(input_path, key_list=[], delimiter=None, index_col=None):
 
     data_dict = {}
+    fs_name = 'feature_set'
     path_list = glob.glob(input_path)
 
     if len(key_list) > 0:
@@ -24,9 +25,8 @@ def load_data(input_path, key_list=[], delimiter=None, index_col=None):
                     print('columns       : \n{}'.format(
                         data_dict[fn].columns.values))
                     print('********************************\n')
-                    if fn == 'feature_set':
-                        fs_name
-        print('{} file load end.'.format(len(key_list)))
+        print('{} file load end.\nreturn {}'.format(len(key_list), data_dict.keys()))
+        print('********************************\n')
         return data_dict, fs_name
 
     elif len(key_list) == 0:
@@ -44,3 +44,15 @@ def x_y_split(data, target):
 def extract_set(data, index, row):
     tmp = data.set_index(index)
     return tmp.loc[row, :].reset_index()
+
+
+def get_df(path):
+    return pd.read_csv(path)
+
+
+def pararell_load():
+    p = Pool()
+    tmp = pd.concat(p.map(get_df, glob.glob('tmp/*csv')), ignore_index=True)
+    p.close()
+    p.join()
+
