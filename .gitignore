@@ -11,3 +11,4 @@ tabelog/log/*
 *.tsv
 *.xlsx
 *.vec
+top10_models/
