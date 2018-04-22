@@ -1,8 +1,9 @@
 import pandas as pd
 import glob
-import tqdm
 import sys
 import re
+from multiprocessing import Pool
+import multiprocessing
 
 
 def load_data(input_path, key_list=[], delimiter=None, index_col=None):
@@ -14,16 +15,14 @@ def load_data(input_path, key_list=[], delimiter=None, index_col=None):
     if len(key_list) > 0:
         for path in path_list:
             filename = re.search(r'/([^/.]*).csv', path).group(1)
-            for fn in key_list:
-                if path.count(fn):
-                    data_dict[fn] = pd.read_csv(path, delimiter=delimiter, index_col=index_col)
+            for key in key_list:
+                if path.count(key):
+                    data_dict[key] = pd.read_csv(path, delimiter=delimiter, index_col=index_col)
                     print('********************************')
                     print('filename      : {}'.format(filename))
                     print('row number    : {}'.format(len(data_dict[fn])))
-                    print('column number : {}'.format(
-                        len(data_dict[fn].columns)))
-                    print('columns       : \n{}'.format(
-                        data_dict[fn].columns.values))
+                    print('column number : {}'.format(len(data_dict[fn].columns)))
+                    print('columns       : \n{}'.format(data_dict[fn].columns.values))
                     print('********************************\n')
         print('{} file load end.\nreturn {}'.format(len(key_list), data_dict.keys()))
         print('********************************\n')
@@ -40,19 +39,55 @@ def x_y_split(data, target):
     return x, y
 
 
-# rowはリストでインデックスの範囲を指定する
-def extract_set(data, index, row):
-    tmp = data.set_index(index)
-    return tmp.loc[row, :].reset_index()
+def pararell_load_data(key_list, path_list):
+    """
+    Explain:
+    ファイル名をkeyとしてデータを格納したdictを並列処理で作成し、
+    そのdictを格納したリストを返す
+
+    Args:
+        key_list(list)  : pathからファイル名を特定する為のkey
+        path_list(list) : loadしたいファイルが入ったパスリスト
+
+    Return:
+        p_list(list) : ファイル名のkeyをキーとしたデータセットの辞書リスト
+
+    """
+
+    arg_list = []
+
+    for path in path_list:
+        for key in key_list:
+            if path.count(key):
+                arg_list.append([key, path])
+
+    p_list = pararell_process(load_wrapper, arg_list)
+
+    return p_list
 
 
-def get_df(path):
-    return pd.read_csv(path)
+def load_wrapper(args):
+    return pararell_read_csv(*args)
 
 
-def pararell_load():
-    p = Pool()
-    tmp = pd.concat(p.map(get_df, glob.glob('tmp/*csv')), ignore_index=True)
-    p.close()
-    p.join()
+def pararell_process(func, arg_list):
+    p = Pool(multiprocessing.cpu_count())
+    p_list = p.map(func, arg_list)
+    p.close
+
+    return p_list
+
+
+def pararell_read_csv(key, path):
+    data_dict = {}
+    data_dict[key] = pd.read_csv(path)
+
+    filename = re.search(r'/([^/.]*).csv', path).group(1)
+    #  print('****************')
+    #  print('filename   : {}'.format(filename))
+    #  print('data shape : {}'.format(data_dict[key].shape))
+    #  print('columns    : {}'.format(data_dict[key].columns.values))
+    #  print('****************\n')
+    return data_dict
+
 
