@@ -3,6 +3,7 @@ import pandas as pd
 import lightgbm as lgb
 from sklearn.model_selection import ParameterGrid, StratifiedKFold, train_test_split
 from sklearn.metrics import r2_score
+from sklearn.preprocessing import LabelEncoder
 import datetime
 from tqdm import tqdm
 import sys
@@ -58,15 +59,15 @@ def sc_metrics(test, pred):
         print('score caliculation error!')
 
 
-def validation(train, test, target, categorical_feature, pts_score='0', test_viz=0):
+def validation(train, test, target, categorical_feature, pts_score='0', test_viz=[]):
 
     x_train, y_train = x_y_split(train, target)
     x_test, y_test = x_y_split(test, target)
 
+    use_cols = list(x_train.columns.values)
+
     y_train = np.log1p(y_train)
     y_test = np.log1p(y_test)
-
-    use_cols = x_train.columns
 
     logger.info('metric:{}'.format(metric))
     logger.info('train columns: {} \nuse columns: {}'.format(len(use_cols), use_cols))
@@ -91,24 +92,35 @@ def validation(train, test, target, categorical_feature, pts_score='0', test_viz
     ftim = pd.DataFrame({'feature': use_cols, 'importance': reg.feature_importances_})
     ftim['score_cv'] = sc_score
 
-
-    """ パーティション毎にスコアを出力し、格納する """
-    if pts_score!='0':
-        df_pts = test[[pts_score, target]]
-        df_pts['predicion'] = y_pred
-
-        for pts in df_pts[pts_score].drop_duplicates().values:
-            tmp = df_pts[df_pts[pts_score]==pts]
-            y_test_pts = tmp[target].values
-            y_pred_pts = tmp['predicion'].values
-            score = sc_metrics(y_test_pts, y_pred_pts)
-            ftim['score_{}'.format(pts)] = score
-
-
     """特徴量セットに予測結果をJOINして出力"""
-    if test_viz==1:
-        test['prediction'] = y_pred
-        test.to_csv('../output/{}_test_viz_{}_{}.csv'.format(
+    if len(test_viz) != 0:
+        prediction = reg.predict(x_train, num_iteration=reg.best_iteration_)
+        prediction = list(np.expm1(prediction))
+        prediction = prediction + list(y_pred)
+        test_viz['prediction'] = prediction
+
+        ''' 予測結果を保管しておく '''
+        result_pred = pd.Series(prediction, name='{}_col{}'.format(start_time[:11], len(use_cols)))
+        result_pred.to_csv('../prediction/{}_col{}_{}.csv'.format(start_time[:11], len(use_cols), sc_score), index=False, header=True)
+
+        """ パーティション毎にスコアを出力し、格納する """
+        if pts_score!='0':
+            df_pts = test_viz[[pts_score, target, 'prediction']]
+
+            pts_list = df_pts[pts_score].drop_duplicates().values
+            pts_score_list = []
+            for pts in pts_list:
+                tmp = df_pts[df_pts[pts_score]==pts]
+                y_test_pts = tmp[target].values
+                y_pred_pts = tmp['prediction'].values
+                score = sc_metrics(y_test_pts, y_pred_pts)
+                pts_score_list.append(score)
+
+            result_pts = pd.DataFrame({pts_score:pts_list, 'pts_score':pts_score_list})
+
+            test_viz = pd.merge(test_viz, result_pts, on=pts_score, how='left', copy=False)
+
+        test_viz.to_csv('../eda/{}_test_viz_{}_{}.csv'.format(
             start_time[:11], metric, sc_score), index=False)
 
     return ftim

@@ -2,22 +2,16 @@ import numpy as np
 import pandas as pd
 import gc
 import re
+import sys
 import datetime
 from tqdm import tqdm
 from lgbm_reg import validation
+from sklearn.preprocessing import LabelEncoder
 
 
 start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 
 # PATH*************************************
-
-base_score = {
-    1: 0.89654587,
-    2: 0.900488924,
-    3: 0.88991557,
-    4: 0.895650121,  # 各validationの平均
-}
-
 
 def path_info(path):
 
@@ -56,7 +50,7 @@ def split_dataset(dataset, val_no):
 
 
 # 学習結果のfeature importanceを軸に、featureと予測結果の関係をまとめる
-def feature_summarize(ftim, dataset, use_cols, target, ft_set_name, number, val_no):
+def feature_summarize(ftim, dataset, corr_list, target, number, val_no):
     """
     予測結果を検証する為に、feature_importanceや特徴量同士の相関などを
     まとめる。
@@ -64,9 +58,8 @@ def feature_summarize(ftim, dataset, use_cols, target, ft_set_name, number, val_
     Args:
         ftim    (df)    : feature_importanceをDFにし、cv_scoreなどを加えた
         dataset (df)    : 元のデータセット
-        use_cols(list)  : 学習に使用した特徴量リスト
-        #  target(str)     : 
-        ft_set_name(str): 学習に使用した特徴量リストを出力したファイル名
+        corr_list(list) : 学習に使用した特徴量リスト
+        target(str)     : 目的変数
         number  (int)   : 全体の学習における通し番号
         val_no  (int)   : CVにおいて何番目のvalidationか
 
@@ -76,8 +69,6 @@ def feature_summarize(ftim, dataset, use_cols, target, ft_set_name, number, val_
 
     ftim['no'] = number
     ftim['val_no'] = val_no
-    ftim['num_of_ft'] = len(use_cols)
-    ftim['add_feature'] = ft_set_name
 
     # feature_importanceを合計1としてスケーリング
     tmp = ftim['importance'].sum()
@@ -89,9 +80,9 @@ def feature_summarize(ftim, dataset, use_cols, target, ft_set_name, number, val_
     comp = ftim[ftim['feature'] == 'dow']['importance'].values[0]
     ftim['comp_dow'] = ftim['importance']/comp
 
-    corr = top_corr(dataset, use_cols, 5)
-    corr_0 = top_corr(dataset[dataset[target] == 0], use_cols, 5, '_0')
-    corr_1 = top_corr(dataset[dataset[target] == 1], use_cols, 5, '_1')
+    corr = top_corr(dataset, corr_list, 5)
+    corr_0 = top_corr(dataset[dataset[target] == 0], corr_list, 5, '_0')
+    corr_1 = top_corr(dataset[dataset[target] == 1], corr_list, 5, '_1')
 
     result = ftim.merge(corr, on='feature', how='left')
     result = result.merge(corr_0, on='feature', how='left')
@@ -115,6 +106,13 @@ def exploratory_train(dataset, target, categorical_feature, max_val_no=1, number
         入力されたデータセットにおける指定Validation_noの予測結果をそれぞれ分析する為のデータフレーム。
     """
 
+    """visualize用 （できたらメモリを圧迫しない様にしたい）"""
+    visualize = dataset.copy()
+    lbl = LabelEncoder()
+    for cat in categorical_feature:
+        dataset[cat] = lbl.fit_transform(dataset[cat])
+    """ **************** """
+
     list_score = []
     list_diff = []
     # validation毎の結果をまとめるdf
@@ -125,7 +123,7 @@ def exploratory_train(dataset, target, categorical_feature, max_val_no=1, number
         # 学習用、テスト用データセットを作成
         train, test = split_dataset(dataset, val_no)
         # 学習
-        ftim = validation(train, test, target, categorical_feature, pts_score, test_viz)
+        ftim = validation(train, test, target, categorical_feature, pts_score, visualize)
 
         # feature_importanceとまとめてスコアを返してるので、一番目のみ取り出す
         score_cv = ftim['score_cv'].values[0]
@@ -139,12 +137,17 @@ def exploratory_train(dataset, target, categorical_feature, max_val_no=1, number
         ftim['score_diff'] = score_diff
 
         use_cols = list(train.columns)
-        ft_set_name = '{}_{}features.csv'.format(
-            start_time[:11], len(use_cols))
+        ftim['add_feature'] = '{}_{}features.csv'.format(start_time[:11], len(use_cols))
+
+        # ここで相関を計算するfeatureのみリストに残す
+        ftim['num_of_ft'] = len(use_cols)
+        corr_list = use_cols.copy()
+        for cat in categorical_feature:
+            corr_list.remove(cat)
 
         "EDA用のデータセットを作成する"
         feature_summary = feature_summarize(
-            ftim, dataset, use_cols, target, ft_set_name, number, val_no)
+            ftim, dataset, corr_list, target, number, val_no)
 
         # validation毎にサマリーを格納し結合していく
         if len(result_val) == 0:
@@ -160,12 +163,12 @@ def exploratory_train(dataset, target, categorical_feature, max_val_no=1, number
     result_val['diff_mean'] = np.mean(list_diff)
     # 学習に使用した特徴量リストを確認する為のファイルを出力する
     pd.Series(use_cols, name='features').to_csv(
-        '../output/{}_use_{}features.csv'.format(start_time[:11], len(use_cols)), index=False)
+        '../eda/{}_use_{}features.csv'.format(start_time[:11], len(use_cols)), index=False)
 
     return result_val
 
 
-def top_corr(data, use_cols, num, suffix=''):
+def top_corr(data, corr_list, num, suffix=''):
     """
     Explain:
         対象featureと相関の高い上位featureとその係数を取得する
@@ -176,7 +179,7 @@ def top_corr(data, use_cols, num, suffix=''):
 
     Args:
         data (DF)       : 相関を計算したいカラムをまとめたデータフレーム
-        use_cols (list) : 相関係数を取り出したい変数名のリスト
+        corr_list (list): 相関係数を取り出したい変数名のリスト
         num             : 上位何番目まで相関係数とその変数を取り出すか
         suffix          : 複数の相関を一つのDFにまとめたい時、区別用の文字を末尾につける
 
@@ -195,7 +198,7 @@ def top_corr(data, use_cols, num, suffix=''):
     # 結果を格納するデータフレーム
     result_corr = pd.DataFrame([])
 
-    for ft in use_cols:
+    for ft in corr_list:
 
         # 相関係数上位を取り出しDFに変換、インデックスを振りなおす
         # reset_indexにより、変数名がカラム名:indexとしてDFに入る
