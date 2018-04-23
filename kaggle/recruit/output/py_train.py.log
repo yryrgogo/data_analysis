@@ -1,0 +1,895 @@
+2018-04-22 10:23:27,173 __main__ 27 [INFO]    [<module>] start 
+2018-04-22 10:23:42,410 __main__ 19 [INFO][<module>] start 
+2018-04-22 10:24:26,445 __main__ 19 [INFO][<module>] start 
+2018-04-22 10:24:51,323 __main__ 19 [INFO][<module>] start 
+2018-04-22 10:24:51,323 __main__ 3 [INFO][log] test 
+2018-04-22 10:25:05,402 __main__ 19 [INFO][<module>] start 
+2018-04-22 10:25:05,403 __main__ 2 [INFO][log] test 
+2018-04-22 10:31:23,067 logger 19 [INFO]    [logger_func] start 
+2018-04-22 10:31:23,067 logger 15 [INFO]    [<module>] Yeah 
+2018-04-22 10:32:58,203 logger 19 [INFO]    [logger_func] start 
+2018-04-22 10:38:17,929 logger 19 [INFO]    [logger_func] start 
+2018-04-22 10:38:17,937 logger 19 [INFO]    [logger_func] start 
+2018-04-22 10:38:17,937 logger 19 [INFO]    [logger_func] start 
+2018-04-22 10:55:39,862 logger 19 [INFO]    [logger_func] start 
+2018-04-22 10:55:39,868 logger 19 [INFO]    [logger_func] start 
+2018-04-22 10:55:39,868 logger 19 [INFO]    [logger_func] start 
+2018-04-22 10:56:05,413 logger 19 [INFO]    [logger_func] start 
+2018-04-22 10:56:05,416 logger 19 [INFO]    [logger_func] start 
+2018-04-22 10:56:05,416 logger 19 [INFO]    [logger_func] start 
+2018-04-22 10:56:17,342 logger 19 [INFO]    [logger_func] start 
+2018-04-22 10:56:17,344 logger 19 [INFO]    [logger_func] start 
+2018-04-22 10:56:17,344 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:03:12,006 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:03:12,009 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:03:12,009 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:03:32,300 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:03:32,302 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:03:32,302 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:08:57,246 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:08:57,248 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:08:57,248 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:09:13,385 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:09:13,387 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:09:13,387 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:09:32,165 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:09:32,167 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:09:32,167 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:10:03,054 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:10:03,057 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:10:03,057 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:15:48,937 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:15:48,940 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:15:48,940 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:16:01,469 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:16:01,472 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:16:01,472 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:17:17,039 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:17:17,042 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:17:17,042 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:17:36,886 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:17:36,889 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:17:36,889 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:17:44,356 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:17:44,358 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:17:44,358 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:17:47,683 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:17:47,685 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:17:47,685 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:18:40,782 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:18:40,785 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:18:40,785 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:19:10,502 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:19:10,504 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:19:10,504 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:20:47,515 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:20:47,518 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:20:47,518 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:20:59,061 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:20:59,063 logger 19 [INFO]    [logger_func] start 
+2018-04-22 12:20:59,063 logger 19 [INFO]    [logger_func] start 
+2018-04-22 21:11:52,865 logger 19 [INFO]    [logger_func] start 
+2018-04-22 21:11:52,869 logger 19 [INFO]    [logger_func] start 
+2018-04-22 21:11:52,869 logger 19 [INFO]    [logger_func] start 
+2018-04-22 21:12:12,470 logger 19 [INFO]    [logger_func] start 
+2018-04-22 21:12:12,472 logger 19 [INFO]    [logger_func] start 
+2018-04-22 21:12:12,472 logger 19 [INFO]    [logger_func] start 
+2018-04-22 21:22:49,017 logger 19 [INFO]    [logger_func] start 
+2018-04-22 21:22:49,020 logger 19 [INFO]    [logger_func] start 
+2018-04-22 21:22:49,020 logger 19 [INFO]    [logger_func] start 
+2018-04-22 21:23:27,180 logger 19 [INFO]    [logger_func] start 
+2018-04-22 21:23:27,184 logger 19 [INFO]    [logger_func] start 
+2018-04-22 21:23:27,184 logger 19 [INFO]    [logger_func] start 
+2018-04-22 21:27:19,862 logger 19 [INFO]    [logger_func] start 
+2018-04-22 21:27:19,865 logger 19 [INFO]    [logger_func] start 
+2018-04-22 21:27:19,865 logger 19 [INFO]    [logger_func] start 
+2018-04-22 21:27:25,387 logger 19 [INFO]    [logger_func] start 
+2018-04-22 21:27:25,390 logger 19 [INFO]    [logger_func] start 
+2018-04-22 21:27:25,390 logger 19 [INFO]    [logger_func] start 
+2018-04-22 21:27:29,462 logger 19 [INFO]    [logger_func] start 
+2018-04-22 21:27:29,465 logger 19 [INFO]    [logger_func] start 
+2018-04-22 21:27:29,465 logger 19 [INFO]    [logger_func] start 
+2018-04-22 21:29:52,776 logger 19 [INFO]    [logger_func] start 
+2018-04-22 21:29:52,780 logger 19 [INFO]    [logger_func] start 
+2018-04-22 21:29:52,780 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:02:57,351 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:02:57,358 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:02:57,358 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:04:51,736 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:04:51,739 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:04:51,739 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:04:57,372 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:04:57,375 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:04:57,375 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:05:54,369 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:05:54,375 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:05:54,375 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:07:04,447 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:07:04,455 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:07:04,455 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:07:56,851 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:07:56,859 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:07:56,859 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:08:10,589 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:08:10,592 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:08:10,592 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:08:24,444 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:08:24,447 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:08:24,447 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:08:33,501 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:08:33,504 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:08:33,504 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:08:40,488 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:08:40,491 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:08:40,491 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:08:41,920 logger 65 [INFO]    [validation] metric:l2 
+2018-04-22 22:08:41,920 logger 65 [INFO]    [validation] metric:l2 
+2018-04-22 22:08:41,920 logger 66 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:08:41,920 logger 66 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:12:35,108 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:12:35,111 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:12:35,111 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:12:49,320 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:12:49,323 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:12:49,323 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:12:51,058 logger 65 [INFO]    [validation] metric:l2 
+2018-04-22 22:12:51,058 logger 65 [INFO]    [validation] metric:l2 
+2018-04-22 22:12:51,058 logger 66 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:12:51,058 logger 66 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:15:34,207 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:15:34,210 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:15:34,210 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:15:35,877 logger 70 [INFO]    [validation] metric:l2 
+2018-04-22 22:15:35,877 logger 70 [INFO]    [validation] metric:l2 
+2018-04-22 22:15:35,878 logger 71 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:15:35,878 logger 71 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:15:37,358 logger 87 [INFO]    [validation] prediction score: 0.4670485097004714 
+2018-04-22 22:15:37,358 logger 87 [INFO]    [validation] prediction score: 0.4670485097004714 
+2018-04-22 22:16:56,461 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:16:56,464 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:16:56,464 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:16:58,281 logger 70 [INFO]    [validation] metric:l2 
+2018-04-22 22:16:58,281 logger 70 [INFO]    [validation] metric:l2 
+2018-04-22 22:16:58,281 logger 71 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:16:58,281 logger 71 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:16:59,757 logger 87 [INFO]    [validation] prediction score: 0.4670485097004714 
+2018-04-22 22:16:59,757 logger 87 [INFO]    [validation] prediction score: 0.4670485097004714 
+2018-04-22 22:19:15,401 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:19:15,404 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:19:15,404 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:19:17,099 logger 70 [INFO]    [validation] metric:l2 
+2018-04-22 22:19:17,099 logger 70 [INFO]    [validation] metric:l2 
+2018-04-22 22:19:17,100 logger 71 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:19:17,100 logger 71 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:19:18,594 logger 87 [INFO]    [validation] prediction score: 0.4670485097004714 
+2018-04-22 22:19:18,594 logger 87 [INFO]    [validation] prediction score: 0.4670485097004714 
+2018-04-22 22:20:38,195 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:20:38,198 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:20:38,198 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:20:39,900 logger 70 [INFO]    [validation] metric:l2 
+2018-04-22 22:20:39,900 logger 70 [INFO]    [validation] metric:l2 
+2018-04-22 22:20:39,900 logger 71 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:20:39,900 logger 71 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:20:41,377 logger 87 [INFO]    [validation] prediction score: 0.4670485097004714 
+2018-04-22 22:20:41,377 logger 87 [INFO]    [validation] prediction score: 0.4670485097004714 
+2018-04-22 22:21:41,747 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:21:41,750 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:21:41,750 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:21:43,453 logger 70 [INFO]    [validation] metric:l2 
+2018-04-22 22:21:43,453 logger 70 [INFO]    [validation] metric:l2 
+2018-04-22 22:21:43,454 logger 71 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:21:43,454 logger 71 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:21:44,936 logger 87 [INFO]    [validation] prediction score: 0.4670485097004714 
+2018-04-22 22:21:44,936 logger 87 [INFO]    [validation] prediction score: 0.4670485097004714 
+2018-04-22 22:22:09,339 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:22:09,342 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:22:09,342 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:22:11,021 logger 70 [INFO]    [validation] metric:l2 
+2018-04-22 22:22:11,021 logger 70 [INFO]    [validation] metric:l2 
+2018-04-22 22:22:11,022 logger 71 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:22:11,022 logger 71 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:22:12,494 logger 87 [INFO]    [validation] prediction score: 0.4670485097004714 
+2018-04-22 22:22:12,494 logger 87 [INFO]    [validation] prediction score: 0.4670485097004714 
+2018-04-22 22:22:42,419 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:22:42,422 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:22:42,422 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:22:44,128 logger 70 [INFO]    [validation] metric:l2 
+2018-04-22 22:22:44,128 logger 70 [INFO]    [validation] metric:l2 
+2018-04-22 22:22:44,128 logger 71 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:22:44,128 logger 71 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:22:45,609 logger 87 [INFO]    [validation] prediction score: 0.4670485097004714 
+2018-04-22 22:22:45,609 logger 87 [INFO]    [validation] prediction score: 0.4670485097004714 
+2018-04-22 22:23:57,517 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:23:57,520 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:23:57,520 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:23:59,221 logger 70 [INFO]    [validation] metric:l2 
+2018-04-22 22:23:59,221 logger 70 [INFO]    [validation] metric:l2 
+2018-04-22 22:23:59,222 logger 71 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:23:59,222 logger 71 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:24:00,726 logger 87 [INFO]    [validation] prediction score: 0.4670485097004714 
+2018-04-22 22:24:00,726 logger 87 [INFO]    [validation] prediction score: 0.4670485097004714 
+2018-04-22 22:25:25,528 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:25:25,537 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:25:25,537 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:25:27,255 logger 70 [INFO]    [validation] metric:l2 
+2018-04-22 22:25:27,255 logger 70 [INFO]    [validation] metric:l2 
+2018-04-22 22:25:27,256 logger 71 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:25:27,256 logger 71 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:25:28,841 logger 87 [INFO]    [validation] prediction score: 0.4670485097004714 
+2018-04-22 22:25:28,841 logger 87 [INFO]    [validation] prediction score: 0.4670485097004714 
+2018-04-22 22:27:13,715 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:27:13,721 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:27:13,721 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:28:13,659 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:28:13,666 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:28:13,666 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:28:15,363 logger 70 [INFO]    [validation] metric:l2 
+2018-04-22 22:28:15,363 logger 70 [INFO]    [validation] metric:l2 
+2018-04-22 22:28:15,364 logger 71 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:28:15,364 logger 71 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:28:16,844 logger 87 [INFO]    [validation] prediction score: 0.4670485097004714 
+2018-04-22 22:28:16,844 logger 87 [INFO]    [validation] prediction score: 0.4670485097004714 
+2018-04-22 22:29:05,372 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:29:05,381 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:29:05,381 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:29:07,157 logger 70 [INFO]    [validation] metric:l2 
+2018-04-22 22:29:07,157 logger 70 [INFO]    [validation] metric:l2 
+2018-04-22 22:29:07,157 logger 71 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:29:07,157 logger 71 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:29:08,634 logger 87 [INFO]    [validation] prediction score: 0.4670485097004714 
+2018-04-22 22:29:08,634 logger 87 [INFO]    [validation] prediction score: 0.4670485097004714 
+2018-04-22 22:35:07,176 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:35:07,178 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:35:07,178 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:35:08,906 logger 71 [INFO]    [validation] metric:l2 
+2018-04-22 22:35:08,906 logger 71 [INFO]    [validation] metric:l2 
+2018-04-22 22:35:08,907 logger 72 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:35:08,907 logger 72 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:35:10,560 logger 88 [INFO]    [validation] prediction score: 0.5477896035624378 
+2018-04-22 22:35:10,560 logger 88 [INFO]    [validation] prediction score: 0.5477896035624378 
+2018-04-22 22:40:23,731 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:40:23,732 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:40:23,732 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:40:34,305 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:40:34,307 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:40:34,307 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:41:33,986 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:41:33,988 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:41:33,988 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:42:06,087 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:42:06,089 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:42:06,089 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:43:36,877 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:43:36,879 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:43:36,879 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:44:06,710 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:44:06,712 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:44:06,712 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:51:54,689 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:51:54,692 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:51:54,692 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:51:56,396 logger 71 [INFO]    [validation] metric:l2 
+2018-04-22 22:51:56,396 logger 71 [INFO]    [validation] metric:l2 
+2018-04-22 22:51:56,396 logger 72 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:51:56,396 logger 72 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 22:51:58,558 logger 88 [INFO]    [validation] prediction score: 0.5477896035624378 
+2018-04-22 22:51:58,558 logger 88 [INFO]    [validation] prediction score: 0.5477896035624378 
+2018-04-22 22:52:45,291 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:52:45,293 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:52:45,293 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:53:10,105 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:53:10,108 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:53:10,108 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:53:41,572 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:53:41,574 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:53:41,574 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:53:57,325 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:53:57,327 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:53:57,327 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:55:25,852 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:55:25,854 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:55:25,854 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:56:38,290 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:56:38,292 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:56:38,292 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:57:14,662 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:57:14,664 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:57:14,664 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:58:23,353 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:58:23,355 logger 19 [INFO]    [logger_func] start 
+2018-04-22 22:58:23,355 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:02:56,719 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:02:56,721 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:02:56,721 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:02:58,566 logger 71 [INFO]    [validation] metric:l2 
+2018-04-22 23:02:58,566 logger 71 [INFO]    [validation] metric:l2 
+2018-04-22 23:02:58,567 logger 72 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 23:02:58,567 logger 72 [INFO]    [validation] train columns: 10 
+use columns: Index(['air_store_id', 'visit_date', 'dow', 'reserve_visitors',
+       'air_genre_name', 'air_area_name', 'latitude', 'longitude',
+       'day_of_week', 'holiday_flg'],
+      dtype='object') 
+2018-04-22 23:03:00,241 logger 88 [INFO]    [validation] prediction score: 0.5477896035624378 
+2018-04-22 23:03:00,241 logger 88 [INFO]    [validation] prediction score: 0.5477896035624378 
+2018-04-22 23:32:17,312 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:32:17,319 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:32:17,319 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:32:33,600 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:32:33,602 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:32:33,602 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:33:30,431 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:33:34,869 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:33:34,872 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:33:34,872 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:33:36,652 logger 76 [INFO]    [validation] metric:l2 
+2018-04-22 23:33:36,652 logger 76 [INFO]    [validation] metric:l2 
+2018-04-22 23:33:36,652 logger 77 [INFO]    [validation] train columns: 10 
+use columns: ['visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg', 'lbl_air_store_id'] 
+2018-04-22 23:33:36,652 logger 77 [INFO]    [validation] train columns: 10 
+use columns: ['visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg', 'lbl_air_store_id'] 
+2018-04-22 23:33:59,734 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:33:59,736 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:33:59,736 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:34:50,882 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:34:50,885 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:34:50,885 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:36:04,657 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:36:04,660 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:36:04,660 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:38:12,211 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:38:12,214 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:38:12,214 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:38:52,099 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:38:52,101 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:38:52,101 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:40:21,236 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:40:21,239 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:40:21,239 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:40:23,043 logger 77 [INFO]    [validation] metric:l2 
+2018-04-22 23:40:23,043 logger 77 [INFO]    [validation] metric:l2 
+2018-04-22 23:40:23,043 logger 78 [INFO]    [validation] train columns: 10 
+use columns: ['visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg', 'lbl_air_store_id'] 
+2018-04-22 23:40:23,043 logger 78 [INFO]    [validation] train columns: 10 
+use columns: ['visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg', 'lbl_air_store_id'] 
+2018-04-22 23:42:16,013 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:42:16,016 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:42:16,016 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:42:17,810 logger 77 [INFO]    [validation] metric:l2 
+2018-04-22 23:42:17,810 logger 77 [INFO]    [validation] metric:l2 
+2018-04-22 23:42:17,810 logger 78 [INFO]    [validation] train columns: 10 
+use columns: ['visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg', 'lbl_air_store_id'] 
+2018-04-22 23:42:17,810 logger 78 [INFO]    [validation] train columns: 10 
+use columns: ['visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg', 'lbl_air_store_id'] 
+2018-04-22 23:43:56,767 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:43:56,770 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:43:56,770 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:43:58,553 logger 77 [INFO]    [validation] metric:l2 
+2018-04-22 23:43:58,553 logger 77 [INFO]    [validation] metric:l2 
+2018-04-22 23:43:58,553 logger 78 [INFO]    [validation] train columns: 10 
+use columns: ['visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg', 'lbl_air_store_id'] 
+2018-04-22 23:43:58,553 logger 78 [INFO]    [validation] train columns: 10 
+use columns: ['visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg', 'lbl_air_store_id'] 
+2018-04-22 23:44:47,143 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:44:47,145 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:44:47,145 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:45:13,588 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:45:13,590 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:45:13,590 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:45:45,298 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:45:45,300 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:45:45,300 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:46:00,865 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:46:00,867 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:46:00,867 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:46:30,071 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:46:30,073 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:46:30,073 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:46:57,825 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:46:57,827 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:46:57,827 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:47:56,980 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:47:56,982 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:47:56,982 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:48:10,377 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:48:10,379 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:48:10,379 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:48:12,199 logger 77 [INFO]    [validation] metric:l2 
+2018-04-22 23:48:12,199 logger 77 [INFO]    [validation] metric:l2 
+2018-04-22 23:48:12,199 logger 78 [INFO]    [validation] train columns: 10 
+use columns: ['visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg', 'lbl_air_store_id'] 
+2018-04-22 23:48:12,199 logger 78 [INFO]    [validation] train columns: 10 
+use columns: ['visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg', 'lbl_air_store_id'] 
+2018-04-22 23:48:13,836 logger 94 [INFO]    [validation] prediction score: 0.5500036786397579 
+2018-04-22 23:48:13,836 logger 94 [INFO]    [validation] prediction score: 0.5500036786397579 
+2018-04-22 23:49:19,534 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:49:19,536 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:49:19,536 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:49:22,023 logger 77 [INFO]    [validation] metric:l2 
+2018-04-22 23:49:22,023 logger 77 [INFO]    [validation] metric:l2 
+2018-04-22 23:49:22,023 logger 78 [INFO]    [validation] train columns: 10 
+use columns: ['visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg', 'lbl_air_store_id'] 
+2018-04-22 23:49:22,023 logger 78 [INFO]    [validation] train columns: 10 
+use columns: ['visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg', 'lbl_air_store_id'] 
+2018-04-22 23:49:26,383 logger 94 [INFO]    [validation] prediction score: 0.5500036786397579 
+2018-04-22 23:49:26,383 logger 94 [INFO]    [validation] prediction score: 0.5500036786397579 
+2018-04-22 23:51:40,211 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:51:40,218 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:51:40,218 logger 19 [INFO]    [logger_func] start 
+2018-04-22 23:51:41,989 logger 77 [INFO]    [validation] metric:l2 
+2018-04-22 23:51:41,989 logger 77 [INFO]    [validation] metric:l2 
+2018-04-22 23:51:41,989 logger 78 [INFO]    [validation] train columns: 10 
+use columns: ['visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg', 'lbl_air_store_id'] 
+2018-04-22 23:51:41,989 logger 78 [INFO]    [validation] train columns: 10 
+use columns: ['visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg', 'lbl_air_store_id'] 
+2018-04-22 23:51:43,447 logger 94 [INFO]    [validation] prediction score: 0.5500036786397579 
+2018-04-22 23:51:43,447 logger 94 [INFO]    [validation] prediction score: 0.5500036786397579 
+2018-04-23 07:16:18,224 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:16:18,228 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:16:18,228 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:16:31,305 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:16:31,307 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:16:31,307 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:17:46,403 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:17:46,406 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:17:46,406 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:23:08,835 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:23:08,842 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:23:08,842 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:23:34,794 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:23:34,797 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:23:34,797 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:23:36,573 logger 77 [INFO]    [validation] metric:l2 
+2018-04-23 07:23:36,573 logger 77 [INFO]    [validation] metric:l2 
+2018-04-23 07:23:36,573 logger 78 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id' 'visit_date' 'dow' 'reserve_visitors' 'air_genre_name'
+ 'air_area_name' 'latitude' 'longitude' 'day_of_week' 'holiday_flg'] 
+2018-04-23 07:23:36,573 logger 78 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id' 'visit_date' 'dow' 'reserve_visitors' 'air_genre_name'
+ 'air_area_name' 'latitude' 'longitude' 'day_of_week' 'holiday_flg'] 
+2018-04-23 07:23:38,210 logger 94 [INFO]    [validation] prediction score: 0.8243524552339221 
+2018-04-23 07:23:38,210 logger 94 [INFO]    [validation] prediction score: 0.8243524552339221 
+2018-04-23 07:26:49,036 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:26:58,357 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:27:13,484 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:27:13,486 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:27:13,486 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:27:26,340 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:27:26,342 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:27:26,342 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:28:37,566 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:28:37,569 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:28:37,569 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:29:02,735 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:29:02,738 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:29:02,738 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:29:46,770 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:29:46,773 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:29:46,773 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:29:48,629 logger 80 [INFO]    [validation] metric:l2 
+2018-04-23 07:29:48,629 logger 80 [INFO]    [validation] metric:l2 
+2018-04-23 07:29:48,629 logger 81 [INFO]    [validation] train columns: 10 
+use columns: ['dow' 'reserve_visitors' 'latitude' 'longitude' 'holiday_flg'
+ 'lbl_air_store_id' 'lbl_visit_date' 'lbl_air_genre_name'
+ 'lbl_air_area_name' 'lbl_day_of_week'] 
+2018-04-23 07:29:48,629 logger 81 [INFO]    [validation] train columns: 10 
+use columns: ['dow' 'reserve_visitors' 'latitude' 'longitude' 'holiday_flg'
+ 'lbl_air_store_id' 'lbl_visit_date' 'lbl_air_genre_name'
+ 'lbl_air_area_name' 'lbl_day_of_week'] 
+2018-04-23 07:31:38,368 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:31:38,371 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:31:38,371 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:31:40,223 logger 83 [INFO]    [validation] metric:l2 
+2018-04-23 07:31:40,223 logger 83 [INFO]    [validation] metric:l2 
+2018-04-23 07:31:40,223 logger 84 [INFO]    [validation] train columns: 10 
+use columns: ['dow' 'reserve_visitors' 'latitude' 'longitude' 'holiday_flg'
+ 'lbl_air_store_id' 'lbl_visit_date' 'lbl_air_genre_name'
+ 'lbl_air_area_name' 'lbl_day_of_week'] 
+2018-04-23 07:31:40,223 logger 84 [INFO]    [validation] train columns: 10 
+use columns: ['dow' 'reserve_visitors' 'latitude' 'longitude' 'holiday_flg'
+ 'lbl_air_store_id' 'lbl_visit_date' 'lbl_air_genre_name'
+ 'lbl_air_area_name' 'lbl_day_of_week'] 
+2018-04-23 07:31:41,794 logger 100 [INFO]    [validation] prediction score: 0.8027555930016658 
+2018-04-23 07:31:41,794 logger 100 [INFO]    [validation] prediction score: 0.8027555930016658 
+2018-04-23 07:32:33,349 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:32:33,352 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:32:33,352 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:32:35,202 logger 83 [INFO]    [validation] metric:l2 
+2018-04-23 07:32:35,202 logger 83 [INFO]    [validation] metric:l2 
+2018-04-23 07:32:35,202 logger 84 [INFO]    [validation] train columns: 10 
+use columns: ['dow' 'reserve_visitors' 'latitude' 'longitude' 'holiday_flg'
+ 'lbl_air_store_id' 'lbl_visit_date' 'lbl_air_genre_name'
+ 'lbl_air_area_name' 'lbl_day_of_week'] 
+2018-04-23 07:32:35,202 logger 84 [INFO]    [validation] train columns: 10 
+use columns: ['dow' 'reserve_visitors' 'latitude' 'longitude' 'holiday_flg'
+ 'lbl_air_store_id' 'lbl_visit_date' 'lbl_air_genre_name'
+ 'lbl_air_area_name' 'lbl_day_of_week'] 
+2018-04-23 07:32:36,715 logger 100 [INFO]    [validation] prediction score: 0.8027555930016658 
+2018-04-23 07:32:36,715 logger 100 [INFO]    [validation] prediction score: 0.8027555930016658 
+2018-04-23 07:33:18,025 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:33:18,027 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:33:18,027 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:33:19,852 logger 83 [INFO]    [validation] metric:l2 
+2018-04-23 07:33:19,852 logger 83 [INFO]    [validation] metric:l2 
+2018-04-23 07:33:19,853 logger 84 [INFO]    [validation] train columns: 10 
+use columns: ['dow' 'reserve_visitors' 'latitude' 'longitude' 'holiday_flg'
+ 'lbl_air_store_id' 'lbl_visit_date' 'lbl_air_genre_name'
+ 'lbl_air_area_name' 'lbl_day_of_week'] 
+2018-04-23 07:33:19,853 logger 84 [INFO]    [validation] train columns: 10 
+use columns: ['dow' 'reserve_visitors' 'latitude' 'longitude' 'holiday_flg'
+ 'lbl_air_store_id' 'lbl_visit_date' 'lbl_air_genre_name'
+ 'lbl_air_area_name' 'lbl_day_of_week'] 
+2018-04-23 07:33:21,344 logger 100 [INFO]    [validation] prediction score: 0.8027555930016658 
+2018-04-23 07:33:21,344 logger 100 [INFO]    [validation] prediction score: 0.8027555930016658 
+2018-04-23 07:34:03,014 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:34:03,016 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:34:03,016 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:34:04,812 logger 83 [INFO]    [validation] metric:l2 
+2018-04-23 07:34:04,812 logger 83 [INFO]    [validation] metric:l2 
+2018-04-23 07:34:04,812 logger 84 [INFO]    [validation] train columns: 10 
+use columns: ['dow' 'reserve_visitors' 'latitude' 'longitude' 'holiday_flg'
+ 'lbl_air_store_id' 'lbl_visit_date' 'lbl_air_genre_name'
+ 'lbl_air_area_name' 'lbl_day_of_week'] 
+2018-04-23 07:34:04,812 logger 84 [INFO]    [validation] train columns: 10 
+use columns: ['dow' 'reserve_visitors' 'latitude' 'longitude' 'holiday_flg'
+ 'lbl_air_store_id' 'lbl_visit_date' 'lbl_air_genre_name'
+ 'lbl_air_area_name' 'lbl_day_of_week'] 
+2018-04-23 07:34:06,197 logger 100 [INFO]    [validation] prediction score: 0.8027555930016658 
+2018-04-23 07:34:06,197 logger 100 [INFO]    [validation] prediction score: 0.8027555930016658 
+2018-04-23 07:34:46,043 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:34:46,046 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:34:46,046 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:36:10,055 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:36:21,996 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:36:21,998 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:36:21,998 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:36:43,062 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:36:47,485 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:36:47,488 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:36:47,488 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:37:32,691 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:37:32,694 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:37:32,694 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:38:11,724 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:38:11,726 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:38:11,726 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:38:57,036 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:38:57,038 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:38:57,038 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:39:50,083 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:39:50,086 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:39:50,086 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:40:13,321 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:40:13,324 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:40:13,324 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:52:50,977 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:52:50,979 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:52:50,979 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:52:52,777 logger 78 [INFO]    [validation] metric:l2 
+2018-04-23 07:52:52,777 logger 78 [INFO]    [validation] metric:l2 
+2018-04-23 07:52:52,777 logger 79 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id' 'visit_date' 'dow' 'reserve_visitors' 'air_genre_name'
+ 'air_area_name' 'latitude' 'longitude' 'day_of_week' 'holiday_flg'] 
+2018-04-23 07:52:52,777 logger 79 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id' 'visit_date' 'dow' 'reserve_visitors' 'air_genre_name'
+ 'air_area_name' 'latitude' 'longitude' 'day_of_week' 'holiday_flg'] 
+2018-04-23 07:52:54,323 logger 95 [INFO]    [validation] prediction score: 0.8243524552339221 
+2018-04-23 07:52:54,323 logger 95 [INFO]    [validation] prediction score: 0.8243524552339221 
+2018-04-23 07:56:52,130 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:56:52,137 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:56:52,137 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:56:53,897 logger 78 [INFO]    [validation] metric:l2 
+2018-04-23 07:56:53,897 logger 78 [INFO]    [validation] metric:l2 
+2018-04-23 07:56:53,897 logger 79 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id' 'visit_date' 'dow' 'reserve_visitors' 'air_genre_name'
+ 'air_area_name' 'latitude' 'longitude' 'day_of_week' 'holiday_flg'] 
+2018-04-23 07:56:53,897 logger 79 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id' 'visit_date' 'dow' 'reserve_visitors' 'air_genre_name'
+ 'air_area_name' 'latitude' 'longitude' 'day_of_week' 'holiday_flg'] 
+2018-04-23 07:56:55,287 logger 95 [INFO]    [validation] prediction score: 0.8243524552339221 
+2018-04-23 07:56:55,287 logger 95 [INFO]    [validation] prediction score: 0.8243524552339221 
+2018-04-23 07:58:30,486 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:58:30,493 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:58:30,493 logger 19 [INFO]    [logger_func] start 
+2018-04-23 07:58:32,267 logger 78 [INFO]    [validation] metric:l2 
+2018-04-23 07:58:32,267 logger 78 [INFO]    [validation] metric:l2 
+2018-04-23 07:58:32,268 logger 79 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id' 'visit_date' 'dow' 'reserve_visitors' 'air_genre_name'
+ 'air_area_name' 'latitude' 'longitude' 'day_of_week' 'holiday_flg'] 
+2018-04-23 07:58:32,268 logger 79 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id' 'visit_date' 'dow' 'reserve_visitors' 'air_genre_name'
+ 'air_area_name' 'latitude' 'longitude' 'day_of_week' 'holiday_flg'] 
+2018-04-23 07:58:33,898 logger 95 [INFO]    [validation] prediction score: 0.8243524552339221 
+2018-04-23 07:58:33,898 logger 95 [INFO]    [validation] prediction score: 0.8243524552339221 
+2018-04-23 08:02:21,302 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:02:21,305 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:02:21,305 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:18:01,171 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:18:01,199 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:18:01,199 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:18:03,064 logger 78 [INFO]    [validation] metric:l2 
+2018-04-23 08:18:03,064 logger 78 [INFO]    [validation] metric:l2 
+2018-04-23 08:18:03,065 logger 79 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 08:18:03,065 logger 79 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 08:18:04,609 logger 95 [INFO]    [validation] prediction score: 0.8243524552339221 
+2018-04-23 08:18:04,609 logger 95 [INFO]    [validation] prediction score: 0.8243524552339221 
+2018-04-23 08:18:53,560 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:18:53,566 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:18:53,566 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:18:55,342 logger 78 [INFO]    [validation] metric:l2 
+2018-04-23 08:18:55,342 logger 78 [INFO]    [validation] metric:l2 
+2018-04-23 08:18:55,343 logger 79 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 08:18:55,343 logger 79 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 08:18:56,897 logger 95 [INFO]    [validation] prediction score: 0.8243524552339221 
+2018-04-23 08:18:56,897 logger 95 [INFO]    [validation] prediction score: 0.8243524552339221 
+2018-04-23 08:19:37,522 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:19:37,530 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:19:37,530 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:19:39,330 logger 78 [INFO]    [validation] metric:l2 
+2018-04-23 08:19:39,330 logger 78 [INFO]    [validation] metric:l2 
+2018-04-23 08:19:39,331 logger 79 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 08:19:39,331 logger 79 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 08:19:40,865 logger 95 [INFO]    [validation] prediction score: 0.8243524552339221 
+2018-04-23 08:19:40,865 logger 95 [INFO]    [validation] prediction score: 0.8243524552339221 
+2018-04-23 08:20:19,619 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:20:19,622 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:20:19,622 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:20:21,459 logger 78 [INFO]    [validation] metric:l2 
+2018-04-23 08:20:21,459 logger 78 [INFO]    [validation] metric:l2 
+2018-04-23 08:20:21,459 logger 79 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 08:20:21,459 logger 79 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 08:20:23,022 logger 95 [INFO]    [validation] prediction score: 0.8243524552339221 
+2018-04-23 08:20:23,022 logger 95 [INFO]    [validation] prediction score: 0.8243524552339221 
+2018-04-23 08:22:04,935 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:22:04,942 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:22:04,942 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:22:06,741 logger 78 [INFO]    [validation] metric:l2 
+2018-04-23 08:22:06,741 logger 78 [INFO]    [validation] metric:l2 
+2018-04-23 08:22:06,741 logger 79 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 08:22:06,741 logger 79 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 08:22:08,254 logger 95 [INFO]    [validation] prediction score: 0.8243524552339221 
+2018-04-23 08:22:08,254 logger 95 [INFO]    [validation] prediction score: 0.8243524552339221 
+2018-04-23 08:22:20,924 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:22:20,926 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:22:20,926 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:39:34,941 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:39:34,949 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:39:34,949 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:39:36,769 logger 78 [INFO]    [validation] metric:l2 
+2018-04-23 08:39:36,769 logger 78 [INFO]    [validation] metric:l2 
+2018-04-23 08:39:36,769 logger 79 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 08:39:36,769 logger 79 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 08:39:38,302 logger 95 [INFO]    [validation] prediction score: 0.8243524552339221 
+2018-04-23 08:39:38,302 logger 95 [INFO]    [validation] prediction score: 0.8243524552339221 
+2018-04-23 08:43:02,405 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:43:02,412 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:43:02,412 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:43:04,342 logger 78 [INFO]    [validation] metric:l2 
+2018-04-23 08:43:04,342 logger 78 [INFO]    [validation] metric:l2 
+2018-04-23 08:43:04,342 logger 79 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 08:43:04,342 logger 79 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 08:43:05,874 logger 95 [INFO]    [validation] prediction score: 0.8243524552339221 
+2018-04-23 08:43:05,874 logger 95 [INFO]    [validation] prediction score: 0.8243524552339221 
+2018-04-23 08:44:04,483 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:44:04,485 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:44:04,485 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:44:06,282 logger 78 [INFO]    [validation] metric:l2 
+2018-04-23 08:44:06,282 logger 78 [INFO]    [validation] metric:l2 
+2018-04-23 08:44:06,282 logger 79 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 08:44:06,282 logger 79 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 08:44:07,723 logger 95 [INFO]    [validation] prediction score: 0.8243524552339221 
+2018-04-23 08:44:07,723 logger 95 [INFO]    [validation] prediction score: 0.8243524552339221 
+2018-04-23 08:54:54,116 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:54:54,124 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:54:54,124 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:55:32,141 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:55:32,148 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:55:32,148 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:56:51,373 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:56:51,379 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:56:51,379 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:59:29,901 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:59:29,903 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:59:29,903 logger 19 [INFO]    [logger_func] start 
+2018-04-23 08:59:31,694 logger 72 [INFO]    [validation] metric:l2 
+2018-04-23 08:59:31,694 logger 72 [INFO]    [validation] metric:l2 
+2018-04-23 08:59:31,694 logger 73 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 08:59:31,694 logger 73 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 08:59:33,431 logger 89 [INFO]    [validation] prediction score: 0.5477896035624378 
+2018-04-23 08:59:33,431 logger 89 [INFO]    [validation] prediction score: 0.5477896035624378 
+2018-04-23 09:00:29,481 logger 19 [INFO]    [logger_func] start 
+2018-04-23 09:00:29,483 logger 19 [INFO]    [logger_func] start 
+2018-04-23 09:00:29,483 logger 19 [INFO]    [logger_func] start 
+2018-04-23 09:00:31,312 logger 72 [INFO]    [validation] metric:l2 
+2018-04-23 09:00:31,312 logger 72 [INFO]    [validation] metric:l2 
+2018-04-23 09:00:31,313 logger 73 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 09:00:31,313 logger 73 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 09:00:33,047 logger 89 [INFO]    [validation] prediction score: 0.5477896035624378 
+2018-04-23 09:00:33,047 logger 89 [INFO]    [validation] prediction score: 0.5477896035624378 
+2018-04-23 09:01:12,860 logger 19 [INFO]    [logger_func] start 
+2018-04-23 09:01:12,863 logger 19 [INFO]    [logger_func] start 
+2018-04-23 09:01:12,863 logger 19 [INFO]    [logger_func] start 
+2018-04-23 09:01:14,992 logger 72 [INFO]    [validation] metric:l2 
+2018-04-23 09:01:14,992 logger 72 [INFO]    [validation] metric:l2 
+2018-04-23 09:01:14,992 logger 73 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 09:01:14,992 logger 73 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 09:01:17,375 logger 89 [INFO]    [validation] prediction score: 0.5477896035624378 
+2018-04-23 09:01:17,375 logger 89 [INFO]    [validation] prediction score: 0.5477896035624378 
+2018-04-23 09:14:22,747 logger 19 [INFO]    [logger_func] start 
+2018-04-23 09:14:22,754 logger 19 [INFO]    [logger_func] start 
+2018-04-23 09:14:22,754 logger 19 [INFO]    [logger_func] start 
+2018-04-23 09:14:24,546 logger 72 [INFO]    [validation] metric:l2 
+2018-04-23 09:14:24,546 logger 72 [INFO]    [validation] metric:l2 
+2018-04-23 09:14:24,547 logger 73 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 09:14:24,547 logger 73 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 09:14:26,082 logger 89 [INFO]    [validation] prediction score: 0.5477896035624378 
+2018-04-23 09:14:26,082 logger 89 [INFO]    [validation] prediction score: 0.5477896035624378 
+2018-04-23 09:16:16,727 logger 19 [INFO]    [logger_func] start 
+2018-04-23 09:16:16,729 logger 19 [INFO]    [logger_func] start 
+2018-04-23 09:16:16,729 logger 19 [INFO]    [logger_func] start 
+2018-04-23 09:16:18,505 logger 72 [INFO]    [validation] metric:l2 
+2018-04-23 09:16:18,505 logger 72 [INFO]    [validation] metric:l2 
+2018-04-23 09:16:18,505 logger 73 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 09:16:18,505 logger 73 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 09:16:20,005 logger 89 [INFO]    [validation] prediction score: 0.5477896035624378 
+2018-04-23 09:16:20,005 logger 89 [INFO]    [validation] prediction score: 0.5477896035624378 
+2018-04-23 09:17:46,442 logger 19 [INFO]    [logger_func] start 
+2018-04-23 09:17:46,445 logger 19 [INFO]    [logger_func] start 
+2018-04-23 09:17:46,445 logger 19 [INFO]    [logger_func] start 
+2018-04-23 09:17:48,377 logger 72 [INFO]    [validation] metric:l2 
+2018-04-23 09:17:48,377 logger 72 [INFO]    [validation] metric:l2 
+2018-04-23 09:17:48,378 logger 73 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 09:17:48,378 logger 73 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
+2018-04-23 09:17:50,089 logger 89 [INFO]    [validation] prediction score: 0.5477896035624378 
+2018-04-23 09:17:50,089 logger 89 [INFO]    [validation] prediction score: 0.5477896035624378 
