@@ -27,12 +27,12 @@ categorical_feature = [
     ,'air_genre_name'
     ,'air_area_name'
     ,'day_of_week'
-    ,'air_area_name'
 ]
 target = 'visitors'
+partision = 'air_store_id'
 
 
-def bench_mark():
+def bench_mark(partision):
 
     air_re_date = air_re.groupby(['air_store_id', 'visit_date'], as_index=False)['reserve_visitors'].sum()
 
@@ -42,15 +42,10 @@ def bench_mark():
     end_date   = pd.to_datetime('2017-04-22')
     b_mark['validation'] = b_mark['visit_date'].map(lambda x: 1 if start_date <= x and x <= end_date else 0)
 
-    lbl = LabelEncoder()
-    for cat in categorical_feature:
-        b_mark[cat] = lbl.fit_transform(b_mark[cat])
-
     return b_mark
 
 
 def make_submission():
-
     submit = load_submit(submit_path)
 
     air_re_date = air_re.groupby(['air_store_id', 'visit_date'], as_index=False)['reserve_visitors'].sum()
@@ -66,15 +61,15 @@ def make_submission():
 
 def main():
 
-    b_mark = bench_mark()
+    b_mark = bench_mark(partision)
 
-    eda_data = exploratory_train(b_mark, target, categorical_feature, 1, 0, 'air_store_id', 1)
+    eda_data = exploratory_train(b_mark, target, categorical_feature, 1, 0, partision, 1)
     eda_data.to_csv('../eda/{}_eda_prediction.csv'.format(start_time[:11]), index=False)
 
-    submit = make_submission()
-    b_mark.drop('validation', axis=1, inplace=True)
+    #  submit = make_submission()
+    #  b_mark.drop('validation', axis=1, inplace=True)
 
-    prediction(b_mark, submit, target)
+    #  prediction(b_mark, submit, target)
 
 
 if __name__ == '__main__':
