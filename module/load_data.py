@@ -9,7 +9,6 @@ import multiprocessing
 def load_data(input_path, key_list=[], delimiter=None, index_col=None):
 
     data_dict = {}
-    fs_name = 'feature_set'
     path_list = glob.glob(input_path)
 
     if len(key_list) > 0:
@@ -26,11 +25,10 @@ def load_data(input_path, key_list=[], delimiter=None, index_col=None):
                     print('********************************\n')
         print('{} file load end.\nreturn {}'.format(len(key_list), data_dict.keys()))
         print('********************************\n')
-        return data_dict, fs_name
+        return data_dict
 
     elif len(key_list) == 0:
-        fs_name = re.search(r'/([^/.]*).csv', path_list[0]).group(1)
-        return pd.read_csv(path_list[0]), fs_name
+        return pd.read_csv(path_list[0])
 
 
 def x_y_split(data, target):
@@ -90,4 +88,14 @@ def pararell_read_csv(key, path):
     #  print('****************\n')
     return data_dict
 
+
+def path_info(path):
+
+    path_dict = {}
+    path_dict['filename'] = re.search(r'/([^/.]*).csv', path).group(1)  # Linux
+    path_dict['particle'] = re.search(r'feature_([0-9]+)@', path).group(1)
+    path_dict['time'] = re.search(r'@([^.]*)@', path).group(1)
+    path_dict['elem'] = re.search(r'\D@([^.]*).csv', path).group(1)
+
+    return path_dict
 

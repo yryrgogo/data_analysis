@@ -893,3 +893,33 @@ use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genr
 use columns: ['air_store_id', 'visit_date', 'dow', 'reserve_visitors', 'air_genre_name', 'air_area_name', 'latitude', 'longitude', 'day_of_week', 'holiday_flg'] 
 2018-04-23 09:17:50,089 logger 89 [INFO]    [validation] prediction score: 0.5477896035624378 
 2018-04-23 09:17:50,089 logger 89 [INFO]    [validation] prediction score: 0.5477896035624378 
+2018-04-24 08:19:20,148 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:19:20,151 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:19:20,151 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:22:35,227 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:22:35,229 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:22:35,229 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:22:52,510 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:22:52,511 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:22:52,511 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:23:12,740 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:23:12,741 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:23:12,741 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:23:28,260 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:23:28,262 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:23:28,262 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:23:35,832 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:23:35,833 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:23:35,833 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:23:50,307 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:23:50,308 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:23:50,308 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:26:12,650 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:26:12,651 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:26:12,651 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:28:02,157 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:28:02,158 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:28:02,158 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:28:24,799 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:28:24,801 logger 19 [INFO]    [logger_func] start 
+2018-04-24 08:28:24,801 logger 19 [INFO]    [logger_func] start 
