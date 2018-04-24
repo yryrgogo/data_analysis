@@ -32,13 +32,23 @@ def RMSLE(y_obs, y_pred):
     return np.sqrt(mean_squared_log_error(y_obs, y_pred))
 
 
-def make_submission(dataset):
-    print()
+def set_validation(data):
+    start_date = pd.to_datetime('2017-03-12')
+    end_date   = pd.to_datetime('2017-04-22')
+    data['validation'] = data['visit_date'].map(lambda x: 1 if start_date <= x and x <= end_date else 0)
+
+    return data
 
 
+""" 日時操作系 """
+def date_diff(start, end):
+    diff = air_vi['visit_date'] - air_vi['visit_date']
+    return diff
+
+
+"""並列でデータセットをロード"""
 def load_data(key_list, path_list):
 
-    """並列でデータセットをロード"""
     p_list = pararell_load_data(key_list, path_list)
 
     for d_dict in p_list:
