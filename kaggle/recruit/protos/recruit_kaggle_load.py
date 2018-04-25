@@ -42,7 +42,7 @@ def set_validation(data):
 
 """ 日時操作系 """
 def date_diff(start, end):
-    diff = air_vi['visit_date'] - air_vi['visit_date']
+    diff = end - start
     return diff
 
 
