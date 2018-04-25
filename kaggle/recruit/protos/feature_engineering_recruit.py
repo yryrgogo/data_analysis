@@ -32,9 +32,46 @@ data_list = [air_vi, air_re, air_st, df_date]
 air_vi = set_validation(air_vi)
 '''前日のvisitorsをセット'''
 air_vi['last_visit'] = air_vi.groupby('air_store_id')['visitors'].shift(1)
+''' moving average '''
+
+window_list = [7, 21, 35, 63, 126, 252, 378]
 
 
-def moving_avg(data, particle, value, window, periods):
+'''
+各行に対して重み付き平均を持たせるには？
+一度の計算では、maxの日付に対する重み付き平均になるので、
+1日ずつしか出せない。全ての行に対してweight_avgを持たせるには、
+持たせる日付を決めて、その全ての日付について計算をしていかなければならない
+'''
+
+def exp_weight_avg(data, start, end, weight):
+
+
+    N = len(data)
+    max_date = data['visit_date'].max()
+
+    data['diff'] = abs(date_diff(max_date, data['visit_date']))
+    data['weight'] = data['diff'].map(lambda x:weight ** x.days)
+
+    data['visitors_@w_avg_{}'.format(weight)] = data['weight'] * data['visitors']
+
+
+def date_range(data, start, end):
+    data = data[( start <= data['visit_date']) & (data['visit_date'] <= end)]
+    print(data.head())
+    sys.exit()
+
+
+date_list = air_vi['visit_date'].drop_duplicates().sort_values().values[7:]
+print(date_list)
+sys.exit()
+
+for weight in [0.9, 0.95, 0.98, 0.99]:
+    exp_weight_avg(air_vi, '2017-04-01', air_vi['visit_date'].max(), weight)
+sys.exit()
+
+
+def moving_avg(data, particle, value, window, periods, window_list):
 
     data.set_index('visit_date', inplace=True)
     data.sort_index(inplace=True)
@@ -43,11 +80,6 @@ def moving_avg(data, particle, value, window, periods):
     result.rename(columns={'last_visit':'visitors_@mv_avg_{}_{}'.format(window, periods)}, inplace=True)
 
     return result
-
-
-def make_moving_avg_feature():
-    for i in [7, 21, 35, 63, 126, 252, 378]:
-        moving_avg(air_vi, 'air_store_id', 'last_visit', i, 1)
 
 
 def one_agg_wrapper(args):
