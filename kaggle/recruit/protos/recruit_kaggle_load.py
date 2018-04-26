@@ -39,6 +39,21 @@ def set_validation(data):
 
     return data
 
+def make_air_calendar():
+    ''' 全日付を持たせたデータ '''
+    air_min_date = air_vi.groupby('air_store_id', as_index=False)['visit_date'].min()
+    air_id = air_min_date['air_store_id'].values
+    min_date = air_min_date['visit_date'].values
+
+    tmp = df_date.copy()
+    for i,air,date in zip(range(len(air_id)), air_id, min_date):
+        tmp_date = tmp[tmp['visit_date']>=date]
+        tmp_date['air_store_id'] = air
+        if i==0:
+            air_calendar = tmp_date
+        else:
+            air_calendar = pd.concat([air_calendar, tmp_date], axis=0)
+
 
 """ 日時操作系 """
 def date_diff(start, end):
@@ -59,8 +74,10 @@ def load_data(key_list, path_list):
                 air_st = df
             elif key.count('air_visit'):
                 air_vi = df
-            elif key.count('date_info'):
-                df_date = df.rename(columns = {'calendar_date':'visit_date'})
+            #  elif key.count('date_info'):
+            #      df_date = df.rename(columns = {'calendar_date':'visit_date'})
+            elif key.count('air_calendar'):
+                air_cal = df
 
     air_vi['visit_date'] = pd.to_datetime(air_vi['visit_date'])
     air_vi['dow'] = air_vi['visit_date'].dt.dayofweek
@@ -69,12 +86,12 @@ def load_data(key_list, path_list):
     air_re['reserve_date'] = pd.to_datetime(air_re['reserve_datetime'].str[:10])
     air_re['dow'] = air_re['visit_date'].dt.dayofweek
 
-    df_date['visit_date'] = pd.to_datetime(df_date['visit_date'])
-    df_date['dow'] = df_date['visit_date'].dt.dayofweek
-    df_date['day_of_week'] = df_date.apply(lambda x:'Special' if x.holiday_flg==1 and (x.day_of_week != 'Saturday' or x.day_of_week != 'Sunday') else x.day_of_week, axis=1)
-    df_date['holiday_flg'] = df_date.apply(lambda x:1 if x.holiday_flg==1 or x.day_of_week=='Saturday' or x.day_of_week=='Sunday' else 0, axis=1)
+    air_cal['visit_date'] = pd.to_datetime(air_cal['visit_date'])
+    #  df_date['dow'] = df_date['visit_date'].dt.dayofweek
+    #  df_date['day_of_week'] = df_date.apply(lambda x:'Special' if x.holiday_flg==1 and (x.day_of_week != 'Saturday' or x.day_of_week != 'Sunday') else x.day_of_week, axis=1)
+    #  df_date['holiday_flg'] = df_date.apply(lambda x:1 if x.holiday_flg==1 or x.day_of_week=='Saturday' or x.day_of_week=='Sunday' else 0, axis=1)
 
-    return air_vi, air_re, air_st, df_date
+    return air_vi, air_re, air_st, air_cal
 
 
 def load_submit(submit_path):
