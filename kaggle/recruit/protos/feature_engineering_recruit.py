@@ -104,21 +104,18 @@ def make_special_set(data):
     #  tmp.to_csv('../input/{}_air_cal_visit.csv'.format(start_time[:11]), index=False)
     #  print('download end')
     #  sys.exit()
-    tmp = pd.read_csv('../input/{}_air_cal_visit.csv'.format(start_time[:11]))
+    tmp = pd.read_csv('../input/20180429_14_air_cal_visit.csv')
     tmp['visit_date'] = pd.to_datetime(tmp['visit_date'])
 
     ''' 翌連休のある祝日のみで集計する '''
     continuous = tmp[(tmp['day_of_week'] == 'Special') & (tmp['next3_holiday']>0)]
     continuous = data.merge(continuous, on=['air_store_id', 'visit_date', 'day_of_week', 'holiday_flg'], how='inner', copy=False)
-    continuous['last_visitors'] = continuous['visitors'].shift(1)
-
-    print(continuous)
-    sys.exit()
+    continuous['last_dow_visitors'] = continuous['visitors'].shift(1)
 
     ''' 翌連休のない祝日のみで集計する '''
     discrete = tmp[(tmp['day_of_week'] == 'Special') & (tmp['next3_holiday']==0)]
     discrete = data.merge(discrete, on=['air_store_id', 'visit_date', 'day_of_week'], how='inner', copy=False)
-    discrete['last_visitors'] = discrete['visitors'].shift(1)
+    discrete['last_dow_visitors'] = discrete['visitors'].shift(1)
 
     return continuous, discrete
 
@@ -167,51 +164,79 @@ def main():
     ' 連休、非連休の祝日データセット作成 '
     continuous, discrete = make_special_set(vi_date)
 
-    '''
-    曜日別、祝日（連休、非連休）の移動平均と重み付き平均を求めたら、曜日、祝日別に
-    バラバラになってるのを特徴量毎にまとめる必要がある
-    '''
+    #  window_list = [3, 12, 24, 48]
+    #  """ 移動平均 """
+    #  for window in window_list:
+    #      result_dow = pd.DataFrame([])
+    #      for i in range(7):
+    #          tmp = vi_date[vi_date['dow']==i][['air_store_id', 'visit_date', 'day_of_week', 'dow', 'visitors']]
+    #          tmp_date = tmp[['air_store_id', 'visit_date', 'day_of_week', 'dow']]
+    #          ''' 祝日はNULLにする '''
+    #          tmp = tmp[tmp['day_of_week'] != 'Special']
 
-    window_list = [3, 12, 24, 48]
-    """ 移動平均 """
-    for window in window_list:
-        result = pd.DataFrame([])
-        #  for i in range(7):
-        #      tmp = vi_date[vi_date['dow']==i][['air_store_id', 'visit_date', 'day_of_week', 'dow', 'visitors']]
-        #      tmp_date = tmp[['air_store_id', 'visit_date', 'day_of_week', 'dow']]
-        #      ''' 祝日はNULLにする '''
-        #      tmp = tmp[tmp['day_of_week'] != 'Special']
+    #          data = tmp_date.merge(tmp, on=['air_store_id', 'visit_date', 'day_of_week', 'dow'], how='left', copy=False)
+    #          ''' 一週前の数字を持たせる '''
+    #          data['last_dow_visitors'] = data['visitors'].shift(1)
 
-        #      data = tmp_date.merge(tmp, on=['air_store_id', 'visit_date', 'day_of_week', 'dow'], how='left', copy=False)
-        #      ''' 一週前の数字を持たせる '''
-        #      data['lastweek_visitors'] = data['visitors'].shift(1)
+    #          dow_mv = moving_agg('avg', data, 'air_store_id', 'last_dow_visitors', window, 1)
+    #          col_name = [col for col in dow_mv.columns if col.count('@')][0]
 
-        #      dow_mv = moving_agg('avg', data, 'air_store_id', 'lastweek_visitors', window, 1)
-        #      ' Specialは消し、NULLを平均で埋める '
-        #      col_name = [col for col in dow_mv.columns if col.count('@')][0]
+    #          ' inner joinでSpecialを除外する '
+    #          tmp_result = dow_mv.merge(tmp[['air_store_id', 'visit_date']], on=['air_store_id', 'visit_date'], how='inner')
 
-        #      dow_avg = dow_mv.groupby('air_store_id', as_index=False)[col_name].mean()
+    #          ' Null埋めする為、店毎の平均値を算出 '
+    #          dow_avg = dow_mv.groupby('air_store_id', as_index=False)[col_name].mean()
+    #          ' Null埋め '
+    #          null = tmp_result[tmp_result[col_name].isnull()]
+    #          fill_null = null[['air_store_id', 'visit_date']].merge(dow_avg, on='air_store_id', how='inner')
+    #          tmp_result.dropna(inplace=True)
 
-        #      tmp_result = dow_mv.merge(tmp[['air_store_id', 'visit_date']], on=['air_store_id', 'visit_date'], how='inner')
+    #          tmp_result = pd.concat([tmp_result, fill_null], axis=0)
 
-        #      null = tmp_result[tmp_result[col_name].isnull()]
-        #      fill_null = null[['air_store_id', 'visit_date']].merge(dow_avg, on='air_store_id', how='inner')
-        #      tmp_result.dropna(inplace=True)
+    #          if len(result_dow)==0:
+    #              result_dow = tmp_result
+    #          else:
+    #              result_dow = pd.concat([result_dow, tmp_result], axis=0)
 
-        #      tmp_result = pd.concat([tmp_result, fill_null], axis=0)
+    #      '''** dowで集計し、concatした後、連休の方もconcatする **'''
+    #      continuous_mv = moving_agg('avg', continuous, 'air_store_id', 'last_dow_visitors', window, 1)
 
-        #      if len(result)==0:
-        #          result = tmp_result
-        #      else:
-        #          result = pd.concat([result, tmp_result], axis=0)
+    #      ' feature nameを取得 '
+    #      col_name = [col for col in continuous_mv.columns if col.count('@')][0]
 
-        #      sys.exit()
+    #      ' Null埋めする為、各店舗の平均値を取得 '
+    #      continuous_mv_avg = continuous_mv.groupby('air_store_id', as_index=False)[col_name].mean()
 
-        '''** dowで集計し、concatした後、連休の方もconcatする **'''
-        continuous_mv = moving_agg('avg', continuous, 'air_store_id', 'last_visitors', window, 1)
-        print(continuous_mv)
-        sys.exit()
-        discrete_mv = moving_agg('avg', discrete, 'air_store_id', 'last_visitors', window, 1)
+    #      ' 移動平均の平均値でNullを埋める '
+    #      null = continuous_mv[continuous_mv[col_name].isnull()]
+    #      fill_null = null[['air_store_id', 'visit_date']].merge(continuous_mv_avg, on='air_store_id', how='inner')
+
+    #      continuous_mv.dropna(inplace=True)
+    #      result_cont = pd.concat([continuous_mv, fill_null], axis=0)
+
+    #      discrete_mv = moving_agg('avg', discrete, 'air_store_id', 'last_dow_visitors', window, 1)
+
+    #      ' feature nameを取得 '
+    #      col_name = [col for col in discrete_mv.columns if col.count('@')][0]
+
+    #      ' Null埋めする為、各店舗の平均値を取得 '
+    #      discrete_mv_avg = discrete_mv.groupby('air_store_id', as_index=False)[col_name].mean()
+
+    #      ' 移動平均の平均値でNullを埋める '
+    #      null = discrete_mv[discrete_mv[col_name].isnull()]
+    #      fill_null = null[['air_store_id', 'visit_date']].merge(discrete_mv_avg, on='air_store_id', how='inner')
+
+    #      discrete_mv.dropna(inplace=True)
+    #      result_disc = pd.concat([discrete_mv, fill_null], axis=0)
+
+    #      result = pd.concat([result_dow, result_cont, result_disc], axis=0)
+
+    #      ' 日程を元のデータセットと同様にする '
+    #      result = air_vi[['air_store_id', 'visit_date']].merge(result, on=['air_store_id', 'visit_date'], how='inner')
+
+    #      result.to_csv('../feature/{}.csv'.format(col_name))
+
+    #  sys.exit()
 
     """ 重み付き平均 """
     date_list = data['visit_date'].drop_duplicates().sort_values().values
@@ -219,7 +244,7 @@ def main():
         for weight in weight_list:
             for end_date in date_list:
                 data = date_range(data, first_date, end_date)
-                dow_wg = exp_weight_avg(data, 'air_store_id', 'lastweek_visitors', weight)
+                dow_wg = exp_weight_avg(data, 'air_store_id', 'last_dow_visitors', weight)
 
                 name = dow_wg.name
                 dow_wg = dow_wg.to_frame()
@@ -233,14 +258,14 @@ def main():
     for weight in weight_list:
         for end_date in date_list:
             continuous = date_range(continuous, first_date, end_date)
-            exp_weight_avg(continuous, 'air_store_id', 'last_visit', weight)
+            exp_weight_avg(continuous, 'air_store_id', 'last_dow_visitors', weight)
 
     date_list = discrete['visit_date'].drop_duplicates().sort_values().values
 
     for weight in weight_list:
         for end_date in date_list:
             discrete = date_range(discrete, first_date, end_date)
-            exp_weight_avg(discrete, 'air_store_id', 'last_visit', weight)
+            exp_weight_avg(discrete, 'air_store_id', 'last_dow_visitors', weight)
 
 
 if __name__ == '__main__':
