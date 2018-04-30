@@ -9,7 +9,7 @@ from recruit_kaggle_load import RMSLE, load_data, load_submit
 from sklearn.preprocessing import LabelEncoder
 
 start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
-sys.path.append('/mnt/c/Git/go/github/module/')
+sys.path.append('../../../module/')
 from logger import logger_func
 logger = logger_func()
 
