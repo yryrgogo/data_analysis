@@ -165,7 +165,7 @@ def exploratory_train(dataset, target, categorical_feature, max_val_no=1, number
     result_val['diff_mean'] = np.mean(list_diff)
     # 学習に使用した特徴量リストを確認する為のファイルを出力する
     pd.Series(use_cols, name='features').to_csv(
-        '../eda/{}_use_{}features.csv'.format(start_time[:11], len(use_cols)), index=False)
+        '../eda/{}_No{}_use_{}features.csv'.format(start_time[:11], number, len(use_cols)), index=False)
 
     return result_val
 

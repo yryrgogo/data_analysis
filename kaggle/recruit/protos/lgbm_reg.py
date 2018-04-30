@@ -120,8 +120,7 @@ def validation(train, test, target, categorical_feature, pts_score='0', test_viz
 
             test_viz = pd.merge(test_viz, result_pts, on=pts_score, how='left', copy=False)
 
-        test_viz.to_csv('../output/{}_test_viz_{}_{}.csv'.format(
-            start_time[:11], metric, sc_score), index=False)
+        #  test_viz.to_csv('../output/{}_test_viz_{}_{}.csv'.format(start_time[:11], metric, sc_score), index=False)
 
     return ftim
 
