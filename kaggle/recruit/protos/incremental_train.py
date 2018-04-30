@@ -98,12 +98,14 @@ def exploratory_train(dataset, target, categorical_feature, max_val_no=1, number
     毎に学習と予測を行い、今の特徴量セットの分析を進める。
 
     Args:
-        dataset(df)    : 元のデータセット
-        max_val_no(int): 複数のValidation_noがある場合、その最大値を入れる（番号は1からの連番が前提）
-        number  (int)  : 全体の学習における通し番号。EDA用に出力するファイルを見やすくする為。
+        dataset(df)              : 元のデータセット
+        target                   : 目的変数
+        categorical_feature(list): lightgbmにカテゴリ変数として認識させるリスト
+        max_val_no(int)          : 複数のValidation_noがある場合、その最大値を入れる（番号は1からの連番が前提）
+        number  (int)            : 全体の学習における通し番号。EDA用に出力するファイルを見やすくする為。
 
-    Returns:result_val
-        入力されたデータセットにおける指定Validation_noの予測結果をそれぞれ分析する為のデータフレーム。
+    Returns:
+        result_val(DF) : 入力されたデータセットにおける指定Validation_noの予測結果をそれぞれ分析する為のデータフレーム。
     """
 
     """visualize用 （できたらメモリを圧迫しない様にしたい）"""
@@ -228,25 +230,25 @@ def top_corr(data, corr_list, num, suffix=''):
     return result_corr
 
 
-def incremental_train(dataset, feature_list, max_val_no):
+def incremental_train(data, target, categorical_feature, valid_list, max_val_no):
     """ Summary line
     用意した特徴量の最適な組み合わせを発見する為、インクリメンタルな学習を行う。
     戻り値はなく、全学習＆予測結果のまとめをCSVで出力して終わり。
 
     Args:
-        dataset(DF)       : 候補となる全特徴量を含んだデータフレーム。
-        feature_list(list): 学習を試したい特徴量の組み合わせリスト。この特徴量
+        data(DF)        : 候補となる全特徴量を含んだデータフレーム。
+        valid_list(list): 学習を試したい特徴量の組み合わせリスト。この特徴量
                            セットを順に流し、学習結果とその分析結果をまとめる。
     """
 
     number = 0
     result = pd.DataFrame([])
 
-    for feature_set in tqdm(feature_list):
+    for feature_set in tqdm(valid_list):
 
         number += 1
         tmp_result = exploratory_train(
-            dataset[feature_set], max_val_no, number)
+            data[feature_set], target, categorical_feature, max_val_no, number)
 
         if len(result) == 0:
             result = tmp_result

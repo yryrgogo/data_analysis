@@ -7,9 +7,9 @@ from sklearn.preprocessing import LabelEncoder
 import datetime
 from tqdm import tqdm
 import sys
-from logger import logger_func
 from recruit_kaggle_load import RMSLE
-sys.path.append('../../../module')
+sys.path.append('/mnt/c/Git/go/github/module/')
+from logger import logger_func
 from load_data import load_data, x_y_split
 
 start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
@@ -120,7 +120,7 @@ def validation(train, test, target, categorical_feature, pts_score='0', test_viz
 
             test_viz = pd.merge(test_viz, result_pts, on=pts_score, how='left', copy=False)
 
-        test_viz.to_csv('../eda/{}_test_viz_{}_{}.csv'.format(
+        test_viz.to_csv('../output/{}_test_viz_{}_{}.csv'.format(
             start_time[:11], metric, sc_score), index=False)
 
     return ftim
@@ -198,7 +198,11 @@ def cross_validation(data):
     logger.info('CV & TEST mean {}: {}'.format(metric, mean_score))
 
 
-def prediction(train, pred, target):
+def prediction(train, categorical_feature, pred, target):
+
+    lbl = LabelEncoder()
+    for cat in categorical_feature:
+        train[cat] = lbl.fit_transform(train[cat])
 
     x, y = x_y_split(train, target)
     y = np.log1p(y)
@@ -216,6 +220,6 @@ def prediction(train, pred, target):
     pred['visitors'] = y_pred
     result = pred[['id', 'visitors']]
 
-    result.to_csv('../output/{}_submission.csv'.format(start_time[:11]), index=False)
+    result.to_csv('../submit/{}_submission.csv'.format(start_time[:11]), index=False)
 
 
