@@ -8,7 +8,7 @@ import datetime
 from tqdm import tqdm
 import sys
 from recruit_kaggle_load import RMSLE
-sys.path.append('/mnt/c/Git/go/github/module/')
+sys.path.append('../../../module/')
 from logger import logger_func
 from load_data import load_data, x_y_split
 
