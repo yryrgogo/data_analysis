@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import gc
+import os
 import re
 import sys
 import datetime
@@ -9,9 +10,10 @@ from lgbm_reg import validation
 from sklearn.preprocessing import LabelEncoder
 
 
-start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
+#  start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 
 # PATH*************************************
+
 
 def path_info(path):
 
@@ -77,8 +79,8 @@ def feature_summarize(ftim, dataset, corr_list, target, number, val_no):
 
     # 基準とするfeatureを設定し、各featureの重要度の相対値をとる
     # （新しいfeatureと既存のgood featureを比較）
-    comp = ftim[ftim['feature'] == 'dow']['importance'].values[0]
-    ftim['comp_dow'] = ftim['importance']/comp
+    comp = ftim[ftim['feature'] == 'air_store_id']['importance'].values[0]
+    ftim['comp_air_id'] = ftim['importance']/comp
 
     corr = top_corr(dataset, corr_list, 5)
     corr_0 = top_corr(dataset[dataset[target] == 0], corr_list, 5, '_0')
@@ -91,7 +93,7 @@ def feature_summarize(ftim, dataset, corr_list, target, number, val_no):
     return result
 
 
-def exploratory_train(dataset, target, categorical_feature, max_val_no=1, number=0, pts_score='0', test_viz=0, base_score={}):
+def exploratory_train(dataset, target, categorical_feature, max_val_no=1, number=0, pts_score='0', viz_flg=0, eda_flg=0, base_score={}):
     """
     時系列モデルの検証、学習、予測結果のEDAを行う。
     Partision、Validationの番号をデータセットにカラムとして持たせ、その番号
@@ -109,7 +111,15 @@ def exploratory_train(dataset, target, categorical_feature, max_val_no=1, number
     """
 
     """visualize用 （できたらメモリを圧迫しない様にしたい）"""
-    visualize = dataset.copy()
+    key = np.arange(len(dataset))
+    dataset['number'] = key
+    if viz_flg == 1:
+        visualize = dataset.copy()
+    else:
+        visualize = []
+
+    dataset.drop('visit_date', axis=1, inplace=True)
+
     lbl = LabelEncoder()
     for cat in categorical_feature:
         dataset[cat] = lbl.fit_transform(dataset[cat])
@@ -125,49 +135,54 @@ def exploratory_train(dataset, target, categorical_feature, max_val_no=1, number
         # 学習用、テスト用データセットを作成
         train, test = split_dataset(dataset, val_no)
         # 学習
-        ftim = validation(train, test, target, categorical_feature, pts_score, visualize)
+        ftim = validation(train, test, target,
+                          categorical_feature, pts_score, visualize)
 
-        # feature_importanceとまとめてスコアを返してるので、一番目のみ取り出す
-        score_cv = ftim['score_cv'].values[0]
-        list_score.append(score_cv)
+        if eda_flg == 1:
 
-        if len(base_score) > 0:
-            score_diff = score_cv - base_score[val_no-1]
-        else:
-            score_diff = 0
-        list_diff.append(score_diff)
-        ftim['score_diff'] = score_diff
+            # feature_importanceとまとめてスコアを返してるので、一番目のみ取り出す
+            score_cv = ftim['score_cv'].values[0]
+            list_score.append(score_cv)
 
-        use_cols = list(train.columns)
-        ftim['add_feature'] = '{}_{}features.csv'.format(start_time[:11], len(use_cols))
+            if len(base_score) > 0:
+                score_diff = score_cv - base_score[val_no-1]
+            else:
+                score_diff = 0
+            list_diff.append(score_diff)
+            ftim['score_diff'] = score_diff
 
-        # ここで相関を計算するfeatureのみリストに残す
-        ftim['num_of_ft'] = len(use_cols)
-        corr_list = use_cols.copy()
-        for cat in categorical_feature:
-            corr_list.remove(cat)
+            use_cols = list(train.columns)
+            ftim['add_feature'] = '{}_{}features.csv'.format(
+                start_time[:11], len(use_cols))
 
-        "EDA用のデータセットを作成する"
-        feature_summary = feature_summarize(
-            ftim, dataset, corr_list, target, number, val_no)
+            # ここで相関を計算するfeatureのみリストに残す
+            ftim['num_of_ft'] = len(use_cols)
+            corr_list = use_cols.copy()
+            for cat in categorical_feature:
+                corr_list.remove(cat)
 
-        # validation毎にサマリーを格納し結合していく
-        if len(result_val) == 0:
-            result_val = feature_summary
-        else:
-            result_val = pd.concat([result_val, feature_summary], axis=0)
+            "EDA用のデータセットを作成する"
+            feature_summary = feature_summarize(
+                ftim, dataset, corr_list, target, number, val_no)
+
+            # validation毎にサマリーを格納し結合していく
+            if len(result_val) == 0:
+                result_val = feature_summary
+            else:
+                result_val = pd.concat([result_val, feature_summary], axis=0)
 
         del train, test
         gc.collect()
 
-    # 全Validationの平均スコアを格納する
-    result_val['score_mean'] = np.mean(list_score)
-    result_val['diff_mean'] = np.mean(list_diff)
-    # 学習に使用した特徴量リストを確認する為のファイルを出力する
-    pd.Series(use_cols, name='features').to_csv(
-        '../eda/{}_No{}_use_{}features.csv'.format(start_time[:11], number, len(use_cols)), index=False)
+    if eda_flg==1:
+        # 全Validationの平均スコアを格納する
+        result_val['score_mean'] = np.mean(list_score)
+        result_val['diff_mean'] = np.mean(list_diff)
+        # 学習に使用した特徴量リストを確認する為のファイルを出力する
+        os.mkdir(f'../output/{start_time}')
+        pd.Series(use_cols, name='features').to_csv(f'../output/{start_time}/{start_time[:11]}_No{number}_use_{len(use_cols)}features.csv', index=False)
 
-    return result_val
+        return result_val
 
 
 def top_corr(data, corr_list, num, suffix=''):
@@ -244,11 +259,21 @@ def incremental_train(data, target, categorical_feature, valid_list, max_val_no)
     number = 0
     result = pd.DataFrame([])
 
-    for feature_set in tqdm(valid_list):
+    for feature_path in tqdm(valid_list):
+        dataset= data.copy()
+        feature_set = pd.DataFrame([])
+        for path in feature_path:
+            feature = pd.read_csv(path)
+            feature['visit_date'] = pd.to_datetime(feature['visit_date'])
+            if path.count('@'):
+                particle = re.search(r'@.*@([^.]*).csv', path).group(1)
+            else:
+                particle = 'air_store_id'
+
+            dataset = dataset.merge(feature, on=[particle, 'visit_date'], how='left')
 
         number += 1
-        tmp_result = exploratory_train(
-            data[feature_set], target, categorical_feature, max_val_no, number)
+        tmp_result = exploratory_train(dataset, target, categorical_feature, max_val_no, number, 'air_store_id', 0, 1)
 
         if len(result) == 0:
             result = tmp_result
@@ -256,3 +281,5 @@ def incremental_train(data, target, categorical_feature, valid_list, max_val_no)
             result = pd.concat([result, tmp_result], axis=0)
 
     result.to_csv('../output/{}_ftim.csv'.format(start_time[:11]), index=False)
+
+

@@ -6,29 +6,8 @@ from multiprocessing import Pool
 import multiprocessing
 
 
-def load_data(input_path, key_list=[], delimiter=None, index_col=None):
-
-    data_dict = {}
-    path_list = glob.glob(input_path)
-
-    if len(key_list) > 0:
-        for path in path_list:
-            filename = re.search(r'/([^/.]*).csv', path).group(1)
-            for key in key_list:
-                if path.count(key):
-                    data_dict[key] = pd.read_csv(path, delimiter=delimiter, index_col=index_col)
-                    print('********************************')
-                    print('filename      : {}'.format(filename))
-                    print('row number    : {}'.format(len(data_dict[fn])))
-                    print('column number : {}'.format(len(data_dict[fn].columns)))
-                    print('columns       : \n{}'.format(data_dict[fn].columns.values))
-                    print('********************************\n')
-        print('{} file load end.\nreturn {}'.format(len(key_list), data_dict.keys()))
-        print('********************************\n')
-        return data_dict
-
-    elif len(key_list) == 0:
-        return pd.read_csv(path_list[0])
+def load_data(path):
+    return pd.read_csv(path)
 
 
 def x_y_split(data, target):
@@ -65,7 +44,7 @@ def pararell_load_data(key_list, path_list):
 
 
 def load_wrapper(args):
-    return pararell_read_csv(*args)
+    return csv_to_dict(*args)
 
 
 def pararell_process(func, arg_list):
@@ -76,7 +55,16 @@ def pararell_process(func, arg_list):
     return p_list
 
 
-def pararell_read_csv(key, path):
+def pararell_read_csv(path):
+    path_list = glob.glob(path)
+    p = Pool(multiprocessing.cpu_count())
+    p_list = p.map(load_data, path_list)
+    p.close
+
+    return p_list
+
+
+def csv_to_dict(key, path):
     data_dict = {}
     data_dict[key] = pd.read_csv(path)
 

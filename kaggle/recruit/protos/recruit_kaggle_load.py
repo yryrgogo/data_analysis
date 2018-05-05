@@ -15,7 +15,7 @@ start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 input_path = '../input/*.csv'
 submit_path = '../input/sample_submission.csv'
 path_list = glob.glob(input_path)
-key_list = [ 'air_reserve', 'air_store', 'air_visit', 'date_info' ]
+key_list = [ 'air_reserve', 'air_store', 'air_visit', 'air_cal_june' ]
 
 """ submit関連
                                 id  visitors
@@ -39,7 +39,24 @@ def set_validation(data):
 
     return data
 
-def make_air_calendar():
+def make_air_calendar(air_vi, air_cal):
+
+    ' 年末年始を除く、年末年始のセットを作る '
+    extract = air_vi[air_vi['visit_date']=='2016-01-06']['visit_date'].values[0]
+    first_extract = air_vi[air_vi['visit_date']=='2016-12-24']['visit_date'].values[0]
+    last_extract = air_vi[air_vi['visit_date']=='2017-01-06']['visit_date'].values[0]
+
+    air_cal = air_cal[(extract < air_cal['visit_date'])]
+    air_cal_1 = air_cal[(first_extract > air_cal['visit_date'])]
+    air_cal_2 = air_cal[(air_cal['visit_date'] > last_extract)]
+    air_cal = pd.concat([air_cal_1, air_cal_2], axis=0)
+
+    air_cal.to_csv('../input/air_cal_june_extract_year_end.csv', index=False)
+    #  air_cal.to_csv('../input/air_calendar_extract_year_end.csv', index=False)
+    #  air_cal.to_csv('../input/air_calendar_year_end_start.csv', index=False)
+    sys.exit()
+
+
     ''' 全日付を持たせたデータ '''
     air_min_date = air_vi.groupby('air_store_id', as_index=False)['visit_date'].min()
     air_id = air_min_date['air_store_id'].values
@@ -53,6 +70,35 @@ def make_air_calendar():
             air_calendar = tmp_date
         else:
             air_calendar = pd.concat([air_calendar, tmp_date], axis=0)
+
+
+def make_june_calendar():
+
+    date = ['2017-06-01', '2017-06-02', '2017-06-03', '2017-06-04', '2017-06-05']
+    dow_no = [3, 4, 5, 6, 0]
+    dow = ['Thursday', 'Friday', 'Saturday', 'Sunday', 'Monday']
+    holiday = [0, 0, 1, 1, 0]
+
+    june = pd.DataFrame({'visit_date':date, 'day_of_week':dow, 'holiday_flg':holiday, 'dow':dow_no})
+    air_id = air_cal['air_store_id'].drop_duplicates().values
+
+    result = pd.DataFrame([])
+    for air in air_id:
+        june['air_store_id'] = air
+        print(june.shape)
+
+        if len(result)==0:
+            result = june
+        else:
+            result = pd.concat([result, june], axis=0)
+
+    result.to_csv('../input/june_air_cal.csv', index=False)
+
+    print(air_cal.shape)
+    result = pd.concat([air_cal, result], axis=0)
+
+    result.to_csv('../input/air_cal_june.csv', index=False)
+    print(result.shape)
 
 
 """ 日時操作系 """
@@ -76,7 +122,8 @@ def load_data(key_list, path_list):
                 air_vi = df
             #  elif key.count('date_info'):
             #      df_date = df.rename(columns = {'calendar_date':'visit_date'})
-            elif key.count('air_calendar'):
+            #  elif key.count('air_cal_june'):
+            elif key.count('air_cal_june'):
                 air_cal = df
 
     air_vi['visit_date'] = pd.to_datetime(air_vi['visit_date'])

@@ -6,7 +6,7 @@ from sklearn.metrics import r2_score
 from sklearn.preprocessing import LabelEncoder
 import datetime
 from tqdm import tqdm
-import sys
+import sys, glob, re
 from recruit_kaggle_load import RMSLE
 sys.path.append('../../../module/')
 from logger import logger_func
@@ -65,6 +65,7 @@ def validation(train, test, target, categorical_feature, pts_score='0', test_viz
     x_test, y_test = x_y_split(test, target)
 
     use_cols = list(x_train.columns.values)
+    use_cols.remove('number')
 
     y_train = np.log1p(y_train)
     y_test = np.log1p(y_test)
@@ -73,13 +74,13 @@ def validation(train, test, target, categorical_feature, pts_score='0', test_viz
     logger.info('train columns: {} \nuse columns: {}'.format(len(use_cols), use_cols))
 
     reg = lgb.LGBMRegressor(**fix_params)
-    reg.fit(x_train, y_train,
-            eval_set=[(x_test, y_test)],
+    reg.fit(x_train[use_cols], y_train,
+            eval_set=[(x_test[use_cols], y_test)],
             eval_metric=metric,
             early_stopping_rounds=early_stopping_rounds,
             categorical_feature=categorical_feature)
 
-    y_pred = reg.predict(x_test, num_iteration=reg.best_iteration_)
+    y_pred = reg.predict(x_test[use_cols], num_iteration=reg.best_iteration_)
 
     y_test = np.expm1(y_test)
     y_pred = np.expm1(y_pred)
@@ -94,14 +95,19 @@ def validation(train, test, target, categorical_feature, pts_score='0', test_viz
 
     """特徴量セットに予測結果をJOINして出力"""
     if len(test_viz) != 0:
-        prediction = reg.predict(x_train, num_iteration=reg.best_iteration_)
+        prediction = reg.predict(x_train[use_cols], num_iteration=reg.best_iteration_)
         prediction = list(np.expm1(prediction))
-        prediction = prediction + list(y_pred)
-        test_viz['prediction'] = prediction
+
+        train['prediction'] = prediction
+        test['prediction'] = y_pred
+        dataset = pd.concat([train, test], axis=0)
+
+        test_viz = test_viz.merge(dataset[['number', 'prediction']], on='number', how='inner')
+        test_viz.drop('number', axis=1, inplace=True)
 
         ''' 予測結果を保管しておく '''
-        result_pred = pd.Series(prediction, name='{}_col{}'.format(start_time[:11], len(use_cols)))
-        result_pred.to_csv('../prediction/{}_col{}_{}.csv'.format(start_time[:11], len(use_cols), sc_score), index=False, header=True)
+        result_pred = test_viz[['air_store_id', 'visit_date', 'prediction']]
+        result_pred.to_csv(f'../prediction/{start_time[:11]}_col{len(use_cols)}_{sc_score}.csv', index=False)
 
         """ パーティション毎にスコアを出力し、格納する """
         if pts_score!='0':
@@ -120,9 +126,25 @@ def validation(train, test, target, categorical_feature, pts_score='0', test_viz
 
             test_viz = pd.merge(test_viz, result_pts, on=pts_score, how='left', copy=False)
 
-        #  test_viz.to_csv('../output/{}_test_viz_{}_{}.csv'.format(start_time[:11], metric, sc_score), index=False)
+        bench_path= glob.glob('../prediction/comp_pred/*.csv')
+        if len(bench_path)>0:
+            test_viz = comp_bench_mark(test_viz, bench_path)
+
+        test_viz.to_csv('../output/{}_test_viz_{}_{}.csv'.format(start_time[:11], metric, sc_score), index=False)
 
     return ftim
+
+
+def comp_bench_mark(test_viz, bench_path):
+
+    for path in bench_path:
+        bench = pd.read_csv(path)
+        filename = path[36:-4]
+        bench.rename(columns={'prediction':filename}, inplace=True)
+        bench['visit_date'] = pd.to_datetime(bench['visit_date'])
+        test_viz = test_viz.merge(bench, on=['air_store_id', 'visit_date'], how='left')
+
+    return test_viz
 
 
 def cross_validation(data):
