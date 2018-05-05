@@ -9,8 +9,8 @@ import re
 from tqdm import tqdm
 from multiprocessing import Pool
 import multiprocessing
-sys.path.append('../../../module')
-from recruit_kaggle_load import load_data, set_validation, date_diff, load_submit
+sys.path.append('../protos')
+from recruit_kaggle_load import load_data, set_validation, date_diff, load_submit, make_air_calendar
 
 start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 
@@ -18,7 +18,7 @@ start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 input_path = '../input/*.csv'
 submit_path = '../input/sample_submission.csv'
 path_list = glob.glob(input_path)
-key_list = ['air_reserve', 'air_store', 'air_visit', 'air_calendar']
+key_list = ['air_reserve', 'air_store', 'air_visit', 'air_calendar_extract']
 
 """ データロード """
 #  base = pd.read_csv('../input/20180424_air_base.csv')
@@ -40,12 +40,14 @@ first_date = air_vi['visit_date'].min()
 last_date = air_vi['visit_date'].max()
 
 ''' カレンダーの日付を絞る '''
-#  air_cal = air_cal[air_cal['visit_date'] <= last_date]
+air_cal = air_cal[air_cal['visit_date'] <= last_date]
+date = air_cal['visit_date'].drop_duplicates().values
 
 
 def main():
-    print()
 
+    print()
+    sys.exit()
 
 if __name__ == '__main__':
 
