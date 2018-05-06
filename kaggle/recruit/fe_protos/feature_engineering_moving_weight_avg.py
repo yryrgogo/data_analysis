@@ -20,18 +20,20 @@ start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 input_path = '../input/*.csv'
 submit_path = '../input/sample_submission.csv'
 path_list = glob.glob(input_path)
-key_list = ['air_reserve', 'air_store', 'air_visit', 'air_cal_june_ex']
+key_air_vi = 'air_vi_ex'
+key_air_re = 'air_re'
+key_air_st = 'air_st'
+key_air_cal = 'air_cal_june_ex'
+key_list = [key_air_st, key_air_vi, key_air_cal]
 
 """ データロード """
 #  base = pd.read_csv('../input/20180424_air_base.csv')
-air_vi, air_re, air_st, air_cal = load_data(key_list, path_list)
-data_list = [air_vi, air_re, air_st, air_cal]
+data_dict = load_data(key_list, path_list)
+air_vi = data_dict[key_air_vi]
+air_st = data_dict[key_air_st]
+air_cal = data_dict[key_air_cal]
+#  air_re = data_dict[key_air_re]
 
-
-""" データチェック"""
-#  for d in data_list:
-#      print(d.head())
-#  sys.exit()
 
 """ 前処理 """
 ' 外れ値を除去 '
