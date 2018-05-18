@@ -1,7 +1,25 @@
 import pandas as pd
 import numpy as np
-import sys, re
+import sys
+import re
 import gc
+
+
+""" 日時操作系 """
+
+
+def date_diff(start, end):
+    diff = end - start
+    return diff
+
+
+def date_range(data, start, end, include_flg=1):
+    '''
+    include_flgが0の場合, endの日付は含めずにデータを返す
+    '''
+    if include_flg == 0:
+        return data[(start <= data['visit_date']) & (data['visit_date'] < end)]
+    return data[(start <= data['visit_date']) & (data['visit_date'] <= end)]
 
 
 def outlier(data, particle, value, out_range=1.64):
@@ -16,14 +34,14 @@ def outlier(data, particle, value, out_range=1.64):
         data(DF): 入力データフレームから外れ値を外したもの
     '''
     tmp = data.groupby(particle, as_index=False)[value].agg(
-        {'avg':'mean',
-         'std':'std'
+        {'avg': 'mean',
+         'std': 'std'
          })
     df = data.merge(tmp, on=particle, how='inner')
     param = df[value].values
     avg = df['avg'].values
     std = df['std'].values
-    z_value =(param - avg)/std
+    z_value = (param - avg)/std
     df['z'] = z_value
 
     inner = df[-1*out_range <= df['z']].copy()
@@ -47,3 +65,57 @@ def outlier(data, particle, value, out_range=1.64):
     gc.collect()
 
     return result
+
+
+def impute_avg(data=None, level=None, index=1, value=None):
+    '''
+    Explain:
+        平均値で欠損値補完を行う
+    Args:
+        data(DF)       : NULLを含み、欠損値補完を行うデータ
+        level(list)    : 集計を行う粒度。最終的に欠損値補完を行う粒度が1カラム
+                         でなく、複数カラム必要な時はリストで渡す。
+                         ただし、欠損値補完の集計を行う粒度がリストと異なる場合、
+                         次のindex変数にリストのうち集計に使うカラム数を入力する
+                         (順番注意)
+        index(int)     : 欠損値補完の際に集計する粒度カラム数
+        value(float)   : 欠損値補完する値のカラム名
+    Return:
+        result(DF): 欠損値補完が完了したデータ
+    '''
+
+    ' Null埋めする為、各店舗の平均値を取得 '
+    imp_avg = data.groupby(level[:index], as_index=False)[value].mean()
+
+    ' 移動平均の平均値でNullを埋める '
+    null = data[data[value].isnull()]
+    fill_null = null[level].merge(imp_avg, on=level[:index], how='inner')
+
+    data.dropna(inplace=True)
+    result = pd.concat([data, fill_null], axis=0)
+
+    return result
+
+
+def lag_feature(data, value, lag, level=[]):
+    '''
+    Explain:
+        時系列データにおいて、リーケージとなる特徴量を集計する際、shiftによって
+        ラグ特徴量を作成する
+    Args:
+        data(DF)    : valueやlevelを含んだデータフレーム
+        value(float): ラグをとる特徴量。主にリークになる様な特徴量
+        lag(int)    : shiftによってずらす行の数
+                     （正：前の行数分データをとる、 負：後の行数分データをとる）
+        level(list) : 粒度を指定してラグをとる場合、その粒度を入れたリスト。
+                      このlevelでgroupbyをした上でラグをとる
+    Return:
+        data: 最初の入力データにラグをとった特徴カラムを付与して返す
+    '''
+
+    if len(level)==0:
+        data[f'shift{lag}_{value}'] = data[value].shift(lag)
+    else:
+        data[f'shift{lag}_{value}@{level}'] = data.groupby(level)[value].shift(lag)
+
+    return data

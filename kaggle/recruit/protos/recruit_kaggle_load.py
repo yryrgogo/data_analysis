@@ -11,12 +11,6 @@ start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 
 """Validationは3/12(日)~4/22(土)"""
 
-""" データセット関連 """
-input_path = '../input/*.csv'
-submit_path = '../input/sample_submission.csv'
-path_list = glob.glob(input_path)
-key_list = [ 'air_reserve', 'air_store', 'air_visit', 'air_cal_june' ]
-
 """ submit関連
                                 id  visitors
 0  air_00a91d42b08b08d9_2017-04-23         0
@@ -38,6 +32,7 @@ def set_validation(data):
     data['validation'] = data['visit_date'].map(lambda x: 1 if start_date <= x and x <= end_date else 0)
 
     return data
+
 
 def make_air_calendar(air_vi, air_cal):
 
@@ -101,44 +96,52 @@ def make_june_calendar():
     print(result.shape)
 
 
-""" 日時操作系 """
-def date_diff(start, end):
-    diff = end - start
-    return diff
-
-
 """並列でデータセットをロード"""
-def load_data(key_list, path_list):
+def recruit_load_data(key_list, path_list):
 
+    data_dict = {key:None for key in key_list}
     p_list = pararell_load_data(key_list, path_list)
 
     for d_dict in p_list:
         for key, df in d_dict.items():
-            if key.count('air_reserve'):
+            if key.count('air_re'):
                 air_re = df
-            elif key.count('air_store'):
+                air_re['visit_date'] = pd.to_datetime(air_re['visit_datetime'].str[:10])
+                air_re['reserve_date'] = pd.to_datetime(air_re['reserve_datetime'].str[:10])
+                air_re['dow'] = air_re['visit_date'].dt.dayofweek
+                data_dict[key] = air_re
+
+            elif key.count('air_st'):
                 air_st = df
-            elif key.count('air_visit'):
+                data_dict[key] = air_st
+
+            elif key.count('air_vi'):
                 air_vi = df
-            #  elif key.count('date_info'):
-            #      df_date = df.rename(columns = {'calendar_date':'visit_date'})
-            #  elif key.count('air_cal_june'):
-            elif key.count('air_cal_june'):
+                air_vi['visit_date'] = pd.to_datetime(air_vi['visit_date'])
+                air_vi['dow'] = air_vi['visit_date'].dt.dayofweek
+                data_dict[key] = air_vi
+
+            elif key.count('air_cal'):
                 air_cal = df
+                air_cal['visit_date'] = pd.to_datetime(air_cal['visit_date'])
+                data_dict[key] = air_cal
 
-    air_vi['visit_date'] = pd.to_datetime(air_vi['visit_date'])
-    air_vi['dow'] = air_vi['visit_date'].dt.dayofweek
+            elif key.count('air_area'):
+                air_area = df
+                air_area['visit_date'] = pd.to_datetime(air_area['visit_date'])
+                data_dict[key] = air_area
 
-    air_re['visit_date'] = pd.to_datetime(air_re['visit_datetime'].str[:10])
-    air_re['reserve_date'] = pd.to_datetime(air_re['reserve_datetime'].str[:10])
-    air_re['dow'] = air_re['visit_date'].dt.dayofweek
+            elif key.count('air_genre'):
+                air_genre = df
+                air_genre['visit_date'] = pd.to_datetime(air_genre['visit_date'])
+                data_dict[key] = air_genre
 
-    air_cal['visit_date'] = pd.to_datetime(air_cal['visit_date'])
-    #  df_date['dow'] = df_date['visit_date'].dt.dayofweek
-    #  df_date['day_of_week'] = df_date.apply(lambda x:'Special' if x.holiday_flg==1 and (x.day_of_week != 'Saturday' or x.day_of_week != 'Sunday') else x.day_of_week, axis=1)
-    #  df_date['holiday_flg'] = df_date.apply(lambda x:1 if x.holiday_flg==1 or x.day_of_week=='Saturday' or x.day_of_week=='Sunday' else 0, axis=1)
+            elif key.count('air_cal_june【'):
+                raw_cal = df
+                raw_cal['visit_date'] = pd.to_datetime(raw_cal['visit_date'])
+                data_dict[key] = raw_cal
 
-    return air_vi, air_re, air_st, air_cal
+    return data_dict
 
 
 def load_submit(submit_path):
