@@ -1,6 +1,7 @@
 input/*
 output/*
 feature/*
+eda/*
 log/*
 __pycache__/*
 __pycache__
@@ -12,4 +13,7 @@ tabelog/log/*
 *.tsv
 *.xlsx
 *.vec
+*.twb
+*.twbx
+*.twbr
 top10_models/
