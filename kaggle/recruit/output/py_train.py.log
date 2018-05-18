@@ -11553,3 +11553,1102 @@ use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 
 use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98', 'last_dow_visitors_@w_avg_0.9@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday'] 
 2018-05-05 09:55:56,949 logger 90 [INFO]    [validation] prediction score: 0.46926445711973935 
 2018-05-05 09:55:56,949 logger 90 [INFO]    [validation] prediction score: 0.46926445711973935 
+2018-05-05 17:06:11,758 logger 19 [INFO]    [logger_func] start 
+2018-05-05 17:06:11,761 logger 19 [INFO]    [logger_func] start 
+2018-05-05 17:06:11,761 logger 19 [INFO]    [logger_func] start 
+2018-05-05 17:06:15,902 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:06:15,902 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:06:15,902 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id'] 
+2018-05-05 17:06:15,902 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id'] 
+2018-05-05 17:06:17,696 logger 90 [INFO]    [validation] prediction score: 0.4675849709272212 
+2018-05-05 17:06:17,696 logger 90 [INFO]    [validation] prediction score: 0.4675849709272212 
+2018-05-05 17:07:38,838 logger 19 [INFO]    [logger_func] start 
+2018-05-05 17:07:38,844 logger 19 [INFO]    [logger_func] start 
+2018-05-05 17:07:38,844 logger 19 [INFO]    [logger_func] start 
+2018-05-05 17:07:42,697 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:07:42,697 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:07:42,698 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id'] 
+2018-05-05 17:07:42,698 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id'] 
+2018-05-05 17:07:44,612 logger 90 [INFO]    [validation] prediction score: 0.4675849709272212 
+2018-05-05 17:07:44,612 logger 90 [INFO]    [validation] prediction score: 0.4675849709272212 
+2018-05-05 17:07:45,658 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:07:45,658 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:07:45,658 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name'] 
+2018-05-05 17:07:45,658 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name'] 
+2018-05-05 17:07:47,407 logger 90 [INFO]    [validation] prediction score: 0.46860322567037743 
+2018-05-05 17:07:47,407 logger 90 [INFO]    [validation] prediction score: 0.46860322567037743 
+2018-05-05 17:11:49,324 logger 19 [INFO]    [logger_func] start 
+2018-05-05 17:11:49,329 logger 19 [INFO]    [logger_func] start 
+2018-05-05 17:11:49,329 logger 19 [INFO]    [logger_func] start 
+2018-05-05 17:11:53,243 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:11:53,243 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:11:53,243 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id'] 
+2018-05-05 17:11:53,243 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id'] 
+2018-05-05 17:11:55,113 logger 90 [INFO]    [validation] prediction score: 0.4675849709272212 
+2018-05-05 17:11:55,113 logger 90 [INFO]    [validation] prediction score: 0.4675849709272212 
+2018-05-05 17:11:56,013 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:11:56,013 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:11:56,013 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name'] 
+2018-05-05 17:11:56,013 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name'] 
+2018-05-05 17:11:57,902 logger 90 [INFO]    [validation] prediction score: 0.46860322567037743 
+2018-05-05 17:11:57,902 logger 90 [INFO]    [validation] prediction score: 0.46860322567037743 
+2018-05-05 17:13:23,233 logger 19 [INFO]    [logger_func] start 
+2018-05-05 17:13:23,238 logger 19 [INFO]    [logger_func] start 
+2018-05-05 17:13:23,238 logger 19 [INFO]    [logger_func] start 
+2018-05-05 17:13:27,097 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:13:27,097 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:13:27,097 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id'] 
+2018-05-05 17:13:27,097 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id'] 
+2018-05-05 17:13:28,849 logger 90 [INFO]    [validation] prediction score: 0.4675849709272212 
+2018-05-05 17:13:28,849 logger 90 [INFO]    [validation] prediction score: 0.4675849709272212 
+2018-05-05 17:13:29,688 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:13:29,688 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:13:29,689 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name'] 
+2018-05-05 17:13:29,689 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name'] 
+2018-05-05 17:13:31,309 logger 90 [INFO]    [validation] prediction score: 0.46860322567037743 
+2018-05-05 17:13:31,309 logger 90 [INFO]    [validation] prediction score: 0.46860322567037743 
+2018-05-05 17:14:13,673 logger 19 [INFO]    [logger_func] start 
+2018-05-05 17:14:13,678 logger 19 [INFO]    [logger_func] start 
+2018-05-05 17:14:13,678 logger 19 [INFO]    [logger_func] start 
+2018-05-05 17:14:17,446 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:14:17,446 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:14:17,446 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id'] 
+2018-05-05 17:14:17,446 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id'] 
+2018-05-05 17:14:19,206 logger 90 [INFO]    [validation] prediction score: 0.4675849709272212 
+2018-05-05 17:14:19,206 logger 90 [INFO]    [validation] prediction score: 0.4675849709272212 
+2018-05-05 17:14:20,056 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:14:20,056 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:14:20,057 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name'] 
+2018-05-05 17:14:20,057 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name'] 
+2018-05-05 17:14:21,705 logger 90 [INFO]    [validation] prediction score: 0.46860322567037743 
+2018-05-05 17:14:21,705 logger 90 [INFO]    [validation] prediction score: 0.46860322567037743 
+2018-05-05 17:16:29,782 logger 19 [INFO]    [logger_func] start 
+2018-05-05 17:16:29,788 logger 19 [INFO]    [logger_func] start 
+2018-05-05 17:16:29,788 logger 19 [INFO]    [logger_func] start 
+2018-05-05 17:16:33,724 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:16:33,724 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:16:33,724 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id'] 
+2018-05-05 17:16:33,724 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id'] 
+2018-05-05 17:16:35,487 logger 90 [INFO]    [validation] prediction score: 0.4675849709272212 
+2018-05-05 17:16:35,487 logger 90 [INFO]    [validation] prediction score: 0.4675849709272212 
+2018-05-05 17:16:36,368 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:16:36,368 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:16:36,368 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name'] 
+2018-05-05 17:16:36,368 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name'] 
+2018-05-05 17:16:38,039 logger 90 [INFO]    [validation] prediction score: 0.46860322567037743 
+2018-05-05 17:16:38,039 logger 90 [INFO]    [validation] prediction score: 0.46860322567037743 
+2018-05-05 17:16:39,064 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:16:39,064 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:16:39,064 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id'] 
+2018-05-05 17:16:39,064 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id'] 
+2018-05-05 17:16:40,778 logger 90 [INFO]    [validation] prediction score: 0.4688366723945139 
+2018-05-05 17:16:40,778 logger 90 [INFO]    [validation] prediction score: 0.4688366723945139 
+2018-05-05 17:16:41,618 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:16:41,618 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:16:41,618 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w126_p1@air_area_name'] 
+2018-05-05 17:16:41,618 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w126_p1@air_area_name'] 
+2018-05-05 17:16:43,291 logger 90 [INFO]    [validation] prediction score: 0.4682441202356654 
+2018-05-05 17:16:43,291 logger 90 [INFO]    [validation] prediction score: 0.4682441202356654 
+2018-05-05 17:16:44,319 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:16:44,319 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:16:44,319 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:16:44,319 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:16:46,065 logger 90 [INFO]    [validation] prediction score: 0.4686085403767601 
+2018-05-05 17:16:46,065 logger 90 [INFO]    [validation] prediction score: 0.4686085403767601 
+2018-05-05 17:16:47,039 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:16:47,039 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:16:47,039 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:16:47,039 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:16:48,994 logger 90 [INFO]    [validation] prediction score: 0.46888154473489296 
+2018-05-05 17:16:48,994 logger 90 [INFO]    [validation] prediction score: 0.46888154473489296 
+2018-05-05 17:16:50,138 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:16:50,138 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:16:50,139 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:16:50,139 logger 74 [INFO]    [validation] train columns: 10 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:16:52,306 logger 90 [INFO]    [validation] prediction score: 0.4684074663612911 
+2018-05-05 17:16:52,306 logger 90 [INFO]    [validation] prediction score: 0.4684074663612911 
+2018-05-05 17:16:53,570 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:16:53,570 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:16:53,570 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name'] 
+2018-05-05 17:16:53,570 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name'] 
+2018-05-05 17:16:55,834 logger 90 [INFO]    [validation] prediction score: 0.4684041499203899 
+2018-05-05 17:16:55,834 logger 90 [INFO]    [validation] prediction score: 0.4684041499203899 
+2018-05-05 17:16:57,355 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:16:57,355 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:16:57,356 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id'] 
+2018-05-05 17:16:57,356 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id'] 
+2018-05-05 17:16:59,714 logger 90 [INFO]    [validation] prediction score: 0.46864383574450474 
+2018-05-05 17:16:59,714 logger 90 [INFO]    [validation] prediction score: 0.46864383574450474 
+2018-05-05 17:17:01,138 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:01,138 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:01,138 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name'] 
+2018-05-05 17:17:01,138 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name'] 
+2018-05-05 17:17:03,473 logger 90 [INFO]    [validation] prediction score: 0.46831523426423943 
+2018-05-05 17:17:03,473 logger 90 [INFO]    [validation] prediction score: 0.46831523426423943 
+2018-05-05 17:17:04,987 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:04,987 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:04,987 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:17:04,987 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:17:07,173 logger 90 [INFO]    [validation] prediction score: 0.4675762858852962 
+2018-05-05 17:17:07,173 logger 90 [INFO]    [validation] prediction score: 0.4675762858852962 
+2018-05-05 17:17:08,509 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:08,509 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:08,509 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:17:08,509 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:17:10,677 logger 90 [INFO]    [validation] prediction score: 0.468269459112004 
+2018-05-05 17:17:10,677 logger 90 [INFO]    [validation] prediction score: 0.468269459112004 
+2018-05-05 17:17:12,127 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:12,127 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:12,127 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:17:12,127 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:17:14,175 logger 90 [INFO]    [validation] prediction score: 0.4676514052658276 
+2018-05-05 17:17:14,175 logger 90 [INFO]    [validation] prediction score: 0.4676514052658276 
+2018-05-05 17:17:15,459 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:15,459 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:15,460 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id'] 
+2018-05-05 17:17:15,460 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id'] 
+2018-05-05 17:17:17,521 logger 90 [INFO]    [validation] prediction score: 0.4689038968748936 
+2018-05-05 17:17:17,521 logger 90 [INFO]    [validation] prediction score: 0.4689038968748936 
+2018-05-05 17:17:18,633 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:18,633 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:18,633 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name'] 
+2018-05-05 17:17:18,633 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name'] 
+2018-05-05 17:17:20,752 logger 90 [INFO]    [validation] prediction score: 0.46913448727626234 
+2018-05-05 17:17:20,752 logger 90 [INFO]    [validation] prediction score: 0.46913448727626234 
+2018-05-05 17:17:22,037 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:22,037 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:22,038 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:17:22,038 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:17:24,174 logger 90 [INFO]    [validation] prediction score: 0.46823585156062064 
+2018-05-05 17:17:24,174 logger 90 [INFO]    [validation] prediction score: 0.46823585156062064 
+2018-05-05 17:17:25,556 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:25,556 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:25,556 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:17:25,556 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:17:27,607 logger 90 [INFO]    [validation] prediction score: 0.4684708011375593 
+2018-05-05 17:17:27,607 logger 90 [INFO]    [validation] prediction score: 0.4684708011375593 
+2018-05-05 17:17:28,885 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:28,885 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:28,885 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:17:28,885 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:17:30,924 logger 90 [INFO]    [validation] prediction score: 0.4684940874366627 
+2018-05-05 17:17:30,924 logger 90 [INFO]    [validation] prediction score: 0.4684940874366627 
+2018-05-05 17:17:32,205 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:32,205 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:32,205 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name'] 
+2018-05-05 17:17:32,205 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name'] 
+2018-05-05 17:17:34,321 logger 90 [INFO]    [validation] prediction score: 0.4681330896541662 
+2018-05-05 17:17:34,321 logger 90 [INFO]    [validation] prediction score: 0.4681330896541662 
+2018-05-05 17:17:35,757 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:35,757 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:35,758 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:17:35,758 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:17:37,799 logger 90 [INFO]    [validation] prediction score: 0.46859551403983934 
+2018-05-05 17:17:37,799 logger 90 [INFO]    [validation] prediction score: 0.46859551403983934 
+2018-05-05 17:17:39,145 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:39,145 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:39,145 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:17:39,145 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:17:42,243 logger 90 [INFO]    [validation] prediction score: 0.4685418633385954 
+2018-05-05 17:17:42,243 logger 90 [INFO]    [validation] prediction score: 0.4685418633385954 
+2018-05-05 17:17:43,713 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:43,713 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:43,713 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:17:43,713 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:17:45,800 logger 90 [INFO]    [validation] prediction score: 0.4684302506563823 
+2018-05-05 17:17:45,800 logger 90 [INFO]    [validation] prediction score: 0.4684302506563823 
+2018-05-05 17:17:47,083 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:47,083 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:47,084 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:17:47,084 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:17:49,037 logger 90 [INFO]    [validation] prediction score: 0.46848115552405384 
+2018-05-05 17:17:49,037 logger 90 [INFO]    [validation] prediction score: 0.46848115552405384 
+2018-05-05 17:17:50,147 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:50,147 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:50,148 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:17:50,148 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:17:52,197 logger 90 [INFO]    [validation] prediction score: 0.4680233090661253 
+2018-05-05 17:17:52,197 logger 90 [INFO]    [validation] prediction score: 0.4680233090661253 
+2018-05-05 17:17:53,539 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:53,539 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:53,540 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:17:53,540 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:17:55,516 logger 90 [INFO]    [validation] prediction score: 0.4679404186307125 
+2018-05-05 17:17:55,516 logger 90 [INFO]    [validation] prediction score: 0.4679404186307125 
+2018-05-05 17:17:56,804 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:56,804 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:17:56,804 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:17:56,804 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:17:58,811 logger 90 [INFO]    [validation] prediction score: 0.4681997204536377 
+2018-05-05 17:17:58,811 logger 90 [INFO]    [validation] prediction score: 0.4681997204536377 
+2018-05-05 17:18:00,273 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:00,273 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:00,273 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:18:00,273 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:18:02,280 logger 90 [INFO]    [validation] prediction score: 0.46797306297190644 
+2018-05-05 17:18:02,280 logger 90 [INFO]    [validation] prediction score: 0.46797306297190644 
+2018-05-05 17:18:03,587 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:03,587 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:03,587 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:18:03,587 logger 74 [INFO]    [validation] train columns: 11 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:18:05,606 logger 90 [INFO]    [validation] prediction score: 0.4684393384584114 
+2018-05-05 17:18:05,606 logger 90 [INFO]    [validation] prediction score: 0.4684393384584114 
+2018-05-05 17:18:07,171 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:07,171 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:07,171 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id'] 
+2018-05-05 17:18:07,171 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id'] 
+2018-05-05 17:18:09,535 logger 90 [INFO]    [validation] prediction score: 0.46823913708789977 
+2018-05-05 17:18:09,535 logger 90 [INFO]    [validation] prediction score: 0.46823913708789977 
+2018-05-05 17:18:10,978 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:10,978 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:10,978 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name'] 
+2018-05-05 17:18:10,978 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name'] 
+2018-05-05 17:18:13,133 logger 90 [INFO]    [validation] prediction score: 0.46775156799200723 
+2018-05-05 17:18:13,133 logger 90 [INFO]    [validation] prediction score: 0.46775156799200723 
+2018-05-05 17:18:14,719 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:14,719 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:14,720 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:18:14,720 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:18:17,199 logger 90 [INFO]    [validation] prediction score: 0.4671166322956947 
+2018-05-05 17:18:17,199 logger 90 [INFO]    [validation] prediction score: 0.4671166322956947 
+2018-05-05 17:18:18,911 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:18,911 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:18,912 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:18:18,912 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:18:21,656 logger 90 [INFO]    [validation] prediction score: 0.4677101614366446 
+2018-05-05 17:18:21,656 logger 90 [INFO]    [validation] prediction score: 0.4677101614366446 
+2018-05-05 17:18:23,320 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:23,320 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:23,321 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:18:23,321 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:18:27,009 logger 90 [INFO]    [validation] prediction score: 0.46759619909001404 
+2018-05-05 17:18:27,009 logger 90 [INFO]    [validation] prediction score: 0.46759619909001404 
+2018-05-05 17:18:28,709 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:28,709 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:28,709 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name'] 
+2018-05-05 17:18:28,709 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name'] 
+2018-05-05 17:18:31,319 logger 90 [INFO]    [validation] prediction score: 0.4675084429897897 
+2018-05-05 17:18:31,319 logger 90 [INFO]    [validation] prediction score: 0.4675084429897897 
+2018-05-05 17:18:33,648 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:33,648 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:33,648 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:18:33,648 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:18:36,970 logger 90 [INFO]    [validation] prediction score: 0.46768524500359643 
+2018-05-05 17:18:36,970 logger 90 [INFO]    [validation] prediction score: 0.46768524500359643 
+2018-05-05 17:18:39,060 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:39,060 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:39,060 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:18:39,060 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:18:46,073 logger 90 [INFO]    [validation] prediction score: 0.4681369483975858 
+2018-05-05 17:18:46,073 logger 90 [INFO]    [validation] prediction score: 0.4681369483975858 
+2018-05-05 17:18:48,434 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:48,434 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:48,434 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:18:48,434 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:18:50,856 logger 90 [INFO]    [validation] prediction score: 0.46747499581447033 
+2018-05-05 17:18:50,856 logger 90 [INFO]    [validation] prediction score: 0.46747499581447033 
+2018-05-05 17:18:52,522 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:52,522 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:52,522 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:18:52,522 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:18:55,101 logger 90 [INFO]    [validation] prediction score: 0.46740871227666203 
+2018-05-05 17:18:55,101 logger 90 [INFO]    [validation] prediction score: 0.46740871227666203 
+2018-05-05 17:18:57,053 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:57,053 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:18:57,054 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:18:57,054 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:19:00,358 logger 90 [INFO]    [validation] prediction score: 0.46777331762815216 
+2018-05-05 17:19:00,358 logger 90 [INFO]    [validation] prediction score: 0.46777331762815216 
+2018-05-05 17:19:02,228 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:02,228 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:02,228 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:19:02,228 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:19:04,526 logger 90 [INFO]    [validation] prediction score: 0.4675963594435728 
+2018-05-05 17:19:04,526 logger 90 [INFO]    [validation] prediction score: 0.4675963594435728 
+2018-05-05 17:19:06,215 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:06,215 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:06,215 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:19:06,215 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:19:09,749 logger 90 [INFO]    [validation] prediction score: 0.4676139535396773 
+2018-05-05 17:19:09,749 logger 90 [INFO]    [validation] prediction score: 0.4676139535396773 
+2018-05-05 17:19:11,732 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:11,732 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:11,732 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:19:11,732 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:19:14,641 logger 90 [INFO]    [validation] prediction score: 0.46716140526221883 
+2018-05-05 17:19:14,641 logger 90 [INFO]    [validation] prediction score: 0.46716140526221883 
+2018-05-05 17:19:16,391 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:16,391 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:16,391 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:19:16,391 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:19:19,157 logger 90 [INFO]    [validation] prediction score: 0.4674086192459502 
+2018-05-05 17:19:19,157 logger 90 [INFO]    [validation] prediction score: 0.4674086192459502 
+2018-05-05 17:19:20,631 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:20,631 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:20,631 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name'] 
+2018-05-05 17:19:20,631 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name'] 
+2018-05-05 17:19:23,030 logger 90 [INFO]    [validation] prediction score: 0.4684157406328041 
+2018-05-05 17:19:23,030 logger 90 [INFO]    [validation] prediction score: 0.4684157406328041 
+2018-05-05 17:19:24,700 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:24,700 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:24,700 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:19:24,700 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:19:28,010 logger 90 [INFO]    [validation] prediction score: 0.4684483668955953 
+2018-05-05 17:19:28,010 logger 90 [INFO]    [validation] prediction score: 0.4684483668955953 
+2018-05-05 17:19:30,541 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:30,541 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:30,542 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:19:30,542 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:19:34,292 logger 90 [INFO]    [validation] prediction score: 0.46845173248784555 
+2018-05-05 17:19:34,292 logger 90 [INFO]    [validation] prediction score: 0.46845173248784555 
+2018-05-05 17:19:36,222 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:36,222 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:36,222 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:19:36,222 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:19:38,541 logger 90 [INFO]    [validation] prediction score: 0.4680912905810008 
+2018-05-05 17:19:38,541 logger 90 [INFO]    [validation] prediction score: 0.4680912905810008 
+2018-05-05 17:19:39,999 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:39,999 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:39,999 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:19:39,999 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:19:42,252 logger 90 [INFO]    [validation] prediction score: 0.4678924383665708 
+2018-05-05 17:19:42,252 logger 90 [INFO]    [validation] prediction score: 0.4678924383665708 
+2018-05-05 17:19:43,515 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:43,515 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:43,516 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:19:43,516 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:19:45,731 logger 90 [INFO]    [validation] prediction score: 0.46816949869424496 
+2018-05-05 17:19:45,731 logger 90 [INFO]    [validation] prediction score: 0.46816949869424496 
+2018-05-05 17:19:47,292 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:47,292 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:47,293 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:19:47,293 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:19:49,872 logger 90 [INFO]    [validation] prediction score: 0.46846760747117855 
+2018-05-05 17:19:49,872 logger 90 [INFO]    [validation] prediction score: 0.46846760747117855 
+2018-05-05 17:19:51,457 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:51,457 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:51,457 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:19:51,457 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:19:54,383 logger 90 [INFO]    [validation] prediction score: 0.46830207979276933 
+2018-05-05 17:19:54,383 logger 90 [INFO]    [validation] prediction score: 0.46830207979276933 
+2018-05-05 17:19:56,424 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:56,424 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:19:56,424 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:19:56,424 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:20:00,758 logger 90 [INFO]    [validation] prediction score: 0.46797835843878116 
+2018-05-05 17:20:00,758 logger 90 [INFO]    [validation] prediction score: 0.46797835843878116 
+2018-05-05 17:20:02,448 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:02,448 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:02,449 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:20:02,449 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:20:05,057 logger 90 [INFO]    [validation] prediction score: 0.46802530467473147 
+2018-05-05 17:20:05,057 logger 90 [INFO]    [validation] prediction score: 0.46802530467473147 
+2018-05-05 17:20:06,836 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:06,836 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:06,837 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:20:06,837 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:20:09,344 logger 90 [INFO]    [validation] prediction score: 0.46826295117946476 
+2018-05-05 17:20:09,344 logger 90 [INFO]    [validation] prediction score: 0.46826295117946476 
+2018-05-05 17:20:10,864 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:10,864 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:10,864 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:20:10,864 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:20:13,965 logger 90 [INFO]    [validation] prediction score: 0.4675298752792542 
+2018-05-05 17:20:13,965 logger 90 [INFO]    [validation] prediction score: 0.4675298752792542 
+2018-05-05 17:20:16,740 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:16,740 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:16,741 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:20:16,741 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:20:19,525 logger 90 [INFO]    [validation] prediction score: 0.4681546303730434 
+2018-05-05 17:20:19,525 logger 90 [INFO]    [validation] prediction score: 0.4681546303730434 
+2018-05-05 17:20:21,256 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:21,256 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:21,257 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:20:21,257 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:20:24,142 logger 90 [INFO]    [validation] prediction score: 0.4675634447020942 
+2018-05-05 17:20:24,142 logger 90 [INFO]    [validation] prediction score: 0.4675634447020942 
+2018-05-05 17:20:26,336 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:26,336 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:26,336 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:20:26,336 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:20:28,688 logger 90 [INFO]    [validation] prediction score: 0.46780523213113423 
+2018-05-05 17:20:28,688 logger 90 [INFO]    [validation] prediction score: 0.46780523213113423 
+2018-05-05 17:20:30,454 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:30,454 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:30,455 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:20:30,455 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:20:33,160 logger 90 [INFO]    [validation] prediction score: 0.4679628892915134 
+2018-05-05 17:20:33,160 logger 90 [INFO]    [validation] prediction score: 0.4679628892915134 
+2018-05-05 17:20:34,687 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:34,687 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:34,688 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:20:34,688 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:20:37,179 logger 90 [INFO]    [validation] prediction score: 0.46840619775273534 
+2018-05-05 17:20:37,179 logger 90 [INFO]    [validation] prediction score: 0.46840619775273534 
+2018-05-05 17:20:38,764 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:38,764 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:38,764 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:20:38,764 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:20:40,818 logger 90 [INFO]    [validation] prediction score: 0.4681312264918733 
+2018-05-05 17:20:40,818 logger 90 [INFO]    [validation] prediction score: 0.4681312264918733 
+2018-05-05 17:20:42,232 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:42,232 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:42,233 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:20:42,233 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:20:45,151 logger 90 [INFO]    [validation] prediction score: 0.4683190059089739 
+2018-05-05 17:20:45,151 logger 90 [INFO]    [validation] prediction score: 0.4683190059089739 
+2018-05-05 17:20:46,917 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:46,917 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:46,917 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:20:46,917 logger 74 [INFO]    [validation] train columns: 12 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:20:49,471 logger 90 [INFO]    [validation] prediction score: 0.46822389392335634 
+2018-05-05 17:20:49,471 logger 90 [INFO]    [validation] prediction score: 0.46822389392335634 
+2018-05-05 17:20:51,230 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:51,230 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:51,230 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name'] 
+2018-05-05 17:20:51,230 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name'] 
+2018-05-05 17:20:53,828 logger 90 [INFO]    [validation] prediction score: 0.4685551071540108 
+2018-05-05 17:20:53,828 logger 90 [INFO]    [validation] prediction score: 0.4685551071540108 
+2018-05-05 17:20:55,783 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:55,783 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:20:55,783 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:20:55,783 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:20:58,603 logger 90 [INFO]    [validation] prediction score: 0.4679693319440706 
+2018-05-05 17:20:58,603 logger 90 [INFO]    [validation] prediction score: 0.4679693319440706 
+2018-05-05 17:21:00,428 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:21:00,428 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:21:00,428 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:21:00,428 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:21:03,060 logger 90 [INFO]    [validation] prediction score: 0.46866246695847597 
+2018-05-05 17:21:03,060 logger 90 [INFO]    [validation] prediction score: 0.46866246695847597 
+2018-05-05 17:21:05,190 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:21:05,190 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:21:05,190 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:21:05,190 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:21:09,362 logger 90 [INFO]    [validation] prediction score: 0.46794773675094004 
+2018-05-05 17:21:09,362 logger 90 [INFO]    [validation] prediction score: 0.46794773675094004 
+2018-05-05 17:21:11,817 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:21:11,817 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:21:11,818 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:21:11,818 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:21:17,983 logger 90 [INFO]    [validation] prediction score: 0.467988830954432 
+2018-05-05 17:21:17,983 logger 90 [INFO]    [validation] prediction score: 0.467988830954432 
+2018-05-05 17:21:20,170 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:21:20,170 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:21:20,170 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:21:20,170 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:21:25,847 logger 90 [INFO]    [validation] prediction score: 0.46791166340825835 
+2018-05-05 17:21:25,847 logger 90 [INFO]    [validation] prediction score: 0.46791166340825835 
+2018-05-05 17:21:28,467 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:21:28,467 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:21:28,467 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:21:28,467 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:21:33,550 logger 90 [INFO]    [validation] prediction score: 0.46792029171147553 
+2018-05-05 17:21:33,550 logger 90 [INFO]    [validation] prediction score: 0.46792029171147553 
+2018-05-05 17:21:36,496 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:21:36,496 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:21:36,496 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:21:36,496 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:21:39,706 logger 90 [INFO]    [validation] prediction score: 0.46787370068534007 
+2018-05-05 17:21:39,706 logger 90 [INFO]    [validation] prediction score: 0.46787370068534007 
+2018-05-05 17:21:41,655 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:21:41,655 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:21:41,655 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:21:41,655 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:21:44,835 logger 90 [INFO]    [validation] prediction score: 0.46792217704550687 
+2018-05-05 17:21:44,835 logger 90 [INFO]    [validation] prediction score: 0.46792217704550687 
+2018-05-05 17:21:46,759 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:21:46,759 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:21:46,759 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:21:46,759 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:21:49,244 logger 90 [INFO]    [validation] prediction score: 0.46780734408408875 
+2018-05-05 17:21:49,244 logger 90 [INFO]    [validation] prediction score: 0.46780734408408875 
+2018-05-05 17:21:51,215 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:21:51,215 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:21:51,215 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:21:51,215 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:21:54,041 logger 90 [INFO]    [validation] prediction score: 0.467993518235714 
+2018-05-05 17:21:54,041 logger 90 [INFO]    [validation] prediction score: 0.467993518235714 
+2018-05-05 17:21:55,875 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:21:55,875 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:21:55,875 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:21:55,875 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:21:58,594 logger 90 [INFO]    [validation] prediction score: 0.46819134245153987 
+2018-05-05 17:21:58,594 logger 90 [INFO]    [validation] prediction score: 0.46819134245153987 
+2018-05-05 17:22:00,582 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:00,582 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:00,582 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:22:00,582 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:22:03,109 logger 90 [INFO]    [validation] prediction score: 0.46758490569012373 
+2018-05-05 17:22:03,109 logger 90 [INFO]    [validation] prediction score: 0.46758490569012373 
+2018-05-05 17:22:05,035 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:05,035 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:05,035 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:22:05,035 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:22:07,723 logger 90 [INFO]    [validation] prediction score: 0.4678532898683298 
+2018-05-05 17:22:07,723 logger 90 [INFO]    [validation] prediction score: 0.4678532898683298 
+2018-05-05 17:22:10,392 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:10,392 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:10,393 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:22:10,393 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:22:13,293 logger 90 [INFO]    [validation] prediction score: 0.46771474348619146 
+2018-05-05 17:22:13,293 logger 90 [INFO]    [validation] prediction score: 0.46771474348619146 
+2018-05-05 17:22:16,484 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:16,484 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:16,484 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:22:16,484 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:22:19,046 logger 90 [INFO]    [validation] prediction score: 0.4677307953519596 
+2018-05-05 17:22:19,046 logger 90 [INFO]    [validation] prediction score: 0.4677307953519596 
+2018-05-05 17:22:20,886 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:20,886 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:20,886 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:22:20,886 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:22:24,046 logger 90 [INFO]    [validation] prediction score: 0.467401129155591 
+2018-05-05 17:22:24,046 logger 90 [INFO]    [validation] prediction score: 0.467401129155591 
+2018-05-05 17:22:26,566 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:26,566 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:26,567 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:22:26,567 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:22:29,473 logger 90 [INFO]    [validation] prediction score: 0.4673225991416309 
+2018-05-05 17:22:29,473 logger 90 [INFO]    [validation] prediction score: 0.4673225991416309 
+2018-05-05 17:22:31,305 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:31,305 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:31,305 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:22:31,305 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:22:33,795 logger 90 [INFO]    [validation] prediction score: 0.46715889692811313 
+2018-05-05 17:22:33,795 logger 90 [INFO]    [validation] prediction score: 0.46715889692811313 
+2018-05-05 17:22:36,209 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:36,209 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:36,209 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:22:36,209 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:22:39,498 logger 90 [INFO]    [validation] prediction score: 0.4674969749462378 
+2018-05-05 17:22:39,498 logger 90 [INFO]    [validation] prediction score: 0.4674969749462378 
+2018-05-05 17:22:41,263 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:41,263 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:41,263 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:22:41,263 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:22:43,639 logger 90 [INFO]    [validation] prediction score: 0.4684090586102939 
+2018-05-05 17:22:43,639 logger 90 [INFO]    [validation] prediction score: 0.4684090586102939 
+2018-05-05 17:22:45,217 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:45,217 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:45,217 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:22:45,217 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:22:47,607 logger 90 [INFO]    [validation] prediction score: 0.4687099617274953 
+2018-05-05 17:22:47,607 logger 90 [INFO]    [validation] prediction score: 0.4687099617274953 
+2018-05-05 17:22:49,342 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:49,342 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:49,343 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:22:49,343 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:22:51,684 logger 90 [INFO]    [validation] prediction score: 0.4687412718826118 
+2018-05-05 17:22:51,684 logger 90 [INFO]    [validation] prediction score: 0.4687412718826118 
+2018-05-05 17:22:53,411 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:53,411 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:53,411 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:22:53,411 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:22:55,683 logger 90 [INFO]    [validation] prediction score: 0.46851171803641095 
+2018-05-05 17:22:55,683 logger 90 [INFO]    [validation] prediction score: 0.46851171803641095 
+2018-05-05 17:22:57,562 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:57,562 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:22:57,562 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:22:57,562 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:22:59,826 logger 90 [INFO]    [validation] prediction score: 0.46821475506027227 
+2018-05-05 17:22:59,826 logger 90 [INFO]    [validation] prediction score: 0.46821475506027227 
+2018-05-05 17:23:01,606 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:01,606 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:01,606 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:23:01,606 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:23:03,829 logger 90 [INFO]    [validation] prediction score: 0.46852262044870197 
+2018-05-05 17:23:03,829 logger 90 [INFO]    [validation] prediction score: 0.46852262044870197 
+2018-05-05 17:23:05,364 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:05,364 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:05,364 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:23:05,364 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:23:07,569 logger 90 [INFO]    [validation] prediction score: 0.4683706261261734 
+2018-05-05 17:23:07,569 logger 90 [INFO]    [validation] prediction score: 0.4683706261261734 
+2018-05-05 17:23:09,342 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:09,342 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:09,342 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:23:09,342 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:23:11,551 logger 90 [INFO]    [validation] prediction score: 0.4683948804694843 
+2018-05-05 17:23:11,551 logger 90 [INFO]    [validation] prediction score: 0.4683948804694843 
+2018-05-05 17:23:13,097 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:13,097 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:13,098 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:23:13,098 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:23:15,324 logger 90 [INFO]    [validation] prediction score: 0.46847967710978256 
+2018-05-05 17:23:15,324 logger 90 [INFO]    [validation] prediction score: 0.46847967710978256 
+2018-05-05 17:23:17,037 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:17,037 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:17,037 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:23:17,037 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:23:19,248 logger 90 [INFO]    [validation] prediction score: 0.4684482524829545 
+2018-05-05 17:23:19,248 logger 90 [INFO]    [validation] prediction score: 0.4684482524829545 
+2018-05-05 17:23:20,965 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:20,965 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:20,966 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:23:20,966 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:23:23,298 logger 90 [INFO]    [validation] prediction score: 0.4683445831227014 
+2018-05-05 17:23:23,298 logger 90 [INFO]    [validation] prediction score: 0.4683445831227014 
+2018-05-05 17:23:25,188 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:25,188 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:25,188 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:23:25,188 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:23:28,021 logger 90 [INFO]    [validation] prediction score: 0.4679890819328841 
+2018-05-05 17:23:28,021 logger 90 [INFO]    [validation] prediction score: 0.4679890819328841 
+2018-05-05 17:23:29,734 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:29,734 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:29,735 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:23:29,735 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:23:32,016 logger 90 [INFO]    [validation] prediction score: 0.4678267029914024 
+2018-05-05 17:23:32,016 logger 90 [INFO]    [validation] prediction score: 0.4678267029914024 
+2018-05-05 17:23:33,907 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:33,907 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:33,908 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:23:33,908 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:23:36,167 logger 90 [INFO]    [validation] prediction score: 0.46809594688710643 
+2018-05-05 17:23:36,167 logger 90 [INFO]    [validation] prediction score: 0.46809594688710643 
+2018-05-05 17:23:37,927 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:37,927 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:37,927 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:23:37,927 logger 74 [INFO]    [validation] train columns: 13 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:23:40,183 logger 90 [INFO]    [validation] prediction score: 0.4684466991485431 
+2018-05-05 17:23:40,183 logger 90 [INFO]    [validation] prediction score: 0.4684466991485431 
+2018-05-05 17:23:42,146 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:42,146 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:42,146 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:23:42,146 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id'] 
+2018-05-05 17:23:44,650 logger 90 [INFO]    [validation] prediction score: 0.4678655334190913 
+2018-05-05 17:23:44,650 logger 90 [INFO]    [validation] prediction score: 0.4678655334190913 
+2018-05-05 17:23:46,470 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:46,470 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:46,470 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:23:46,470 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:23:48,880 logger 90 [INFO]    [validation] prediction score: 0.4688322743749596 
+2018-05-05 17:23:48,880 logger 90 [INFO]    [validation] prediction score: 0.4688322743749596 
+2018-05-05 17:23:50,885 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:50,885 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:50,886 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:23:50,886 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:23:53,268 logger 90 [INFO]    [validation] prediction score: 0.46851218611131884 
+2018-05-05 17:23:53,268 logger 90 [INFO]    [validation] prediction score: 0.46851218611131884 
+2018-05-05 17:23:55,281 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:55,281 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:55,281 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:23:55,281 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:23:57,635 logger 90 [INFO]    [validation] prediction score: 0.4688334513135115 
+2018-05-05 17:23:57,635 logger 90 [INFO]    [validation] prediction score: 0.4688334513135115 
+2018-05-05 17:23:59,812 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:59,812 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:23:59,812 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:23:59,812 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:24:02,227 logger 90 [INFO]    [validation] prediction score: 0.4684308754313876 
+2018-05-05 17:24:02,227 logger 90 [INFO]    [validation] prediction score: 0.4684308754313876 
+2018-05-05 17:24:04,238 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:04,238 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:04,239 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:24:04,239 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:24:06,646 logger 90 [INFO]    [validation] prediction score: 0.4688311715743538 
+2018-05-05 17:24:06,646 logger 90 [INFO]    [validation] prediction score: 0.4688311715743538 
+2018-05-05 17:24:08,625 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:08,625 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:08,625 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:24:08,625 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:24:11,100 logger 90 [INFO]    [validation] prediction score: 0.4681686950241193 
+2018-05-05 17:24:11,100 logger 90 [INFO]    [validation] prediction score: 0.4681686950241193 
+2018-05-05 17:24:13,106 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:13,106 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:13,106 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:24:13,106 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:24:15,493 logger 90 [INFO]    [validation] prediction score: 0.46812329177377027 
+2018-05-05 17:24:15,493 logger 90 [INFO]    [validation] prediction score: 0.46812329177377027 
+2018-05-05 17:24:17,321 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:17,321 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:17,321 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:24:17,321 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:24:19,699 logger 90 [INFO]    [validation] prediction score: 0.4677083543615734 
+2018-05-05 17:24:19,699 logger 90 [INFO]    [validation] prediction score: 0.4677083543615734 
+2018-05-05 17:24:21,699 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:21,699 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:21,699 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:24:21,699 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:24:24,071 logger 90 [INFO]    [validation] prediction score: 0.46799140500105324 
+2018-05-05 17:24:24,071 logger 90 [INFO]    [validation] prediction score: 0.46799140500105324 
+2018-05-05 17:24:26,231 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:26,231 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:26,231 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:24:26,231 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:24:28,655 logger 90 [INFO]    [validation] prediction score: 0.46846999933560496 
+2018-05-05 17:24:28,655 logger 90 [INFO]    [validation] prediction score: 0.46846999933560496 
+2018-05-05 17:24:30,826 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:30,826 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:30,826 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:24:30,826 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:24:33,234 logger 90 [INFO]    [validation] prediction score: 0.4682971730251891 
+2018-05-05 17:24:33,234 logger 90 [INFO]    [validation] prediction score: 0.4682971730251891 
+2018-05-05 17:24:35,229 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:35,229 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:35,230 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:24:35,230 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:24:37,676 logger 90 [INFO]    [validation] prediction score: 0.46814615657936864 
+2018-05-05 17:24:37,676 logger 90 [INFO]    [validation] prediction score: 0.46814615657936864 
+2018-05-05 17:24:39,904 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:39,904 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:39,904 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:24:39,904 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:24:42,343 logger 90 [INFO]    [validation] prediction score: 0.4682397218854851 
+2018-05-05 17:24:42,343 logger 90 [INFO]    [validation] prediction score: 0.4682397218854851 
+2018-05-05 17:24:44,377 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:44,377 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:44,378 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:24:44,378 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:24:46,762 logger 90 [INFO]    [validation] prediction score: 0.4680901028186345 
+2018-05-05 17:24:46,762 logger 90 [INFO]    [validation] prediction score: 0.4680901028186345 
+2018-05-05 17:24:48,631 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:48,631 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:48,632 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:24:48,632 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:24:51,063 logger 90 [INFO]    [validation] prediction score: 0.4686986562493392 
+2018-05-05 17:24:51,063 logger 90 [INFO]    [validation] prediction score: 0.4686986562493392 
+2018-05-05 17:24:53,075 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:53,075 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:53,075 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:24:53,075 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:24:55,489 logger 90 [INFO]    [validation] prediction score: 0.46885279964412824 
+2018-05-05 17:24:55,489 logger 90 [INFO]    [validation] prediction score: 0.46885279964412824 
+2018-05-05 17:24:57,315 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:57,315 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:24:57,315 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:24:57,315 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:24:59,732 logger 90 [INFO]    [validation] prediction score: 0.4684004112236509 
+2018-05-05 17:24:59,732 logger 90 [INFO]    [validation] prediction score: 0.4684004112236509 
+2018-05-05 17:25:01,748 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:25:01,748 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:25:01,748 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:25:01,748 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:25:04,167 logger 90 [INFO]    [validation] prediction score: 0.4684980611696426 
+2018-05-05 17:25:04,167 logger 90 [INFO]    [validation] prediction score: 0.4684980611696426 
+2018-05-05 17:25:05,996 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:25:05,996 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:25:05,996 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:25:05,996 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:25:08,264 logger 90 [INFO]    [validation] prediction score: 0.4688264045679668 
+2018-05-05 17:25:08,264 logger 90 [INFO]    [validation] prediction score: 0.4688264045679668 
+2018-05-05 17:25:10,290 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:25:10,290 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:25:10,290 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:25:10,290 logger 74 [INFO]    [validation] train columns: 14 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:25:12,728 logger 90 [INFO]    [validation] prediction score: 0.4681416149126707 
+2018-05-05 17:25:12,728 logger 90 [INFO]    [validation] prediction score: 0.4681416149126707 
+2018-05-05 17:25:14,841 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:25:14,841 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:25:14,841 logger 74 [INFO]    [validation] train columns: 15 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:25:14,841 logger 74 [INFO]    [validation] train columns: 15 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name'] 
+2018-05-05 17:25:17,438 logger 90 [INFO]    [validation] prediction score: 0.4682594541382136 
+2018-05-05 17:25:17,438 logger 90 [INFO]    [validation] prediction score: 0.4682594541382136 
+2018-05-05 17:25:20,541 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:25:20,541 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:25:20,542 logger 74 [INFO]    [validation] train columns: 15 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:25:20,542 logger 74 [INFO]    [validation] train columns: 15 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:25:23,089 logger 90 [INFO]    [validation] prediction score: 0.4677019499099397 
+2018-05-05 17:25:23,089 logger 90 [INFO]    [validation] prediction score: 0.4677019499099397 
+2018-05-05 17:25:25,220 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:25:25,220 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:25:25,221 logger 74 [INFO]    [validation] train columns: 15 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:25:25,221 logger 74 [INFO]    [validation] train columns: 15 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:25:28,220 logger 90 [INFO]    [validation] prediction score: 0.46829410534470983 
+2018-05-05 17:25:28,220 logger 90 [INFO]    [validation] prediction score: 0.46829410534470983 
+2018-05-05 17:25:30,508 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:25:30,508 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:25:30,508 logger 74 [INFO]    [validation] train columns: 15 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:25:30,508 logger 74 [INFO]    [validation] train columns: 15 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:25:32,960 logger 90 [INFO]    [validation] prediction score: 0.4684286151513889 
+2018-05-05 17:25:32,960 logger 90 [INFO]    [validation] prediction score: 0.4684286151513889 
+2018-05-05 17:25:35,166 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:25:35,166 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:25:35,166 logger 74 [INFO]    [validation] train columns: 15 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:25:35,166 logger 74 [INFO]    [validation] train columns: 15 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:25:37,908 logger 90 [INFO]    [validation] prediction score: 0.46817125171072665 
+2018-05-05 17:25:37,908 logger 90 [INFO]    [validation] prediction score: 0.46817125171072665 
+2018-05-05 17:25:40,627 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:25:40,627 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:25:40,627 logger 74 [INFO]    [validation] train columns: 15 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:25:40,627 logger 74 [INFO]    [validation] train columns: 15 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.95@air_store_id', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:25:43,725 logger 90 [INFO]    [validation] prediction score: 0.46856800977628343 
+2018-05-05 17:25:43,725 logger 90 [INFO]    [validation] prediction score: 0.46856800977628343 
+2018-05-05 17:25:45,843 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:25:45,843 logger 73 [INFO]    [validation] metric:l2 
+2018-05-05 17:25:45,843 logger 74 [INFO]    [validation] train columns: 15 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:25:45,843 logger 74 [INFO]    [validation] train columns: 15 
+use columns: ['air_store_id', 'day_of_week', 'air_genre_name', 'air_area_name', 'befo3_holiday', 'last_dow_visitors_@w_avg_0.98@air_store_id', 'last_visit_@mv_avg_w7_p1@air_area_name', 'last_visit_@mv_avg_w7_p1@air_store_id', 'next3_holiday', 'last_dow_visitors_@w_avg_0.98@air_area_name', 'last_dow_visitors_@w_avg_0.9@air_store_id', 'last_visit_@mv_avg_w126_p1@air_area_name', 'last_visit_@mv_avg_w126_p1@air_store_id', 'last_visit_@mv_avg_w63_p1@air_area_name', 'last_visit_@mv_avg_w63_p1@air_store_id'] 
+2018-05-05 17:25:48,390 logger 90 [INFO]    [validation] prediction score: 0.46836715420889197 
+2018-05-05 17:25:48,390 logger 90 [INFO]    [validation] prediction score: 0.46836715420889197 
+2018-05-08 20:24:50,805 logger 19 [INFO]    [logger_func] start 

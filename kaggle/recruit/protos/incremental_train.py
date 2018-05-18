@@ -10,7 +10,7 @@ from lgbm_reg import validation
 from sklearn.preprocessing import LabelEncoder
 
 
-#  start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
+start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 
 # PATH*************************************
 
@@ -152,8 +152,7 @@ def exploratory_train(dataset, target, categorical_feature, max_val_no=1, number
             ftim['score_diff'] = score_diff
 
             use_cols = list(train.columns)
-            ftim['add_feature'] = '{}_{}features.csv'.format(
-                start_time[:11], len(use_cols))
+            ftim['add_feature'] = f'{start_time[:11]}_{len(use_cols)}features.csv'
 
             # ここで相関を計算するfeatureのみリストに残す
             ftim['num_of_ft'] = len(use_cols)
@@ -179,8 +178,11 @@ def exploratory_train(dataset, target, categorical_feature, max_val_no=1, number
         result_val['score_mean'] = np.mean(list_score)
         result_val['diff_mean'] = np.mean(list_diff)
         # 学習に使用した特徴量リストを確認する為のファイルを出力する
-        os.mkdir(f'../output/{start_time}')
-        pd.Series(use_cols, name='features').to_csv(f'../output/{start_time}/{start_time[:11]}_No{number}_use_{len(use_cols)}features.csv', index=False)
+        if os.path.isdir(f'../output/{start_time}'):
+            pd.Series(use_cols, name='features').to_csv(f'../output/{start_time}/{start_time[:11]}_No{number}_use_{len(use_cols)}features.csv', index=False)
+        else:
+            os.mkdir(f'../output/{start_time}')
+            pd.Series(use_cols, name='features').to_csv(f'../output/{start_time}/{start_time[:11]}_No{number}_use_{len(use_cols)}features.csv', index=False)
 
         return result_val
 

@@ -15,6 +15,8 @@ from load_data import pararell_read_csv
 from logger import logger_func
 logger = logger_func()
 
+print(1)
+sys.exit()
 
 """ データセット関連 """
 input_path = '../input/*.csv'
@@ -120,9 +122,9 @@ def main():
     dataset = base
 
     ' 特徴量の全組み合わせを検証する '
-    #  valid_list = ready_incremental_train(dataset)
-    #  incremental_train(dataset, target, categorical_feature, valid_list, 1)
-    #  sys.exit()
+    valid_list = ready_incremental_train(dataset)
+    incremental_train(dataset, target, categorical_feature, valid_list, 1)
+    sys.exit()
 
     ' 特徴量を一つずつ検証する '
     #  valid_feature(dataset)
