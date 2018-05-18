@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-from itertools import combinations
 import datetime
 from time import time
 import sys
@@ -9,10 +8,16 @@ import re
 from tqdm import tqdm
 from multiprocessing import Pool
 import multiprocessing
+
+' 自作モジュール '
+from feature_engineering import exp_weight_avg, moving_agg
+from recruit_make_input_data import consective_holiday
+
 sys.path.append('../protos/')
-from recruit_kaggle_load import load_data, set_validation, date_diff, load_submit
+from recruit_kaggle_load import recruit_load_data, set_validation, load_submit
+
 sys.path.append('../../../module/')
-from preprocessing import outlier
+from preprocessing import outlier, impute_avg, date_range, date_diff, lag_feature
 
 start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 
@@ -24,184 +29,40 @@ key_air_vi = 'air_vi_ex'
 key_air_re = 'air_re'
 key_air_st = 'air_st'
 key_air_cal = 'air_cal_june_ex'
-key_list = [key_air_st, key_air_vi, key_air_cal]
+key_raw_cal = 'air_cal_june【'
+key_air_area = 'air_area'
+key_air_genre = 'air_genre'
+key_air_genre = 'air_genre'
+key_list = [
+    key_air_st,
+    #  key_air_vi,
+    key_air_area,
+    key_air_genre,
+    key_air_cal,
+    key_raw_cal]
 
 """ データロード """
 #  base = pd.read_csv('../input/20180424_air_base.csv')
-data_dict = load_data(key_list, path_list)
-air_vi = data_dict[key_air_vi]
+data_dict = recruit_load_data(key_list, path_list)
+#  air_vi = data_dict[key_air_vi]
 air_st = data_dict[key_air_st]
 air_cal = data_dict[key_air_cal]
+raw_cal = data_dict[key_raw_cal]
 #  air_re = data_dict[key_air_re]
+air_area = data_dict[key_air_area]
+air_genre = data_dict[key_air_genre]
 
-
-""" 前処理 """
-' 外れ値を除去 '
-air_vi = outlier(air_vi, 'air_store_id', 'visitors', 1.64)
-air_vi.sort_values(by=['air_store_id', 'visit_date'], inplace=True)
-air_vi.reset_index(drop=True, inplace=True)
-' validation_noをセット '
-air_vi = set_validation(air_vi)
-'''前日のvisitorsをセット'''
-air_vi['last_visit'] = air_vi.groupby('air_store_id')['visitors'].shift(1)
-
-first_date = air_vi['visit_date'].min()
-last_date = air_vi['visit_date'].max()
+first_date = air_cal['visit_date'].min()
+last_date = air_cal['visit_date'].max()
 
 ''' カレンダーの日付を絞る '''
 air_cal = air_cal[air_cal['visit_date'] <= last_date]
 
 
-def moving_agg(method, data, particle, value, window, periods):
-
-    data = data.set_index('visit_date')
-    data = data.sort_index()
-    if method=='avg':
-        result = data.groupby(particle)[value].rolling(
-            window=window, min_periods=periods).mean().reset_index()
-    elif method=='sum':
-        result = data.groupby(particle)[value].rolling(
-            window=window, min_periods=periods).sum().reset_index()
-
-    result.rename(columns={value: f'{value}_@mv_{method}_w{window}_p{periods}@{particle}'}, inplace=True)
-
-    return result
-
-
-def exp_weight_avg(data, particle, value, weight):
-
-    N = len(data)
-    max_date = data['visit_date'].max()
-
-    data['diff'] = abs(date_diff(max_date, data['visit_date']))
-    data['weight'] = data['diff'].map(lambda x: weight ** x.days)
-
-    data['tmp'] = data['weight'] * data[value]
-
-    ' valueがNullになっている行の重みは0にする。（分母の合計に入ってしまう為） '
-    no_null = data[data[value].notnull()]
-    null = data[data[value].isnull()]
-    if len(null)>0:
-        null['weight'] = 0
-    if len(null)>0 and len(no_null)>0:
-        data = pd.concat([null, no_null], axis=0)
-    elif len(null)==0 and len(no_null)>0:
-        data = no_null
-    elif len(null)>0 and len(no_null)==0:
-        data = null
-    #  data[value] = data[value].fillna(-10)
-    #  data['weight'] = data.apply(lambda x:0 if x[value]<0 else x['weight'], axis=1)
-    tmp_result = data.groupby(particle)['tmp', 'weight'].sum()
-    result = tmp_result['tmp']/tmp_result['weight']
-
-    result.name = f'{value}_@w_avg_{weight}@{particle}'
-
-    return result
-
-
-def date_range(data, start, end):
-    return data[(start <= data['visit_date']) & (data['visit_date'] <= end)]
-
-
-def make_special_set(data, particle):
-    """
-    Args:
-        data:対象期間のカレンダーを持ったDF
-    """
-
-    ''' 祝日の集計を行う（土日も祝日の場合はSpecialになってる） '''
-    #  tmp = data[['air_store_id', 'visit_date', 'holiday_flg', 'day_of_week']]
-    #  tmp['n1_holiday_flg'] = tmp.groupby('air_store_id')['holiday_flg'].shift(-1)
-    #  tmp['n2_holiday_flg'] = tmp.groupby('air_store_id')['holiday_flg'].shift(-2)
-    #  tmp['n3_holiday_flg'] = tmp.groupby('air_store_id')['holiday_flg'].shift(-3)
-    #  tmp['b1_holiday_flg'] = tmp.groupby('air_store_id')['holiday_flg'].shift(1)
-    #  tmp['b2_holiday_flg'] = tmp.groupby('air_store_id')['holiday_flg'].shift(2)
-    #  tmp['b3_holiday_flg'] = tmp.groupby('air_store_id')['holiday_flg'].shift(3)
-    #  tmp = tmp.fillna(0)
-
-    #  ' 翌3日の連休数を求める '
-    #  tmp['next3_holiday'] = tmp.apply(lambda x:0 if x['n1_holiday_flg']==0 else 1 if x['n2_holiday_flg']==0 else 2 if x['n3_holiday_flg']==0 else 3, axis=1)
-
-    #  ' 前3日の連休数を求める '
-    #  tmp['befo3_holiday'] = tmp.apply(lambda x:0 if x['b1_holiday_flg']==0 else 1 if x['b2_holiday_flg']==0 else 2 if x['b3_holiday_flg']==0 else 3, axis=1)
-
-    #  tmp[['air_store_id', 'visit_date', 'next3_holiday']].to_csv('../feature/valid_feature/next3_holiday.csv', index=False)
-    #  tmp[['air_store_id', 'visit_date', 'befo3_holiday']].to_csv('../feature/valid_feature/befo3_holiday.csv', index=False)
-    #  tmp.to_csv('../input/air_cal_next_before_holiday.csv', index=False)
-    #  print('download end')
-    #  sys.exit()
-
-    tmp = pd.read_csv('../input/air_cal_next_before_holiday.csv')
-    tmp = tmp.merge(air_st, on='air_store_id', how='left')
-    tmp['visit_date'] = pd.to_datetime(tmp['visit_date'])
-
-    ''' 翌連休のある祝日のみで集計する '''
-    continuous = tmp[(tmp['day_of_week'] == 'Special') & (tmp['next3_holiday']>0)]
-    continuous = data.merge(continuous, on=[particle, 'visit_date', 'day_of_week'], how='inner', copy=False)
-    continuous['last_dow_visitors'] = continuous.groupby(particle)['visitors'].shift(1)
-
-    ''' 翌連休のない祝日のみで集計する '''
-    discrete = tmp[(tmp['day_of_week'] == 'Special') & (tmp['next3_holiday']==0)]
-    discrete = data.merge(discrete, on=[particle, 'visit_date', 'day_of_week'], how='inner', copy=False)
-    discrete['last_dow_visitors'] = discrete.groupby(particle)['visitors'].shift(1)
-
-    return continuous, discrete
-
-
-def main():
-
-    ' visit dataにcalendarで全日程をもたせる '
-    vi_date = air_cal.merge(air_vi, on=['air_store_id', 'visit_date', 'dow'], how='left')
-    air_info = vi_date.merge(air_st, on='air_store_id', how='left')
-
-    df_area = air_info.groupby(['air_area_name', 'visit_date', 'day_of_week', 'dow'], as_index=False)['visitors', 'last_visit'].mean()
-
-    ' 統計量を求める粒度とDFを決定 '
-    ptc_list = [
-        #  'air_store_id'
-        #  ,
-        'air_area_name'
-    ]
-    df_list  = [
-        #  vi_date
-        #  ,
-        df_area
-    ]
-
-    for particle, df_input in zip(ptc_list, df_list):
-
-        let_aggregation(df_input, particle)
-
-
-def let_aggregation(df_input, particle):
-
-    """ 移動平均 """
-    #  window_list = [7, 63, 126]
-    #  for window in window_list:
-    #      mv_avg = moving_agg('avg', df_input, particle, 'last_visit', window, 1)
-    #      #  mv_avg = moving_agg('avg', vi_date, 'air_store_id', 'last_visit', window, int(window/2))
-
-    #      col_name = [col for col in mv_avg.columns if col.count('@')][0]
-    #      ' Null埋めする為、各店舗の平均値を取得 '
-    #      mv_avg_avg = mv_avg.groupby(particle, as_index=False)[col_name].mean()
-
-    #      ' 移動平均の平均値でNullを埋める '
-    #      null = mv_avg[mv_avg[col_name].isnull()]
-    #      fill_null = null[[particle, 'visit_date']].merge(mv_avg_avg, on=particle, how='inner')
-
-    #      mv_avg.dropna(inplace=True)
-    #      result = pd.concat([mv_avg, fill_null], axis=0)
-
-    #      result = df_input[[particle, 'visit_date']].merge(result, on=[particle, 'visit_date'], how='inner')
-
-    #      result.to_csv(f'../feature/valid_feature/{col_name}.csv', header=True, index=False)
-    #      print(col_name)
-    #      print(result.shape)
-    #  sys.exit()
-
+def let_wg_agg(data, level, window_list):
     """ 重み付き平均 """
-    weight_list = [0.9, 0.95, 0.98]
-    ''' 学習データの日程（重み付き平均は1日ずつ計算してあげる必要があるので全日付リストが必要） '''
+    #  weight_list = [0.9, 0.95, 0.98]
+    #  ''' 学習データの日程（重み付き平均は1日ずつ計算してあげる必要があるので全日付リストが必要） '''
     #  date_list = air_vi['visit_date'].drop_duplicates().sort_values().values
     #  for weight in weight_list:
     #      result = pd.DataFrame([])
@@ -223,209 +84,342 @@ def let_aggregation(df_input, particle):
 
     #  sys.exit()
 
-    """ 曜日&祝日別の集計
-    平均をとった際に影響がない様に、NULLはそのままにする。
-    祝日以外の曜日集計を行う
+
+def let_mv_agg(data, level, number, value, method_list, window_list, period, lag, segment=None, segment_list=['nothing']):
+    """
+    Explain:
+        移動平均の前処理が必要な場合の処理をまとめた関数。
+
+    Args:
+        data(DF)          :
+        level(list)       : 移動平均結果のvalueカラムとは別に残すカラムリスト
+                            頭(0)から移動平均の集計粒度となり、次のindex変数に
+                            集計粒度カラム数が格納される。
+                            例：idの粒度で集計し、id * dateの粒度で結果DFを作る
+                                場合は、リストに[id, date]、index=1となる
+                            ※リストの要素順は注意
+        index(int)        : 集計に使うlevel内の要素の数。頭(0)から使う
+        value(float)      : 集計する値
+        method(sum|avg)   :
+        window_list(list) : 移動平均をとる行数（自分の行を含む前〇行）
+        period(int)       : 移動平均をとる行内にNullなどあった場合、最低何要素
+                            あったら値を算出するか？（足りない時はNull）
+        lag(int)          : shiftによってずらす行の数
+                           （正：前lag行のデータ、 負：後lag行のデータ）
+        segment(column)   : セグメントの入ったカラム名
+        segment_list(list): セグメントに分けて集計を実施する場合、その
+                            セグメントに切り分ける要素を格納したリスト
+                            セグメントがない場合は引数なしで'nothing'が入る
+    Return:
+        なし。csvをoutput
+
     """
 
-    #  vi_date = vi_date[vi_date['air_store_id']=='air_1c0b150f9e696a5f']
     ' 連休、非連休の祝日データセット作成 '
-    continuous, discrete = make_special_set(df_input, particle)
+    consective, discrete = consective_holiday('air_cal_next')
+    consective.sort_values(by=level, inplace=True)
+    discrete.sort_values(by=level, inplace=True)
 
     """ 移動平均 """
-    #  window_list = [3, 12, 24, 48]
-    #  for window in window_list:
-    #      result_dow = pd.DataFrame([])
-    #      for i in range(7):
-    #          tmp = vi_date[vi_date['dow']==i][['air_store_id', 'visit_date', 'day_of_week', 'dow', 'visitors']]
-    #          tmp_date = tmp[['air_store_id', 'visit_date', 'day_of_week', 'dow']]
-    #          ''' 祝日のvisitorsは別途集計する為、各曜日におけるvisitorsはNULLにする '''
-    #          tmp = tmp[tmp['day_of_week'] != 'Special']
-    #          data = tmp_date.merge(tmp, on=['air_store_id', 'visit_date', 'day_of_week', 'dow'], how='left', copy=False)
-    #          ''' 一週前の数字を持たせる '''
-    #          data['last_dow_visitors'] = data.groupby('air_store_id')['visitors'].shift(1)
+    for method in method_list:
+        for window in window_list:
+            seg_result = pd.DataFrame([])
+            for seg in segment_list:
+                if seg != 'nothing':
+                    ' 対象セグメントに絞る '
+                    df_seg = data[data[segment] == seg]
 
-    #          dow_mv = moving_agg('avg', data, 'air_store_id', 'last_dow_visitors', window, 1)
-    #          col_name = [col for col in dow_mv.columns if col.count('@')][0]
+                    '''
+                    祝日はその曜日の移動平均に含めないが、週カウントは行う。
+                    その為、祝日は値をNullにして行のみ残す
+                    NULLにしたい値をもつカラムをdropしてtmpDFに格納（その行は
+                    集計しないだけでカウントしたいので、インデックスは残す為）
+                    '''
+                    ' Nullにしたいレコードを落とす '
+                    tmp = df_seg.drop(value, axis=1)
+                    key_columns = list(tmp.columns.values)
+                    df_seg = df_seg[df_seg['day_of_week'] != 'Special']
+                    '''
+                    全てのインデックスを持ったDFに、NULLにしたいレコードを落とした
+                    DFをLeft Joinすることで、対象レコードのvalueのみNullにする
+                    '''
+                    dataset = tmp.merge(
+                        df_seg, on=key_columns, how='left', copy=False)
 
-    #          ' inner joinでSpecialを除外する '
-    #          tmp_result = dow_mv.merge(tmp[['air_store_id', 'visit_date']], on=['air_store_id', 'visit_date'], how='inner')
+                else:
+                    dataset = data
 
-    #          ' Null埋めする為、店毎の平均値を算出 '
-    #          dow_avg = dow_mv.groupby('air_store_id', as_index=False)[col_name].mean()
-    #          ' Null埋め '
-    #          null = tmp_result[tmp_result[col_name].isnull()]
-    #          fill_null = null[['air_store_id', 'visit_date']].merge(dow_avg, on='air_store_id', how='inner')
-    #          tmp_result.dropna(inplace=True)
+                ' 目的変数をエンコーディングする為、リークしない時系列でもたせる '
+                dataset = lag_feature(
+                    data=dataset, value=value, lag=lag, level=level)
 
-    #          tmp_result = pd.concat([tmp_result, fill_null], axis=0)
+                ' コア部分：移動平均 '
+                seg_mv = moving_agg(method, dataset, level,
+                                    number, value, window, 1, 'visit_date')
+                ' 特徴量は@を持ったカラムとしているので、これで取得できる '
+                col_name = [col for col in seg_mv.columns if col.count('@')][0]
 
-    #          if len(result_dow)==0:
-    #              result_dow = tmp_result
-    #          else:
-    #              result_dow = pd.concat([result_dow, tmp_result], axis=0)
+                if seg != 'nothing':
+                    '''
+                    集計後はNULLでカウントさせてたセグメントのレコードは必要ないので
+                    inner joinで除外する
+                    '''
+                    seg_mv = seg_mv.merge(df_seg[level], on=level, how='inner')
 
-    #      '''** dowで集計し、concatした後、連休の方もconcatする **'''
-    #      continuous_mv = moving_agg('avg', continuous, 'air_store_id', 'last_dow_visitors', window, 1)
+                ' 欠損値を平均で補完 '
+                tmp_result = impute_avg(seg_mv, level, number, col_name)
 
-    #      ' feature nameを取得 '
-    #      col_name = [col for col in continuous_mv.columns if col.count('@')][0]
+                if seg == 'nothing':
+                    tmp_result.to_csv(
+                        f'../feature/valid_feature/{col_name}.csv', header=True, index=False)
+                    return
+                    ' セグメント別に移動平均を集計しない場合、ここで完了 '
 
-    #      ' Null埋めする為、各店舗の平均値を取得 '
-    #      continuous_mv_avg = continuous_mv.groupby('air_store_id', as_index=False)[col_name].mean()
+                if len(seg_result) == 0:
+                    seg_result = tmp_result
+                else:
+                    seg_result = pd.concat([seg_result, tmp_result], axis=0)
 
-    #      ' 移動平均の平均値でNullを埋める '
-    #      null = continuous_mv[continuous_mv[col_name].isnull()]
-    #      fill_null = null[['air_store_id', 'visit_date']].merge(continuous_mv_avg, on='air_store_id', how='inner')
+            '''
+            ********************************
+            ********************************
+            **連休セグをもっと綺麗に分け、**
+            **上記のループに含めることはで**
+            **きないか？
+            ********************************
+            ********************************
+            '''
+            consective = lag_feature(
+                data=consective, value=value, lag=lag, level=level)
+            discrete = lag_feature(
+                data=discrete, value=value, lag=lag, level=level)
 
-    #      continuous_mv.dropna(inplace=True)
-    #      result_cont = pd.concat([continuous_mv, fill_null], axis=0)
+            ''' 連休の特徴量 '''
+            consective_mv = moving_agg(
+                method, consective, level, number, value, window, 1, 'visit_date')
+            ' feature nameを取得 '
+            col_name = [
+                col for col in consective_mv.columns if col.count('@')][0]
+            ' NULL埋め '
+            result_cont = impute_avg(consective_mv, level, number, col_name)
 
-    #      discrete_mv = moving_agg('avg', discrete, 'air_store_id', 'last_dow_visitors', window, 1)
+            ''' 非連休の特徴量 '''
+            discrete_mv = moving_agg(
+                method, discrete, level, number, value, window, 1, 'visit_date')
+            ' feature nameを取得 '
+            col_name = [
+                col for col in discrete_mv.columns if col.count('@')][0]
+            ' NULL埋め '
+            result_disc = impute_avg(discrete_mv, level, number, col_name)
 
-    #      ' feature nameを取得 '
-    #      col_name = [col for col in discrete_mv.columns if col.count('@')][0]
+            ''' 結合 '''
+            result = pd.concat([seg_result, result_cont, result_disc], axis=0)
 
-    #      ' Null埋めする為、各店舗の平均値を取得 '
-    #      discrete_mv_avg = discrete_mv.groupby('air_store_id', as_index=False)[col_name].mean()
+            ' 日程を元のデータセットと同様にする '
+            result = air_cal[level].merge(result, on=level, how='inner')
 
-    #      ' 移動平均の平均値でNullを埋める '
-    #      null = discrete_mv[discrete_mv[col_name].isnull()]
-    #      fill_null = null[['air_store_id', 'visit_date']].merge(discrete_mv_avg, on='air_store_id', how='inner')
+            result.sort_values(by=level, inplace=True)
+            #  result = result[col_name]
+            result.to_csv(f'../feature/{col_name}.csv',
+                          index=False, header=True)
+            print(result.shape)
+            print(result.head())
 
-    #      discrete_mv.dropna(inplace=True)
-    #      result_disc = pd.concat([discrete_mv, fill_null], axis=0)
 
-    #      result = pd.concat([result_dow, result_cont, result_disc], axis=0)
+def let_wg_agg(data, level, number, value, method_list, weight_list, index, lag, segment=None, segment_list=['nothing']):
+    """
+    Explain:
+        移動平均の前処理が必要な場合の処理をまとめた関数。
 
-    #      ' 日程を元のデータセットと同様にする '
-    #      result = air_vi[['air_store_id', 'visit_date']].merge(result, on=['air_store_id', 'visit_date'], how='inner')
+    Args:
+        data(DF)          :
+        level(list)       : 移動平均結果のvalueカラムとは別に残すカラムリスト.
+                            頭(0)から移動平均の集計粒度となり、次のindex変数に
+                            集計粒度カラム数が格納される。
+                            例：idの粒度で集計し、id * dateの粒度で結果DFを作る
+                                場合は、リストに[id, date]、index=1となる
+                            ※リストの要素順は注意
+        index(int)        : 集計に使うlevel内の要素の数。頭(0)から使う
+        value(float)      : 集計する値
+        method(sum|avg)   :
+        weight_list(list) : 重み付き平均をの減衰率
+        index             : 時系列などで重みの調整をする場合、そのインデックスとなるカラム名
+        lag(int)          : リーク防止などで集計する値をshiftによってずらす行の数
+                           （正：前lag行のデータ、 負：後lag行のデータ）
+        segment(column)   : セグメントの入ったカラム名
+        segment_list(list): セグメントに分けて集計を実施する場合、その
+                            セグメントに切り分ける要素を格納したリスト
+                            セグメントがない場合は引数なしで'nothing'が入る
+    Return:
+        なし。csvをoutput
 
-    #      result.sort_values(by=['air_store_id', 'visit_date'], inplace=True)
-    #      result = result[col_name]
-    #      result.to_csv('../feature/{}.csv'.format(col_name), index=False, header=True)
-    #      print(result.shape)
+    """
 
+    ' 連休、非連休の祝日データセット作成 '
+    consective, discrete = consective_holiday('air_cal_next')
+    consective.sort_values(by=level, inplace=True)
+    discrete.sort_values(by=level, inplace=True)
 
     """ 重み付き平均 """
-    for weight in weight_list:
-        result_dow = pd.DataFrame([])
-        for i in range(7):
-            ' ここではまだその曜日の祝日が残っている '
-            tmp = df_input[df_input['dow']==i][[particle, 'visit_date', 'day_of_week', 'dow', 'visitors']]
+    for method in method_list:
+        for weight in weight_list:
+            seg_result = pd.DataFrame([])
+            ' recruit competisionの場合は、曜日毎の特徴量を作りたいので、segment=dow '
+            for seg in segment_list:
+                if seg != 'nothing':
+                    ' 対象セグメントに絞る '
+                    df_seg = data[data[segment] == seg]
 
-            ''' 祝日のvisitorsは別途集計する為、各曜日におけるvisitorsはNULLにする '''
-            tmp_date = tmp[[particle, 'visit_date', 'day_of_week', 'dow']]
-            no_sp = tmp[tmp['day_of_week'] != 'Special']
-            data = tmp_date.merge(no_sp, on=[particle, 'visit_date', 'day_of_week', 'dow'], how='left', copy=False)
-            data['last_dow_visitors'] = data.groupby(particle)['visitors'].shift(1)
+                    '''
+                    祝日はその曜日の重み付き平均に含めないが、週カウントは行う。
+                    その為、祝日は値をNullにして行のみ残す
+                    NULLにしたい値をもつカラムをdropしてtmpDFに格納（その行は
+                    集計しないだけでカウントしたいので、インデックスは残す為）
+                    '''
+                    ' Nullにしたいレコードを落とす '
+                    tmp = df_seg.drop(value, axis=1)
+                    key_columns = list(tmp.columns.values)
+                    df_seg = df_seg[df_seg['day_of_week'] != 'Special']
+                    '''
+                    全てのインデックスを持ったDFに、NULLにしたいレコードを落とした
+                    DFをLeft Joinすることで、対象レコードのvalueのみNullにする
+                    '''
+                    dataset = tmp.merge(
+                        df_seg, on=key_columns, how='left', copy=False)
 
-            date_list = data['visit_date'].drop_duplicates().sort_values().values
-            '''
-            重み付き平均はその期間における直近日の集計値のみが求まる。
-            全日程を学習データとするなら、各日時点の重み月平均を求めてあげる
-            '''
-            tmp_result_dow = pd.DataFrame([])
-            for end_date in date_list:
-                tmp = date_range(data, first_date, end_date)
-
-                dow_wg = exp_weight_avg(tmp, particle, 'last_dow_visitors', weight)
-
-                ' このnameを特徴量ファイル名とする '
-                col_name = dow_wg.name
-                dow_wg = dow_wg.to_frame().reset_index()
-                dow_wg['visit_date'] = end_date
-
-                ' id * visit_date * feature のDFを作る '
-                if len(tmp_result_dow)==0:
-                    tmp_result_dow = dow_wg
                 else:
-                    tmp_result_dow = pd.concat([tmp_result_dow, dow_wg], axis=0)
+                    dataset = data
 
+                ' 目的変数を特徴量化する為、リークしない時系列でもたせる '
+                dataset = lag_feature(
+                    data=dataset, value=value, lag=lag, level=level)
+
+                ''''''''''''''''''''''''''''''''''''''
+                '''''  コア部分：重み付き平均    '''''
+                ''''''''''''''''''''''''''''''''''''''
+
+                if seg == 'nothing':
+                    seg_wg = exp_weight_avg(
+                        dataset, level[0], value, weight, index)
+                    col_name = [
+                        col for col in seg_wg.columns if col.count('@')][0]
+                    tmp_result.to_csv(
+                        f'../feature/valid_feature/{col_name}.csv', header=True, index=False)
+                    return
+                    ' セグメント別に集計しない場合、ここで完了 '
+
+                index_list= dataset[index].drop_duplicates().values
+
+                idx_stack = pd.DataFrame([])
+                for idx in index_list:
+                    seg_wg = exp_weight_avg(dataset, level[0], value, weight, index)
+                    seg_wg = seg_wg.reset_index()
+                    seg_wg[index] = idx
+
+                    if len(idx_stack)==0:
+                        idx_stack = seg_wg
+                    else:
+                        idx_stack = pd.concat([idx_stack, seg_wg], axis=0)
+                ' 特徴量は@を持ったカラムとしているので、これで取得できる '
+                col_name = [col for col in idx_stack.columns if col.count('@')][0]
+
+                '''
+                集計後はNULLでカウントさせてたセグメントのレコードは必要ないので
+                inner joinで除外する
+                '''
+                tmp_result = idx_stack.merge(df_seg[level], on=level, how='inner')
+
+                ' 欠損値を平均で補完 '
+                tmp_result = impute_avg(tmp_result, level, 1, col_name)
+
+                if len(seg_result) == 0:
+                    seg_result = tmp_result
+                else:
+                    seg_result = pd.concat([seg_result, tmp_result], axis=0)
+
+            print(seg_result.shape)
             '''
-            Special週単位で重みを付け集計する為、SpecialはNULLとして残して
-            いたが、Specialは別途集計して値を出す為、ここの集約時は除外する
+            ********************************
+            **連休セグをもっと綺麗に分け、**
+            **上記のループに含めることはで**
+            **きないか？
+            ********************************
             '''
-            ' tmpはSpecialを除いたdowのDF '
-            tmp_result_dow = tmp_result_dow.merge(no_sp[[particle, 'visit_date']], on=[particle, 'visit_date'], how='inner')
+            consective = lag_feature( data=consective, value=value, lag=lag, level=level)
+            discrete = lag_feature(data=discrete, value=value, lag=lag, level=level)
 
-            ' そのdowの全日程における重み付き平均が求まったら、NULL埋めをする '
-            ' Null埋めする為、各店舗の平均値を取得 '
-            tmp_wg_avg = tmp_result_dow.groupby(particle, as_index=False)[col_name].mean()
+            index_list= consective[index].drop_duplicates().values
+            idx_stack = pd.DataFrame([])
 
-            ' 重み付き平均の平均値でNullを埋める '
-            null = tmp_result_dow[tmp_result_dow[col_name].isnull()]
-            fill_null = null[[particle, 'visit_date']].merge(tmp_wg_avg, on=particle, how='inner')
+            for idx in index_list:
+                seg_wg = exp_weight_avg(consective, level[0], value, weight, index)
+                seg_wg = seg_wg.reset_index()
+                seg_wg[index] = idx
 
-            tmp_result_dow.dropna(inplace=True)
-            tmp_result_dow = pd.concat([tmp_result_dow, fill_null], axis=0)
+                if len(idx_stack)==0:
+                    idx_stack = seg_wg
+                else:
+                    idx_stack = pd.concat([idx_stack, seg_wg], axis=0)
 
-            ' NULL埋めまで終えた各dowのDFを積んで完成 '
-            if len(result_dow)==0:
-                result_dow = tmp_result_dow
-            else:
-                result_dow = pd.concat([result_dow, tmp_result_dow], axis=0)
+            ''' 連休の特徴量 '''
+            consective_mv = moving_agg(
+                method, consective, level, 1, value, window, 1, 'visit_date')
+            ' feature nameを取得 '
+            col_name = [
+                col for col in consective_mv.columns if col.count('@')][0]
+            ' NULL埋め '
+            result_cont = impute_avg(consective_mv, level, 1, col_name)
 
-        cont_result = pd.DataFrame([])
-        date_list = continuous['visit_date'].drop_duplicates().sort_values().values
-        for end_date in date_list:
-            tmp = date_range(continuous, first_date, end_date)
-            continuous_wg = exp_weight_avg(tmp, particle, 'last_dow_visitors', weight)
+            ''' 非連休の特徴量 '''
+            discrete_mv = moving_agg(
+                method, discrete, level, 1, value, window, 1, 'visit_date')
+            ' feature nameを取得 '
+            col_name = [
+                col for col in discrete_mv.columns if col.count('@')][0]
+            ' NULL埋め '
+            result_disc = impute_avg(discrete_mv, level, 1, col_name)
 
-            col_name = continuous_wg.name
+            ''' 結合 '''
+            result = pd.concat([seg_result, result_cont, result_disc], axis=0)
 
-            continuous_wg = continuous_wg.to_frame().reset_index()
-            continuous_wg['visit_date'] = end_date
+            ' 日程を元のデータセットと同様にする '
+            result = air_cal[level].merge(result, on=level, how='inner')
 
-            ' id * visit_date * feature のDFを作る '
-            if len(cont_result)==0:
-                cont_result = continuous_wg
-            else:
-                cont_result = pd.concat([cont_result, continuous_wg], axis=0)
+            result.sort_values(by=level, inplace=True)
+            #  result = result[col_name]
+            result.to_csv(f'../feature/{col_name}.csv',
+                          index=False, header=True)
+            print(result.shape)
+            print(result.head())
 
-        ' Null埋めする為、各店舗の平均値を取得 '
-        cont_wg_avg = cont_result.groupby(particle, as_index=False)[col_name].mean()
 
-        ' 重み付き平均の平均値でNullを埋める '
-        null = cont_result[cont_result[col_name].isnull()]
-        fill_null = null[[particle, 'visit_date']].merge(cont_wg_avg, on=particle, how='inner')
+def main():
 
-        cont_result.dropna(inplace=True)
-        cont_result = pd.concat([cont_result, fill_null], axis=0)
+    #  let_mv_agg(
+    #      data=air_cal,
+    #      level=['air_store_id', 'visit_date'],
+    #      number=1,
+    #      value='visitors',
+    #      method_list=['avg', 'std'],
+    #      window_list=[3],
+    #      period=1,
+    #      lag=1,
+    #      segment='dow',
+    #      segment_list=list(air_cal['dow'].drop_duplicates().values)
+    #  )
 
-        disc_result = pd.DataFrame([])
-        date_list = discrete['visit_date'].drop_duplicates().sort_values().values
-        for end_date in date_list:
-            tmp = date_range(discrete, first_date, end_date)
-            discrete_wg = exp_weight_avg(tmp, particle, 'last_dow_visitors', weight)
-
-            col_name = discrete_wg.name
-
-            discrete_wg = discrete_wg.to_frame().reset_index()
-            discrete_wg['visit_date'] = end_date
-
-            ' id * visit_date * feature のDFを作る '
-            if len(disc_result)==0:
-                disc_result = discrete_wg
-            else:
-                disc_result = pd.concat([disc_result, discrete_wg], axis=0)
-
-        ' Null埋めする為、各店舗の平均値を取得 '
-        disc_wg_avg = disc_result.groupby(particle, as_index=False)[col_name].mean()
-
-        ' 重み付き平均の平均値でNullを埋める '
-        null = disc_result[disc_result[col_name].isnull()]
-        fill_null = null[[particle, 'visit_date']].merge(disc_wg_avg, on=particle, how='inner')
-
-        disc_result.dropna(inplace=True)
-        disc_result = pd.concat([disc_result, fill_null], axis=0)
-
-        result = pd.concat([result_dow, cont_result, disc_result], axis=0)
-        result = df_input[[particle, 'visit_date']].merge(result, on=[particle, 'visit_date'], how='inner')
-        result.sort_values(by=[particle, 'visit_date'], inplace=True)
-
-        result.to_csv(f'../feature/valid_feature/{col_name}.csv', index=False, header=True)
-        print(result.shape)
+    let_wg_agg(
+        data=air_cal,
+        level=['air_store_id', 'visit_date'],
+        number=1,
+        value='visitors',
+        method_list=['avg', 'std'],
+        weight_list=[0.9, 0.95, 0.98],
+        index='visit_date',
+        lag=1,
+        segment='dow',
+        segment_list=list(air_cal['dow'].drop_duplicates().values)
+    )
 
 if __name__ == '__main__':
 
