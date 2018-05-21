@@ -52,13 +52,14 @@ def pararell_process(func, arg_list):
     p_list = p.map(func, arg_list)
     p.close
 
+    print(111)
+    print(p_list)
     return p_list
 
 
-def pararell_read_csv(path):
-    path_list = glob.glob(path)
+def pararell_read_csv(func, path_list):
     p = Pool(multiprocessing.cpu_count())
-    p_list = p.map(load_data, path_list)
+    p_list = p.map(pd.read_csv(), path_list)
     p.close
 
     return p_list
@@ -68,7 +69,7 @@ def csv_to_dict(key, path):
     data_dict = {}
     data_dict[key] = pd.read_csv(path)
 
-    filename = re.search(r'/([^/.]*).csv', path).group(1)
+    #  filename = re.search(r'/([^/.]*).csv', path).group(1)
     #  print('****************')
     #  print('filename   : {}'.format(filename))
     #  print('data shape : {}'.format(data_dict[key].shape))

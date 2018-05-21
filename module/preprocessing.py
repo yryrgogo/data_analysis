@@ -3,11 +3,10 @@ import numpy as np
 import sys
 import re
 import gc
+from sklearn.model_selection import StratifiedKFold
 
 
 """ 日時操作系 """
-
-
 def date_diff(start, end):
     diff = end - start
     return diff
@@ -21,7 +20,7 @@ def date_range(data, start, end, include_flg=1):
         return data[(start <= data['visit_date']) & (data['visit_date'] < end)]
     return data[(start <= data['visit_date']) & (data['visit_date'] <= end)]
 
-
+""" 前処理系 """
 def outlier(data, particle, value, out_range=1.64):
     '''
     Explain:
@@ -119,3 +118,78 @@ def lag_feature(data, value, lag, level=[]):
         data[f'shift{lag}_{value}@{level}'] = data.groupby(level)[value].shift(lag)
 
     return data
+
+
+def set_validation(data, target, holdout_flg=0):
+    #  start_date = pd.to_datetime('2017-03-12')
+    #  end_date = pd.to_datetime('2017-04-22')
+    #  data['validation'] = data['visit_date'].map(lambda x: 1 if start_date <= x and x <= end_date else 0)
+
+    seed = 1208
+
+    if holdout_flg==1:
+        ' 全体をStratifiedKFoldで8:2に切って、8をCV.2をHoldoutで保存する '
+
+        cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=seed)
+        x = data.drop(target, axis=1)
+        y = data[target].values
+
+        for trn_idx, val_idx in cv.split(x, y):
+            data.iloc[trn_idx].to_csv('../data/cv_app_train.csv', index=False)
+            data.iloc[val_idx].to_csv('../data/holdout_app_train.csv', index=False)
+            sys.exit()
+
+    else:
+        ' データ4分割してvalidation番号をつける '
+        cv = StratifiedKFold(n_splits=4, shuffle=True, random_state=seed)
+        x = data.drop(target, axis=1)
+        y = data[target].values
+        cnt=0
+
+        for trn_idx, val_idx in cv.split(x, y):
+            cnt+=1
+
+            valid_no = np.zeros(len(val_idx))+cnt
+            tmp = pd.DataFrame({'index':val_idx, 'valid_no':valid_no})
+
+            if cnt==1:
+                tmp_result = tmp
+            else:
+                tmp_result = pd.concat([tmp_result, tmp], axis=0)
+
+        tmp_result.set_index('index', inplace=True)
+
+        result = data.join(tmp_result)
+        print(result.shape)
+        print(result.head())
+
+    return result
+
+
+def squeeze_target(data, particle, size):
+    '''
+    particleの各要素について、一定数以上のデータがある要素の行のみ残す
+    '''
+
+    tmp = data.groupby(particle).size()
+    target_id = tmp[tmp >= size].index
+
+    data = data.set_index(particle)
+    result = data.loc[target_id, :]
+    result = result.reset_index()
+
+
+    return result
+
+
+"""**************"""
+"""   評価関数   """
+"""**************"""
+def RMSLE(y_obs, y_pred):
+    #  del_idx = np.arange(len(y_obs))[y_obs == 0]
+    #  y_obs = np.delete(y_obs, del_idx)
+    #  y_pred = np.delete(y_pred, del_idx)
+    y_pred = y_pred.clip(min=0.)
+    return np.sqrt(mean_squared_log_error(y_obs, y_pred))
+
+
