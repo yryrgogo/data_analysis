@@ -120,6 +120,31 @@ def lag_feature(data, value, lag, level=[]):
     return data
 
 
+def split_dataset(dataset, val_no):
+    """
+    時系列用のtrain, testデータを切る。validation_noを受け取り、
+    データセットにおいてその番号をもつ行をTestデータ。その番号を
+    もたない行をTrainデータとする。
+
+    Args:
+        dataset(DF): TrainとTestに分けたいデータセット
+        val_no(int): 時系列においてleakが発生しない様にデータセットを
+                     切り分ける為の番号。これをもとにデータを切り分ける
+
+    Return:
+        train(df): 学習用データフレーム(validationカラムはdrop)
+        test(df) : 検証用データフレーム(validationカラムはdrop)
+    """
+
+    train = dataset[dataset['valid_no'] != val_no].copy()
+    test = dataset[dataset['valid_no'] == val_no].copy()
+
+    train.drop(['valid_no'], axis=1, inplace=True)
+    test.drop(['valid_no'], axis=1, inplace=True)
+
+    return train, test
+
+
 def set_validation(data, target, holdout_flg=0):
     #  start_date = pd.to_datetime('2017-03-12')
     #  end_date = pd.to_datetime('2017-04-22')
