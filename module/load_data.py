@@ -57,9 +57,14 @@ def pararell_process(func, arg_list):
     return p_list
 
 
-def pararell_read_csv(func, path_list):
+def load_csv(path):
+    data = pd.read_csv(path).set_index('SK_ID_CURR')
+    return data
+
+
+def pararell_read_csv(path_list):
     p = Pool(multiprocessing.cpu_count())
-    p_list = p.map(pd.read_csv(), path_list)
+    p_list = p.map(load_csv, path_list)
     p.close
 
     return p_list
