@@ -47,16 +47,6 @@ def load_wrapper(args):
     return csv_to_dict(*args)
 
 
-def pararell_process(func, arg_list):
-    p = Pool(multiprocessing.cpu_count())
-    p_list = p.map(func, arg_list)
-    p.close
-
-    print(111)
-    print(p_list)
-    return p_list
-
-
 def load_csv(path):
     data = pd.read_csv(path).set_index('SK_ID_CURR')
     return data
