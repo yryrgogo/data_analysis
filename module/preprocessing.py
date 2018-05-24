@@ -167,6 +167,7 @@ def set_validation(data, target, holdout_flg=0):
     else:
         ' データ4分割してvalidation番号をつける '
         cv = StratifiedKFold(n_splits=4, shuffle=True, random_state=seed)
+        data = data.fillna(0)
         x = data.drop(target, axis=1)
         y = data[target].values
         cnt=0
