@@ -207,6 +207,14 @@ def squeeze_target(data, particle, size):
     return result
 
 
+" 高速化 "
+def pararell_process(func, arg_list):
+    p = Pool(multiprocessing.cpu_count())
+    p_list = p.map(func, arg_list)
+    p.close
+    return p_list
+
+
 """**************"""
 """   評価関数   """
 """**************"""
