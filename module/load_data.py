@@ -47,14 +47,21 @@ def load_wrapper(args):
     return csv_to_dict(*args)
 
 
-def load_csv(path):
+def kaggle_load_csv(path):
     data = pd.read_csv(path).set_index('SK_ID_CURR')
     return data
 
 
-def pararell_read_csv(path_list):
+def load_csv(path):
+    return pd.read_csv(path)
+
+
+def pararell_read_csv(path_list, kaggle=0):
     p = Pool(multiprocessing.cpu_count())
-    p_list = p.map(load_csv, path_list)
+    if kaggle==1:
+        p_list = p.map(kaggle_load_csv, path_list)
+    else:
+        p_list = p.map(load_csv, path_list)
     p.close
 
     return p_list
