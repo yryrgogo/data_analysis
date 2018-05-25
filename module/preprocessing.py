@@ -120,6 +120,38 @@ def lag_feature(data, value, lag, level=[]):
     return data
 
 
+def dframe_dtype(data):
+    for col in data.columns:
+        print(data[col].dtype)
+
+
+#  カテゴリ変数を取得する関数
+def get_categorical_features(data, ignore):
+    obj = [col for col in list(data.columns) if data[col].dtype == 'object' and col not in ignore]
+    return obj
+
+
+#  連続値カラムを取得する関数
+def get_numeric_features(data, ignore):
+    num = [col for col in list(data.columns) if (str(data[col].dtype).count('int') or str(data[col].dtype).count('float')) and col not in ignore]
+    return num
+
+
+# カテゴリ変数をファクトライズ (整数に置換)する関数
+def factorize_categoricals(data, cats):
+    for col in cats:
+        data[col], _ = pd.factorize(data[col])
+    return data
+
+
+# カテゴリ変数のダミー変数 (二値変数化)を作成する関数
+def get_dummies(data, cats):
+    for col in cats:
+        data = pd.concat([data, pd.get_dummies(data[col], prefix=col)], axis=1)
+    return data
+
+
+
 def split_dataset(dataset, val_no):
     """
     時系列用のtrain, testデータを切る。validation_noを受け取り、
