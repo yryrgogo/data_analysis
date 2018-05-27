@@ -20,23 +20,24 @@ def date_range(data, start, end, include_flg=1):
         return data[(start <= data['visit_date']) & (data['visit_date'] < end)]
     return data[(start <= data['visit_date']) & (data['visit_date'] <= end)]
 
+
 """ 前処理系 """
-def outlier(data, particle, value, out_range=1.64):
+def outlier(data, level, value, out_range=1.64):
     '''
     Explain:
     Args:
         data(DF)        : 外れ値を除外したいデータフレーム
-        particle(str)   : 標準偏差を計算する粒度
+        level(str)      : 標準偏差を計算する粒度
         value(float)    : 標準偏差を計算する値
         out_range(float): 外れ値とするZ値の範囲.初期値は1.64としている
     Return:
         data(DF): 入力データフレームから外れ値を外したもの
     '''
-    tmp = data.groupby(particle, as_index=False)[value].agg(
+    tmp = data.groupby(level, as_index=False)[value].agg(
         {'avg': 'mean',
          'std': 'std'
          })
-    df = data.merge(tmp, on=particle, how='inner')
+    df = data.merge(tmp, on=level, how='inner')
     param = df[value].values
     avg = df['avg'].values
     std = df['std'].values
@@ -47,14 +48,14 @@ def outlier(data, particle, value, out_range=1.64):
     inner = inner[inner['z'] <= out_range]
 
     out_minus = df[-1*out_range > df['z']]
-    minus_max = out_minus.groupby(particle, as_index=False)[value].max()
+    minus_max = out_minus.groupby(level, as_index=False)[value].max()
     out_minus.drop(value, axis=1, inplace=True)
-    out_minus = out_minus.merge(minus_max, on=particle, how='inner')
+    out_minus = out_minus.merge(minus_max, on=level, how='inner')
 
     out_plus = df[df['z'] > out_range]
-    plus_min = out_plus.groupby(particle, as_index=False)[value].min()
+    plus_min = out_plus.groupby(level, as_index=False)[value].min()
     out_plus.drop(value, axis=1, inplace=True)
-    out_plus = out_plus.merge(plus_min, on=particle, how='inner')
+    out_plus = out_plus.merge(plus_min, on=level, how='inner')
 
     result = pd.concat([inner, out_minus, out_plus], axis=0)
     result.drop(['avg', 'std', 'z'], axis=1, inplace=True)
@@ -145,9 +146,12 @@ def factorize_categoricals(data, cats):
 
 
 # カテゴリ変数のダミー変数 (二値変数化)を作成する関数
-def get_dummies(data, cats):
+def get_dummies(data, cats, drop=1):
+    input_col = data.columns
     for col in cats:
         data = pd.concat([data, pd.get_dummies(data[col], prefix=col)], axis=1)
+    if drop==1:
+        data = data.drop(input_col, axis=1)
     return data
 
 

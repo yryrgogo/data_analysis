@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import glob
 import sys
@@ -52,16 +53,20 @@ def kaggle_load_csv(path):
     return data
 
 
-def load_csv(path):
-    return pd.read_csv(path)
+def load_file(path):
+    if path.count('.csv'):
+        return pd.read_csv(path)
+    elif path.count('.npy'):
+        filename = re.search(r'/([^/.]*).npy', path).group(1)
+        return pd.Series(np.load(path), name=filename)
 
 
-def pararell_read_csv(path_list, kaggle=0):
+def pararell_load_data(path_list, kaggle=0):
     p = Pool(multiprocessing.cpu_count())
     if kaggle==1:
         p_list = p.map(kaggle_load_csv, path_list)
     else:
-        p_list = p.map(load_csv, path_list)
+        p_list = p.map(load_file, path_list)
     p.close
 
     return p_list
