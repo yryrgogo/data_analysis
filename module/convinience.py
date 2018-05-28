@@ -29,9 +29,6 @@ def move_feature():
                 print(path)
                 shutil.move(path, '../features/3_winner/')
 
-move_feature()
-sys.exit()
-
 
 def shape_check_move():
     #  path_list = glob.glob('../features/1_first_valid/*.npy')
