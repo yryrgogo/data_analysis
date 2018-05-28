@@ -29,6 +29,8 @@ def move_feature():
                 print(path)
                 shutil.move(path, '../features/3_winner/')
 
+move_feature()
+sys.exit()
 
 
 def shape_check_move():
