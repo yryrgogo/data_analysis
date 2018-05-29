@@ -36,7 +36,7 @@ def move_target_feature():
 
     for path in path_list:
         if not(path.count('TARGET')):
-            shutil.move(path, '../features/3_third_valid/')
+            shutil.move(path, '../features/1_third_valid/')
 
 
 def shape_check_move():
