@@ -30,6 +30,15 @@ def move_feature():
                 shutil.move(path, '../features/3_winner/')
 
 
+def move_target_feature():
+
+    path_list = glob.glob('../features/1_first_valid/*.npy')
+
+    for path in path_list:
+        if not(path.count('TARGET')):
+            shutil.move(path, '../features/3_third_valid/')
+
+
 def shape_check_move():
     #  path_list = glob.glob('../features/1_first_valid/*.npy')
     path_list = glob.glob('../features/1_second_valid/*.npy')
