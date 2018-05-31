@@ -50,15 +50,27 @@ def shape_check_move():
 
 
 def head_tail(data):
-    print(data.head())
-    print(data.tail())
     sys.exit()
 
 
-def col_check(data):
-    for col in data.columns:
-        print(col)
-    sys.exit()
+def col_part_shape_cnt_check(data, col=0, part=0, shape=0, count=0, nunique=0):
+
+    if col==1:
+        for col in data.columns:
+            print(col)
+
+    if part==1:
+        print(data.head())
+        print(data.tail())
+
+    if shape==1:
+        print(data.shape)
+
+    if count==1:
+        print(data.count())
+
+    if nunique==1:
+        print(data.nunique())
 
 
 def list_check(elems):
