@@ -1,9 +1,13 @@
 import pandas as pd
 import numpy as np
-import sys
-import re
+import sys, re, glob
 import gc
 from sklearn.model_selection import StratifiedKFold
+from load_data import pararell_load_data
+
+
+unique_id = 'SK_ID_CURR'
+seed = 1208
 
 
 """ 日時操作系 """
@@ -67,7 +71,7 @@ def outlier(data, level, value, out_range=1.64):
     return result
 
 
-def impute_avg(data=None, level=None, index=1, value=None):
+def impute_avg(data=None, unique_id=None, level=None, index=1, value=None):
     '''
     Explain:
         平均値で欠損値補完を行う
@@ -84,14 +88,21 @@ def impute_avg(data=None, level=None, index=1, value=None):
         result(DF): 欠損値補完が完了したデータ
     '''
 
-    ' Null埋めする為、各店舗の平均値を取得 '
-    imp_avg = data.groupby(level[:index], as_index=False)[value].mean()
+    ' 元データとの紐付けをミスらない様にインデックスをセット '
+    data.set_index(unique_id, inplace=True)
 
-    ' 移動平均の平均値でNullを埋める '
+    ' Null埋めする為、level粒度の平均値を取得 '
+    use_cols = level + [value]
+    data = data[use_cols]
+    imp_avg = data.groupby(level, as_index=False)[value].mean()
+
+    ' 平均値でNull埋め '
     null = data[data[value].isnull()]
-    fill_null = null[level].merge(imp_avg, on=level[:index], how='inner')
+    null = null.reset_index()
+    fill_null = null.merge(imp_avg, on=level[:index], how='inner')
 
-    data.dropna(inplace=True)
+    ' インデックスをカラムに戻して、Null埋めしたDFとconcat '
+    data = data[data[value].dropna()].reset_index()
     result = pd.concat([data, fill_null], axis=0)
 
     return result
@@ -101,7 +112,7 @@ def lag_feature(data, value, lag, level=[]):
     '''
     Explain:
         時系列データにおいて、リーケージとなる特徴量を集計する際、shiftによって
-        ラグ特徴量を作成する
+        リーケージを避け、ラグ特徴量を作成する
     Args:
         data(DF)    : valueやlevelを含んだデータフレーム
         value(float): ラグをとる特徴量。主にリークになる様な特徴量
@@ -155,7 +166,6 @@ def get_dummies(data, cats, drop=1):
     return data
 
 
-
 def split_dataset(dataset, val_no):
     """
     時系列用のtrain, testデータを切る。validation_noを受け取り、
@@ -182,11 +192,16 @@ def split_dataset(dataset, val_no):
 
 
 def set_validation(data, target, holdout_flg=0):
+    '''
+    Explain:
+        データセットにvalidation番号を振る。繰り返し検証を行う際、
+        validationを固定したいのでカラムにする。
+    Args:
+    Return:
+    '''
     #  start_date = pd.to_datetime('2017-03-12')
     #  end_date = pd.to_datetime('2017-04-22')
     #  data['validation'] = data['visit_date'].map(lambda x: 1 if start_date <= x and x <= end_date else 0)
-
-    seed = 1208
 
     if holdout_flg==1:
         ' 全体をStratifiedKFoldで8:2に切って、8をCV.2をHoldoutで保存する '
@@ -203,8 +218,8 @@ def set_validation(data, target, holdout_flg=0):
     else:
         ' データ4分割してvalidation番号をつける '
         cv = StratifiedKFold(n_splits=4, shuffle=True, random_state=seed)
-        data = data.fillna(0)
-        x = data.drop(target, axis=1)
+        data = data[[unique_id, target]]
+        x = data[unique_id].to_frame()
         y = data[target].values
         cnt=0
 
@@ -222,29 +237,45 @@ def set_validation(data, target, holdout_flg=0):
         tmp_result.set_index('index', inplace=True)
 
         result = data.join(tmp_result)
+        result.drop(target, axis=1, inplace=True)
         print(result.shape)
         print(result.head())
 
     return result
 
 
-def squeeze_target(data, particle, size):
+def squeeze_target(data, level, size):
     '''
-    particleの各要素について、一定数以上のデータがある要素の行のみ残す
+    levelの各要素について、一定数以上のデータがある要素の行のみ残す
     '''
 
-    tmp = data.groupby(particle).size()
+    tmp = data.groupby(level).size()
     target_id = tmp[tmp >= size].index
 
-    data = data.set_index(particle)
+    data = data.set_index(level)
     result = data.loc[target_id, :]
     result = result.reset_index()
-
-
     return result
 
 
-" 高速化 "
+def make_feature_set(dataset, path):
+
+    '''
+    Explain:
+        pathに入ってるfeatureをdatasetにmerge.現状はnpy対応
+    Args:
+    Return:
+    '''
+
+    use_feature = glob.glob(path)
+    p_list = pararell_load_data(use_feature, 0)
+    df_use = pd.concat(p_list, axis=1)
+
+    dataset = pd.concat([dataset, df_use], axis=1)
+    return dataset
+
+
+" 並列処理 "
 def pararell_process(func, arg_list):
     p = Pool(multiprocessing.cpu_count())
     p_list = p.map(func, arg_list)
@@ -252,9 +283,7 @@ def pararell_process(func, arg_list):
     return p_list
 
 
-"""**************"""
-"""   評価関数   """
-"""**************"""
+"  評価関数  "
 def RMSLE(y_obs, y_pred):
     #  del_idx = np.arange(len(y_obs))[y_obs == 0]
     #  y_obs = np.delete(y_obs, del_idx)

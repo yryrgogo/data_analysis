@@ -18,16 +18,36 @@ def move_feature():
     #      filename = re.search(r'/([^/.]*).csv', path).group(1)
     #      winner_list.append(filename[2:])
 
-    winner_list = pd.read_csv('../output/use_feature/auc_0.7761917332858363_feature_importance.csv')['feature'].values
-    path_list = glob.glob('../features/1_first_valid/*.npy')
+    #  winner_list = pd.read_csv('../output/use_feature/auc_0.7761917332858363_feature_importance.csv')['feature'].values
+    path_list = glob.glob('../features/3_winner/*.npy')
+    winner_list = pd.read_csv('../prediction/use_features/20180531_13_valid2_use_169col_auc_0_7857869389179928.csv')['feature'].values
 
     for path in path_list:
         for win in winner_list:
-            win = win.replace(' ', '_')
-            win = f'{win}.npy'
+            #  win = win.replace(' ', '_')
+            print(win)
+            #  win = f'a_{win}.npy'
             if path.count(win):
                 print(path)
-                shutil.move(path, '../features/3_winner/')
+                shutil.move(path, '../features/1_third_valid/')
+
+
+def move_diff_file(path_1, path_2):
+
+    path_list1 = glob.glob(path_1)
+    path_list2 = glob.glob(path_2)
+
+    for p_1 in path_list1:
+        filename_1 = re.search(r'/([^/.]*).npy', p_1).group(1)
+        duplicate_flg = 0
+        for p_2 in path_list2:
+            filename_2 = re.search(r'/([^/.]*).npy', p_2).group(1)
+            print(filename_1)
+            print(filename_2)
+            if filename_1.count(filename_2):
+                duplicate_flg = 1
+        if duplicate_flg==0:
+            shutil.move(p_1, '../features/tmp/')
 
 
 def move_target_feature():
@@ -80,7 +100,8 @@ def list_check(elems):
 
 
 def main():
-    move_feature()
+    print()
+    #  move_feature()
 
 
 if __name__=='__main__':
