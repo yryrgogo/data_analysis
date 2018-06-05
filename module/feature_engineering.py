@@ -8,7 +8,7 @@ from preprocessing import set_validation
 from convinience import col_part_shape_cnt_check, move_feature, shape_check_move
 
 
-def make_npy(result, ignore_features, prefix, suffix=''):
+def make_npy(result, ignore_features=[], prefix='', suffix=''):
     '''
     Explain:
         .npyで特徴量を保存する
@@ -21,7 +21,7 @@ def make_npy(result, ignore_features, prefix, suffix=''):
     '''
 
     for feature in result.columns:
-        if feature.count('@'):
+        if feature.count('@') and feature not in ignore_features:
             filename = f'{prefix}{feature}'
             ' 環境パスと相性の悪い記号は置換する '
             filename = filename.replace(
