@@ -115,7 +115,7 @@ def check_impute(data=[]):
     '''
 
     if len(data)==0:
-        base = pd.read_csv('../data/application_train_test.csv')[unique_id].to_frame()
+        base = pd.read_csv('../data/application_train_test.csv')[[unique_id, 'is_test']]
         path_list = glob.glob('../features/5_check_feature/*.npy')
 
     ' チェック用のID。このIDについては元データの値をすぐ参照できるようにエクセルで保存しておく '
@@ -156,8 +156,10 @@ def check_impute(data=[]):
         feature = pd.Series(np.load(path), name=filename)
         data = pd.concat([base, feature], axis=1).set_index(unique_id)
 
-        print(data.loc[train_id, :])
-        print(data.loc[test_id, :])
+        print(data.query('is_test==1').head(10))
+        sys.exit()
+        #  print(data.loc[train_id, :])
+        #  print(data.loc[test_id, :])
 
 
 def main():
