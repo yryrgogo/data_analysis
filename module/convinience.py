@@ -9,6 +9,10 @@ sys.path.append('../engineering/')
 from select_feature import select_feature
 
 
+unique_id = 'SK_ID_CURR'
+target = 'TARGET'
+
+
 def move_feature():
 
     #  path_list = glob.glob('../features/3_winner/*.csv')
@@ -97,6 +101,63 @@ def list_check(elems):
     for ele in elems:
         print(ele)
     sys.exit()
+
+
+def check_impute(data=[]):
+    '''
+    作成したnpyファイルがちゃんと意図したソート順になっているかを
+    チェックする.
+    10IDほど、trainとtestでそれぞれピックアップしておき、値を
+    比較できるようにしておく。
+    imputeはNullでない値を保持しておけば、正しい値がすぐわかる.
+    engineeringした値は、npyファイルとIDの入ったcsvを比較する
+    しかない
+    '''
+
+    if len(data)==0:
+        base = pd.read_csv('../data/application_train_test.csv')[unique_id].to_frame()
+        path_list = glob.glob('../features/5_check_feature/*.npy')
+
+    ' チェック用のID。このIDについては元データの値をすぐ参照できるようにエクセルで保存しておく '
+    train_id = [
+        100002,
+        100003,
+        100004,
+        100006,
+        100007,
+        100008,
+        100009,
+        100010,
+        100011,
+        100012
+    ]
+    test_id = [
+        100001,
+        100005,
+        100013,
+        100028,
+        100038,
+        100042,
+        100057,
+        100065,
+        100066,
+        100067
+    ]
+
+    if len(data)>0:
+        print(data.loc[train_id, :])
+        print(data.loc[test_id, :])
+        return
+
+
+    for path in path_list:
+
+        filename = re.search(r'/([^/.]*).npy', path).group(1)
+        feature = pd.Series(np.load(path), name=filename)
+        data = pd.concat([base, feature], axis=1).set_index(unique_id)
+
+        print(data.loc[train_id, :])
+        print(data.loc[test_id, :])
 
 
 def main():
