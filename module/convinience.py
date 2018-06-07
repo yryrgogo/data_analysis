@@ -156,10 +156,8 @@ def check_impute(data=[]):
         feature = pd.Series(np.load(path), name=filename)
         data = pd.concat([base, feature], axis=1).set_index(unique_id)
 
-        print(data.query('is_test==1').head(10))
-        sys.exit()
-        #  print(data.loc[train_id, :])
-        #  print(data.loc[test_id, :])
+        print(data.loc[train_id, :])
+        print(data.loc[test_id, :])
 
 
 def main():
