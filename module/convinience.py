@@ -73,10 +73,6 @@ def shape_check_move():
         #      shutil.move(path, '../features/1_third_valid/')
 
 
-def head_tail(data):
-    sys.exit()
-
-
 def col_part_shape_cnt_check(data, col=0, part=0, shape=0, count=0, nunique=0):
 
     if col==1:
@@ -103,7 +99,7 @@ def list_check(elems):
     sys.exit()
 
 
-def check_impute(data=[]):
+def check_sort(data=[]):
     '''
     作成したnpyファイルがちゃんと意図したソート順になっているかを
     チェックする.

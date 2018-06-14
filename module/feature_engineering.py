@@ -31,6 +31,31 @@ def make_npy(result, ignore_features=[], prefix='', suffix=''):
             #  result.reset_index(drop=True, inplace=True)
 
             print(result.shape)
-            np.save(
-            f'../features/1_first_valid/{filename}', result[feature].values)
+            np.save(f'../features/1_first_valid/{filename}', result[feature].values)
+
+def base_aggregation(data, level, feature, method, prefix=''):
+    '''
+    Explain:
+        levelの粒度で集約を行う。この関数が受け取るカラムは一つなので、
+        複数カラムを集計する時はループで繰り返し引数を渡す
+    Args:
+        level: str/list/tuple。要素数は何個でもOK
+    Return:
+        集約したカラムとlevelの2カラムDF。
+        集約したカラム名は、{prefix}{元のカラム名}_{メソッド}@{粒度}となっている
+    '''
+
+    if str(type(level)).count('str'):
+        level = [level]
+    elif str(type(level)).count('tuple'):
+        level = list(level)
+
+    df = data[level+[feature]]
+
+    result = df.groupby(level)[feature].agg({'tmp': {method}})
+    result = result['tmp'].reset_index().rename(
+        columns={f'{method}': f'{prefix}{feature}_{method}@{level}'})
+
+    return result
+
 

@@ -275,6 +275,23 @@ def make_feature_set(dataset, path):
     return dataset
 
 
+def row_number(df, level):
+    '''
+    Explain:
+        各level粒度毎にrow_numberをつける。
+        順番は入力されたDFのままなので、ソートが必要な場合は事前に。
+    Args:
+    Return:
+    '''
+    index = np.arange(1, len(df)+1, 1)
+    df['index'] = index
+    min_index = df.groupby(level)['index'].min().reset_index()
+    df = df.merge(min_index, on=level, how='inner')
+    df['index'] = df['index_x'] - df['index_y'] + 1
+    df.drop(['index_x', 'index_y'], axis=1, inplace=True)
+    return df
+
+
 " 並列処理 "
 def pararell_process(func, arg_list):
     p = Pool(multiprocessing.cpu_count())
