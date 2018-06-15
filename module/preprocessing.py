@@ -71,6 +71,20 @@ def outlier(data, level, value, out_range=1.64):
     return result
 
 
+def contraction(data, valud, limit, max_flg=1, null_flg=0):
+
+    if max_flg==1 and null_flg==0:
+        data[value] = data[value].map(lambda x: limit if x > limit else x)
+    elif max_flg==0 and null_flg==0:
+        data[value] = data[value].map(lambda x: limit if x < limit else x)
+    elif max_flg==1 and null_flg==1:
+        data[value] = data[value].map(lambda x: null if x > limit else x)
+    elif max_flg==0 and null_flg==1:
+        data[value] = data[value].map(lambda x: null if x < limit else x)
+
+    return data
+
+
 def impute_avg(data=None, unique_id=None, level=None, index=1, value=None):
     '''
     Explain:
