@@ -4,6 +4,8 @@ import sys, re, glob
 import gc
 from sklearn.model_selection import StratifiedKFold
 from load_data import pararell_load_data
+from multiprocessing import Pool
+import multiprocessing
 
 
 unique_id = 'SK_ID_CURR'
@@ -26,7 +28,7 @@ def date_range(data, start, end, include_flg=1):
 
 
 """ 前処理系 """
-def outlier(data, level, value, out_range=1.64):
+def outlier(data, level, value, out_range=1.64, print_flg=0):
     '''
     Explain:
     Args:
@@ -37,32 +39,63 @@ def outlier(data, level, value, out_range=1.64):
     Return:
         data(DF): 入力データフレームから外れ値を外したもの
     '''
-    tmp = data.groupby(level, as_index=False)[value].agg(
-        {'avg': 'mean',
-         'std': 'std'
-         })
-    df = data.merge(tmp, on=level, how='inner')
+
+    if len(level)==0:
+
+        std = data[value].std()
+        avg = data[value].mean()
+        df = data.copy()
+
+    else:
+        tmp = data.groupby(level, as_index=False)[value].agg(
+            {'avg': 'mean',
+             'std': 'std'
+             })
+        df = data.merge(tmp, on=level, how='inner')
+        avg = df['avg'].values
+        std = df['std'].values
     param = df[value].values
-    avg = df['avg'].values
-    std = df['std'].values
     z_value = (param - avg)/std
     df['z'] = z_value
+
+    if print_flg==1:
+        print(df.query(f'z > {out_range}')[value].count())
+        print(df.query(f'z > {out_range}')[value].head().sort_values(ascending=False))
+        print(df.query(f'z < -1*{out_range}')[value].count())
+        print(df.query(f'z < -1*{out_range}')[value].head().sort_values(ascending=True))
+        return data
+
+    null = df[df[value].isnull()]
 
     inner = df[-1*out_range <= df['z']].copy()
     inner = inner[inner['z'] <= out_range]
 
     out_minus = df[-1*out_range > df['z']]
-    minus_max = out_minus.groupby(level, as_index=False)[value].max()
-    out_minus.drop(value, axis=1, inplace=True)
-    out_minus = out_minus.merge(minus_max, on=level, how='inner')
+    if len(level)==0:
+        minus_max = out_minus[value].max()
+        out_minus[value] = minus_max
+    else:
+        minus_max = out_minus.groupby(level, as_index=False)[value].max()
+        out_minus.drop(value, axis=1, inplace=True)
+        out_minus = out_minus.merge(minus_max, on=level, how='inner')
 
     out_plus = df[df['z'] > out_range]
-    plus_min = out_plus.groupby(level, as_index=False)[value].min()
-    out_plus.drop(value, axis=1, inplace=True)
-    out_plus = out_plus.merge(plus_min, on=level, how='inner')
 
-    result = pd.concat([inner, out_minus, out_plus], axis=0)
-    result.drop(['avg', 'std', 'z'], axis=1, inplace=True)
+    if len(level)==0:
+        plus_min = out_plus[value].min()
+        out_plus[value] = plus_min
+    else:
+        plus_min = out_plus.groupby(level, as_index=False)[value].min()
+        out_plus.drop(value, axis=1, inplace=True)
+        out_plus = out_plus.merge(plus_min, on=level, how='inner')
+
+    result = pd.concat([inner, out_minus, out_plus, null], axis=0)
+
+    if len(level)==0:
+        result.drop(['z'], axis=1, inplace=True)
+    else:
+        result.drop(['avg', 'std', 'z'], axis=1, inplace=True)
+
     result.reset_index(drop=True, inplace=True)
 
     del df, out_minus, out_plus
@@ -71,16 +104,16 @@ def outlier(data, level, value, out_range=1.64):
     return result
 
 
-def contraction(data, valud, limit, max_flg=1, null_flg=0):
+def contraction(data, value, limit, max_flg=1, null_flg=0):
 
     if max_flg==1 and null_flg==0:
         data[value] = data[value].map(lambda x: limit if x > limit else x)
     elif max_flg==0 and null_flg==0:
         data[value] = data[value].map(lambda x: limit if x < limit else x)
     elif max_flg==1 and null_flg==1:
-        data[value] = data[value].map(lambda x: null if x > limit else x)
+        data[value] = data[value].map(lambda x: np.nan if x > limit else x)
     elif max_flg==0 and null_flg==1:
-        data[value] = data[value].map(lambda x: null if x < limit else x)
+        data[value] = data[value].map(lambda x: np.nan if x < limit else x)
 
     return data
 
@@ -301,7 +334,7 @@ def row_number(df, level):
     df['index'] = index
     min_index = df.groupby(level)['index'].min().reset_index()
     df = df.merge(min_index, on=level, how='inner')
-    df['index'] = df['index_x'] - df['index_y'] + 1
+    df['row_no'] = df['index_x'] - df['index_y'] + 1
     df.drop(['index_x', 'index_y'], axis=1, inplace=True)
     return df
 
