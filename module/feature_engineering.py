@@ -19,6 +19,8 @@ def make_npy(result, ignore_features=[], prefix='', suffix=''):
         suffix:
     Return:
     '''
+    ' お試し→これは使える '
+    #  feature_list = list(pd.read_csv('../prediction/use_feature/20180531_13_valid2_use_169col_auc_0_7857869389179928.csv')['feature'].values)
 
     for feature in result.columns:
         if feature.count('@') and feature not in ignore_features:
@@ -31,9 +33,13 @@ def make_npy(result, ignore_features=[], prefix='', suffix=''):
             #  result.reset_index(drop=True, inplace=True)
 
             print(result.shape)
+
+            #  if filename in feature_list:
+
             np.save(f'../features/1_first_valid/{filename}', result[feature].values)
 
-def base_aggregation(data, level, feature, method, prefix=''):
+
+def base_aggregation(data, level, feature, method, prefix='', suffix=''):
     '''
     Explain:
         levelの粒度で集約を行う。この関数が受け取るカラムは一つなので、
@@ -45,7 +51,8 @@ def base_aggregation(data, level, feature, method, prefix=''):
         集約したカラム名は、{prefix}{元のカラム名}_{メソッド}@{粒度}となっている
     '''
 
-    if str(type(level)).count('str'):
+    ' levelの型がlistでもtupleでもなければ単体カラムのはずなので、listにする '
+    if not(str(type(level)).count('tuple')) and not(str(type(level)).count('list')):
         level = [level]
     elif str(type(level)).count('tuple'):
         level = list(level)
@@ -54,7 +61,7 @@ def base_aggregation(data, level, feature, method, prefix=''):
 
     result = df.groupby(level)[feature].agg({'tmp': {method}})
     result = result['tmp'].reset_index().rename(
-        columns={f'{method}': f'{prefix}{feature}_{method}@{level}'})
+        columns={f'{method}': f'{prefix}{feature}_{method}{suffix}@{level}'})
 
     return result
 

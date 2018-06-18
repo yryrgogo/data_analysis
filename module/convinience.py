@@ -24,10 +24,10 @@ def move_feature():
 
     #  winner_list = pd.read_csv('../output/use_feature/auc_0.7761917332858363_feature_importance.csv')['feature'].values
     path_list = glob.glob('../features/3_winner/*.npy')
-    winner_list = pd.read_csv('../prediction/use_features/20180531_13_valid2_use_169col_auc_0_7857869389179928.csv')['feature'].values
+    #  winner_list = pd.read_csv('../prediction/use_features/20180531_13_valid2_use_169col_auc_0_7857869389179928.csv')['feature'].values
 
     for path in path_list:
-        for win in winner_list:
+        for win in lose_list:
             #  win = win.replace(' ', '_')
             print(win)
             #  win = f'a_{win}.npy'
@@ -50,7 +50,7 @@ def move_diff_file(path_1, path_2):
             print(filename_2)
             if filename_1.count(filename_2):
                 duplicate_flg = 1
-        if duplicate_flg==0:
+        if duplicate_flg == 0:
             shutil.move(p_1, '../features/tmp/')
 
 
@@ -75,21 +75,21 @@ def shape_check_move():
 
 def col_part_shape_cnt_check(data, col=0, part=0, shape=0, count=0, nunique=0):
 
-    if col==1:
+    if col == 1:
         for col in data.columns:
             print(col)
 
-    if part==1:
+    if part == 1:
         print(data.head())
         print(data.tail())
 
-    if shape==1:
+    if shape == 1:
         print(data.shape)
 
-    if count==1:
+    if count == 1:
         print(data.count())
 
-    if nunique==1:
+    if nunique == 1:
         print(data.nunique())
 
 
@@ -110,8 +110,9 @@ def check_sort(data=[]):
     しかない
     '''
 
-    if len(data)==0:
-        base = pd.read_csv('../data/application_train_test.csv')[[unique_id, 'is_test']]
+    if len(data) == 0:
+        base = pd.read_csv(
+            '../data/application_train_test.csv')[[unique_id, 'is_test']]
         path_list = glob.glob('../features/5_check_feature/*.npy')
 
     ' チェック用のID。このIDについては元データの値をすぐ参照できるようにエクセルで保存しておく '
@@ -140,11 +141,10 @@ def check_sort(data=[]):
         100067
     ]
 
-    if len(data)>0:
+    if len(data) > 0:
         print(data.loc[train_id, :])
         print(data.loc[test_id, :])
         return
-
 
     for path in path_list:
 
@@ -161,5 +161,5 @@ def main():
     #  move_feature()
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     main()
