@@ -8,7 +8,7 @@ from preprocessing import set_validation
 from convinience import col_part_shape_cnt_check, move_feature, shape_check_move
 
 
-def make_npy(result, ignore_features=[], prefix='', suffix=''):
+def make_npy(result, ignore_features=[], prefix='', suffix='', select_list=[]):
     '''
     Explain:
         .npyで特徴量を保存する
@@ -19,8 +19,6 @@ def make_npy(result, ignore_features=[], prefix='', suffix=''):
         suffix:
     Return:
     '''
-    ' お試し→これは使える '
-    #  feature_list = list(pd.read_csv('../prediction/use_feature/20180531_13_valid2_use_169col_auc_0_7857869389179928.csv')['feature'].values)
 
     for feature in result.columns:
         if feature.count('@') and feature not in ignore_features:
@@ -34,9 +32,12 @@ def make_npy(result, ignore_features=[], prefix='', suffix=''):
 
             print(result.shape)
 
-            #  if filename in feature_list:
+            if len(select_list)==0:
+                np.save(f'../features/1_first_valid/{filename}', result[feature].values)
 
-            np.save(f'../features/1_first_valid/{filename}', result[feature].values)
+            else:
+                if filename in select_list:
+                    np.save(f'../features/1_first_valid/{filename}', result[feature].values)
 
 
 def base_aggregation(data, level, feature, method, prefix='', suffix=''):
