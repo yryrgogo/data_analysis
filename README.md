@@ -2,6 +2,8 @@
 
 ## My System for Data Analytics Competition
 
+### 0. EDA
+
 ### 1. Preprocessing
 
 #### Outlier
