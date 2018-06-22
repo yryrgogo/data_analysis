@@ -12,10 +12,26 @@
 
 ##### Impute by Regression
 
-### 2. Categorical Encoding
+
+### 2. Feature Engineering
 
 #### Likelihood Encoding(Target Encoding)
 
 #### Count Encoding
 
 #### One Hot Encoding
+
+#### Aggregation
+
+#### Embedding
+
+
+### 3. Feature Selection
+
+#### Feature Importance (GBDT)
+
+#### LIME
+
+#### Shap
+
+#### Partial differential
