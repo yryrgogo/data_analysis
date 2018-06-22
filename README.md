@@ -1,8 +1,12 @@
 # data_analysis
 
-## My System for Data Analytics Competition
+## My System for Data Mining Competition
 
 ### 0. EDA
+
+#### correlation
+
+
 
 ### 1. Preprocessing
 
@@ -23,9 +27,27 @@
 
 #### One Hot Encoding
 
-#### Aggregation
+#### Label Encoding
+
+#### Base Aggregation
+
+#### Dimentional Reduction
+
+##### PCA
+
+##### LDA
+
+#### Clustering
+
+##### KMEANS
+
+##### EM Algorithm
 
 #### Embedding
+
+##### T-SNE
+
+##### UMAP
 
 
 ### 3. Feature Selection
