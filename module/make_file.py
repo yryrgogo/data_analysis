@@ -4,7 +4,7 @@ import sys, glob
 from load_data import pararell_load_data
 
 
-def make_npy(result, ignore_features=[], prefix='', suffix='', select_list=[]):
+def make_npy(result, ignore_features=[], prefix='', suffix='', select_list=[], path='../features/1_first_valid/'):
     '''
     Explain:
         .npyで特徴量を保存する
@@ -29,11 +29,11 @@ def make_npy(result, ignore_features=[], prefix='', suffix='', select_list=[]):
             print(result.shape)
 
             if len(select_list)==0:
-                np.save(f'../features/1_first_valid/{filename}', result[feature].values)
+                np.save(f'{path}{filename}', result[feature].values)
 
             else:
                 if filename in select_list:
-                    np.save(f'../features/1_first_valid/{filename}', result[feature].values)
+                    np.save(f'{path}{filename}', result[feature].values)
 
 
 def make_feature_set(dataset, path):
@@ -53,13 +53,13 @@ def make_feature_set(dataset, path):
     return dataset
 
 
-def make_raw_feature(data, prefix='', select_list=[], ignore_list, extension='npy', path):
+def make_raw_feature(data, prefix='', select_list=[], ignore_list=[], extension='npy', path=''):
 
     for col in data.columns:
         if col in ignore_list or f'{prefix}{col}' not in select_list:
             continue
-        if extension.count('npy')
+        if extension.count('npy'):
             np.save(f'{path}{prefix}{col}.npy', data[col].values)
-        elif extension.count('csv')
+        elif extension.count('csv'):
             data[col].to_csv(f'{path}{prefix}{col}.csv')
 

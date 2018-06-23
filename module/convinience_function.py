@@ -50,54 +50,6 @@ def RMSLE(y_obs, y_pred):
     return np.sqrt(mean_squared_log_error(y_obs, y_pred))
 
 
-' データをチェックする系 '
-def col_heta_shape_cnt_check(data, col=0, heta=0, shape=0, count=0, nunique=0, all_check=0):
-
-    if all_check=1:
-        col=1
-        part=1
-        shape=1
-        count=1
-        nunique=1
-
-    if col == 1:
-        for col in data.columns:
-            print(col)
-
-    if part == 1:
-        print(data.head())
-        print(data.tail())
-
-    if shape == 1:
-        print(data.shape)
-
-    if count == 1:
-        print(data.count())
-
-    if nunique == 1:
-        print(data.nunique())
-
-
-def dframe_dtype(data):
-    ' データフレームのデータ型をカラム毎に確認する '
-    for col in data.columns:
-        print(f'column: {col} dtype: {data[col].dtype}')
-
-
-def list_check(check_list):
-    ' listの中身を一覧で '
-    for ele in check_list:
-        print(ele)
-    sys.exit()
-
-
-def null_check(data):
-    for col in data.columns:
-        print(col)
-        print(len(data[data[col].isnull()]))
-    sys.exit()
-
-
 def main():
     print()
     #  move_feature()

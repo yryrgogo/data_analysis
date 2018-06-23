@@ -216,7 +216,7 @@ def split_dataset(dataset, val_no):
     return train, test
 
 
-def set_validation(data, target, holdout_flg=0):
+def set_validation(data, target, unique_id, holdout_flg=0):
     '''
     Explain:
         データセットにvalidation番号を振る。繰り返し検証を行う際、
