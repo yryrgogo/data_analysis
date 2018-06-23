@@ -8,23 +8,7 @@ from multiprocessing import Pool
 import multiprocessing
 
 
-unique_id = 'SK_ID_CURR'
 seed = 1208
-
-
-""" 日時操作系 """
-def date_diff(start, end):
-    diff = end - start
-    return diff
-
-
-def date_range(data, start, end, include_flg=1):
-    '''
-    include_flgが0の場合, endの日付は含めずにデータを返す
-    '''
-    if include_flg == 0:
-        return data[(start <= data['visit_date']) & (data['visit_date'] < end)]
-    return data[(start <= data['visit_date']) & (data['visit_date'] <= end)]
 
 
 """ 前処理系 """
@@ -104,15 +88,26 @@ def outlier(data, level, value, out_range=1.64, print_flg=0):
     return result
 
 
-def contraction(data, value, limit, max_flg=1, null_flg=0):
+def contraction(data, value, limit, max_flg=1, nan_flg=0):
+    '''
+    Explain:
+        収縮法。limitより大きいor小さい値をlimitの値で置換する。
+    Args:
+        data    : 
+        value   : 
+        limit   : 収縮を適用する閾値
+        max_flg : limitより大きい値を収縮する場合は1。小さい値を収縮する場合は0。
+        null_flg: limitの値ではなくNaNに置換する場合は1。
+    Return:
+    '''
 
-    if max_flg==1 and null_flg==0:
+    if max_flg==1 and nan_flg==0:
         data[value] = data[value].map(lambda x: limit if x > limit else x)
-    elif max_flg==0 and null_flg==0:
+    elif max_flg==0 and nan_flg==0:
         data[value] = data[value].map(lambda x: limit if x < limit else x)
-    elif max_flg==1 and null_flg==1:
+    elif max_flg==1 and nan_flg==1:
         data[value] = data[value].map(lambda x: np.nan if x > limit else x)
-    elif max_flg==0 and null_flg==1:
+    elif max_flg==0 and nan_flg==1:
         data[value] = data[value].map(lambda x: np.nan if x < limit else x)
 
     return data
@@ -155,14 +150,14 @@ def impute_avg(data=None, unique_id=None, level=None, index=1, value=None):
     return result
 
 
-def lag_feature(data, value, lag, level=[]):
+def lag_feature(data, col_name, lag, level=[]):
     '''
     Explain:
-        時系列データにおいて、リーケージとなる特徴量を集計する際、shiftによって
-        リーケージを避け、ラグ特徴量を作成する
+        対象カラムのラグをとる
+        時系列データにおいてリーケージとなる特徴量を集計する際などに使用
     Args:
         data(DF)    : valueやlevelを含んだデータフレーム
-        value(float): ラグをとる特徴量。主にリークになる様な特徴量
+        col_name    : ラグをとる特徴量のカラム名
         lag(int)    : shiftによってずらす行の数
                      （正：前の行数分データをとる、 負：後の行数分データをとる）
         level(list) : 粒度を指定してラグをとる場合、その粒度を入れたリスト。
@@ -172,28 +167,11 @@ def lag_feature(data, value, lag, level=[]):
     '''
 
     if len(level)==0:
-        data[f'shift{lag}_{value}'] = data[value].shift(lag)
+        data[f'shift{lag}_{value}'] = data[col_name].shift(lag)
     else:
-        data[f'shift{lag}_{value}@{level}'] = data.groupby(level)[value].shift(lag)
+        data[f'shift{lag}_{value}@{level}'] = data.groupby(level)[col_name].shift(lag)
 
     return data
-
-
-def dframe_dtype(data):
-    for col in data.columns:
-        print(data[col].dtype)
-
-
-#  カテゴリ変数を取得する関数
-def get_categorical_features(data, ignore):
-    obj = [col for col in list(data.columns) if data[col].dtype == 'object' and col not in ignore]
-    return obj
-
-
-#  連続値カラムを取得する関数
-def get_numeric_features(data, ignore):
-    num = [col for col in list(data.columns) if (str(data[col].dtype).count('int') or str(data[col].dtype).count('float')) and col not in ignore]
-    return num
 
 
 # カテゴリ変数をファクトライズ (整数に置換)する関数
@@ -204,9 +182,9 @@ def factorize_categoricals(data, cats):
 
 
 # カテゴリ変数のダミー変数 (二値変数化)を作成する関数
-def get_dummies(data, cats, drop=1):
+def get_dummies(data, cat_list, drop=1):
     input_col = data.columns
-    for col in cats:
+    for col in cat_list:
         data = pd.concat([data, pd.get_dummies(data[col], prefix=col)], axis=1)
     if drop==1:
         data = data.drop(input_col, axis=1)
@@ -291,68 +269,16 @@ def set_validation(data, target, holdout_flg=0):
     return result
 
 
-def squeeze_target(data, level, size):
+def squeeze_target(data, col_name, size):
     '''
-    levelの各要素について、一定数以上のデータがある要素の行のみ残す
+    col_nameの各要素について、一定数以上のデータがある要素の行のみ残す
     '''
 
-    tmp = data.groupby(level).size()
+    tmp = data.groupby(col_name).size()
     target_id = tmp[tmp >= size].index
 
-    data = data.set_index(level)
+    data = data.set_index(col_name)
     result = data.loc[target_id, :]
     result = result.reset_index()
     return result
-
-
-def make_feature_set(dataset, path):
-
-    '''
-    Explain:
-        pathに入ってるfeatureをdatasetにmerge.現状はnpy対応
-    Args:
-    Return:
-    '''
-
-    use_feature = glob.glob(path)
-    p_list = pararell_load_data(use_feature, 0)
-    df_use = pd.concat(p_list, axis=1)
-
-    dataset = pd.concat([dataset, df_use], axis=1)
-    return dataset
-
-
-def row_number(df, level):
-    '''
-    Explain:
-        各level粒度毎にrow_numberをつける。
-        順番は入力されたDFのままなので、ソートが必要な場合は事前に。
-    Args:
-    Return:
-    '''
-    index = np.arange(1, len(df)+1, 1)
-    df['index'] = index
-    min_index = df.groupby(level)['index'].min().reset_index()
-    df = df.merge(min_index, on=level, how='inner')
-    df['row_no'] = df['index_x'] - df['index_y'] + 1
-    df.drop(['index_x', 'index_y'], axis=1, inplace=True)
-    return df
-
-
-" 並列処理 "
-def pararell_process(func, arg_list):
-    p = Pool(multiprocessing.cpu_count())
-    p_list = p.map(func, arg_list)
-    p.close
-    return p_list
-
-
-"  評価関数  "
-def RMSLE(y_obs, y_pred):
-    #  del_idx = np.arange(len(y_obs))[y_obs == 0]
-    #  y_obs = np.delete(y_obs, del_idx)
-    #  y_pred = np.delete(y_pred, del_idx)
-    y_pred = y_pred.clip(min=0.)
-    return np.sqrt(mean_squared_log_error(y_obs, y_pred))
-
 
