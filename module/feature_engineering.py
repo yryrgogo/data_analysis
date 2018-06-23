@@ -31,39 +31,33 @@ def base_aggregation(data, level, feature, method, prefix='', suffix=''):
 
 def diff_feature(df, first, second):
     ' 大きい値がf1に来るようにする '
-    if first<second:
+    if df[first].mean()<df[second].mean():
         f1 = second
         f2 = first
     else:
         f1 = first
         f2 = second
-    print(f'f1: {f1}')
-    print(f'f2: {f2}')
     df[f'{f1}_diff_{f2}@'] = df[f1] - df[f2]
     return df
 
 def division_feature(df, first, second):
     ' 大きい値がf1に来るようにする '
-    if first<second:
+    if df[first].mean()<df[second].mean():
         f1 = second
         f2 = first
     else:
         f1 = first
         f2 = second
-    print(f'f1: {f1}')
-    print(f'f2: {f2}')
     df[f'{f1}_div_{f2}@'] = df[f1] / df[f2]
     return df
 
 def product_feature(df, first, second):
     ' 大きい値がf1に来るようにする '
-    if first<second:
+    if df[first].mean()<df[second].mean():
         f1 = second
         f2 = first
     else:
         f1 = first
         f2 = second
-    print(f'f1: {f1}')
-    print(f'f2: {f2}')
     df[f'{f1}_pro_{f2}@'] = df[f1] * df[f2]
     return df
