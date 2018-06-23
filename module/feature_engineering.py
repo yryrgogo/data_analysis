@@ -29,4 +29,35 @@ def base_aggregation(data, level, feature, method, prefix='', suffix=''):
 
     return result
 
+def diff_feature(df, first, second):
+    ' 大きい値がf1に来るようにする '
+    if first<second:
+        f1 = second
+        f2 = first
+    else:
+        f1 = first
+        f2 = second
+    df[f'{f1}_diff_{f2}@'] = df[f1] - df[f2]
+    return df
 
+def division_feature(df, first, second):
+    ' 大きい値がf1に来るようにする '
+    if first<second:
+        f1 = second
+        f2 = first
+    else:
+        f1 = first
+        f2 = second
+    df[f'{f1}_div_{f2}@'] = df[f1] / df[f2]
+    return df
+
+def product_feature(df, first, second):
+    ' 大きい値がf1に来るようにする '
+    if first<second:
+        f1 = second
+        f2 = first
+    else:
+        f1 = first
+        f2 = second
+    df[f'{f1}_pro_{f2}@'] = df[f1] * df[f2]
+    return df
