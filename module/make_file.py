@@ -4,7 +4,7 @@ import sys, glob
 from load_data import pararell_load_data
 
 
-def make_npy(result, ignore_features=[], prefix='', suffix='', select_list=[], path='../features/1_first_valid/'):
+def make_npy(result, ignore_list=[], prefix='', suffix='', select_list=[], path='../features/1_first_valid/'):
     '''
     Explain:
         .npyで特徴量を保存する
@@ -17,7 +17,7 @@ def make_npy(result, ignore_features=[], prefix='', suffix='', select_list=[], p
     '''
 
     for feature in result.columns:
-        if feature.count('@') and feature not in ignore_features:
+        if feature.count('@') and feature not in ignore_list:
             filename = f'{prefix}{feature}'
             ' 環境パスと相性の悪い記号は置換する '
             filename = filename.replace(

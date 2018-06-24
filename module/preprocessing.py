@@ -183,11 +183,10 @@ def factorize_categoricals(data, cats):
 
 # カテゴリ変数のダミー変数 (二値変数化)を作成する関数
 def get_dummies(data, cat_list, drop=1):
-    input_col = data.columns
     for col in cat_list:
         data = pd.concat([data, pd.get_dummies(data[col], prefix=col)], axis=1)
     if drop==1:
-        data = data.drop(input_col, axis=1)
+        data = data.drop(cat_list, axis=1)
     return data
 
 
