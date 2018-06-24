@@ -53,11 +53,15 @@ def make_feature_set(dataset, path):
     return dataset
 
 
-def make_raw_feature(data, prefix='', select_list=[], ignore_list=[], extension='npy', path=''):
+def make_raw_feature(data, prefix='', select_list=[], ignore_list=[], extension='npy', path='../features/raw_features/', word=''):
 
     for col in data.columns:
-        if col in ignore_list or f'{prefix}{col}' not in select_list:
-            continue
+        if col in ignore_list: continue
+        if len(select_list)>0:
+            if f'{prefix}{col}' not in select_list:continue
+        if len(word)>0:
+            if not(col.count(word)): continue
+
         if extension.count('npy'):
             np.save(f'{path}{prefix}{col}.npy', data[col].values)
         elif extension.count('csv'):
