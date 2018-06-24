@@ -16,6 +16,15 @@ def get_numeric_features(data, ignore):
     return num
 
 
+'dfのカラムにおいてwordを含むカラムをリストで取得'
+def feature_list(df, word):
+    feature_list = []
+    for col in df.columns:
+        if col.count(word):
+            feature_list.append(col)
+    return feature_list
+
+
 def row_number(df, col_name):
     '''
     Explain:
