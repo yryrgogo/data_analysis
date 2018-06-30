@@ -4,7 +4,7 @@ import sys, glob
 from load_data import pararell_load_data
 
 
-def make_npy(result, ignore_list=[], prefix='', suffix='', select_list=[], path='../features/1_first_valid/'):
+def make_npy(result, ignore_list=[], prefix='', suffix='', select_list=[], path='../features/1_first_valid/', logger=False):
     '''
     Explain:
         .npyで特徴量を保存する
@@ -21,12 +21,12 @@ def make_npy(result, ignore_list=[], prefix='', suffix='', select_list=[], path=
             filename = f'{prefix}{feature}'
             ' 環境パスと相性の悪い記号は置換する '
             filename = filename.replace(
-                '/', '_').replace(':', '_').replace(' ', '_').replace('.', '_')
+                '/', '_').replace(':', '_').replace(' ', '_').replace('.', '_').replace('"', '')
             ' .npyをloadして結合するとき、並びが変わらぬ様に昇順ソートしておく '
             #  result = result[[unique_id, feature]].sort_values(by=unique_id)
             #  result.reset_index(drop=True, inplace=True)
 
-            print(result.shape)
+            logger.info(result[feature].value_counts())
 
             if len(select_list)==0:
                 np.save(f'{path}{filename}', result[feature].values)
