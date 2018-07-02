@@ -8,8 +8,6 @@ from multiprocessing import Pool
 import multiprocessing
 
 
-seed = 1208
-
 
 """ 前処理系 """
 def outlier(data, level, value, out_range=1.64, print_flg=0):
@@ -215,7 +213,7 @@ def split_dataset(dataset, val_no):
     return train, test
 
 
-def set_validation(data, target, unique_id, holdout_flg=0):
+def set_validation(data, target, unique_id, val_col='valid_no', seed=1208, holdout_flg=0):
     '''
     Explain:
         データセットにvalidation番号を振る。繰り返し検証を行う際、
@@ -251,7 +249,7 @@ def set_validation(data, target, unique_id, holdout_flg=0):
             cnt+=1
 
             valid_no = np.zeros(len(val_idx))+cnt
-            tmp = pd.DataFrame({'index':val_idx, 'valid_no':valid_no})
+            tmp = pd.DataFrame({'index':val_idx, val_col:valid_no})
 
             if cnt==1:
                 tmp_result = tmp
