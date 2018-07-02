@@ -188,7 +188,7 @@ def get_dummies(data, cat_list, drop=1):
     return data
 
 
-def split_dataset(dataset, val_no):
+def split_dataset(dataset, val_no, val_col='valid_no'):
     """
     時系列用のtrain, testデータを切る。validation_noを受け取り、
     データセットにおいてその番号をもつ行をTestデータ。その番号を
@@ -204,11 +204,15 @@ def split_dataset(dataset, val_no):
         test(df) : 検証用データフレーム(validationカラムはdrop)
     """
 
-    train = dataset[dataset['valid_no'] != val_no].copy()
-    test = dataset[dataset['valid_no'] == val_no].copy()
+    train = dataset[dataset[val_col] != val_no].copy()
+    test = dataset[dataset[val_col] == val_no].copy()
 
-    train.drop(['valid_no'], axis=1, inplace=True)
-    test.drop(['valid_no'], axis=1, inplace=True)
+    train.drop([val_col], axis=1, inplace=True)
+    test.drop([val_col], axis=1, inplace=True)
+
+    if val_col != 'valid_no':
+        train.drop(['valid_no'], axis=1, inplace=True)
+        test.drop(['valid_no'], axis=1, inplace=True)
 
     return train, test
 
