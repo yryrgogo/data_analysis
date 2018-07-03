@@ -207,12 +207,10 @@ def split_dataset(dataset, val_no, val_col='valid_no'):
     train = dataset[dataset[val_col] != val_no].copy()
     test = dataset[dataset[val_col] == val_no].copy()
 
-    train.drop([val_col], axis=1, inplace=True)
-    test.drop([val_col], axis=1, inplace=True)
-
-    if val_col != 'valid_no':
-        train.drop(['valid_no'], axis=1, inplace=True)
-        test.drop(['valid_no'], axis=1, inplace=True)
+    for col in train.columns:
+        if col.count('valid_no'):
+            train.drop(col, axis=1, inplace=True)
+            test.drop(col, axis=1, inplace=True)
 
     return train, test
 
