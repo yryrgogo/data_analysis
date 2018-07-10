@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import sys
+from multiprocessing import Pool
+import multiprocessing
 
 
 " 機械学習でよく使う系 "
