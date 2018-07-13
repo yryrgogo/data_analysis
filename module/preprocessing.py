@@ -215,7 +215,7 @@ def split_dataset(dataset, val_no, val_col='valid_no'):
     return train, test
 
 
-def set_validation(data, target, unique_id, val_col='valid_no', seed=1208, holdout_flg=0):
+def set_validation(data, target, unique_id, val_col='valid_no', fold=4, seed=1208, holdout_flg=0):
     '''
     Explain:
         データセットにvalidation番号を振る。繰り返し検証を行う際、
@@ -240,8 +240,8 @@ def set_validation(data, target, unique_id, val_col='valid_no', seed=1208, holdo
             sys.exit()
 
     else:
-        ' データ4分割してvalidation番号をつける '
-        cv = StratifiedKFold(n_splits=4, shuffle=True, random_state=seed)
+        ' データをfold数に分割してvalidation番号をつける '
+        cv = StratifiedKFold(n_splits=fold, shuffle=True, random_state=seed)
         data = data[[unique_id, target]]
         x = data[unique_id].to_frame()
         y = data[target].values
