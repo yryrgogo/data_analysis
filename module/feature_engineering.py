@@ -40,9 +40,9 @@ def diff_feature(df, first, second):
     df[f'{f1}_diff_{f2}@'] = df[f1] - df[f2]
     return df
 
-def division_feature(df, first, second):
+def division_feature(df, first, second, sort=1):
     ' 大きい値がf1に来るようにする '
-    if df[first].mean()<df[second].mean():
+    if df[first].mean()<df[second].mean() and sort==1:
         f1 = second
         f2 = first
     else:
