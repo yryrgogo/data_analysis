@@ -129,7 +129,7 @@ def impute_avg(data=None, unique_id=None, level=None, index=1, value=None):
     '''
 
     ' 元データとの紐付けをミスらない様にインデックスをセット '
-    data.set_index(unique_id, inplace=True)
+    #  data.set_index(unique_id, inplace=True)
 
     ' Null埋めする為、level粒度の平均値を取得 '
     use_cols = level + [value]
@@ -138,11 +138,11 @@ def impute_avg(data=None, unique_id=None, level=None, index=1, value=None):
 
     ' 平均値でNull埋め '
     null = data[data[value].isnull()]
-    null = null.reset_index()
+    #  null = null.reset_index()
     fill_null = null.merge(imp_avg, on=level[:index], how='inner')
 
     ' インデックスをカラムに戻して、Null埋めしたDFとconcat '
-    data = data[data[value].dropna()].reset_index()
+    data = data[data[value].dropna()]
     result = pd.concat([data, fill_null], axis=0)
 
     return result

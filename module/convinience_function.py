@@ -27,18 +27,18 @@ def feature_list(df, word):
     return feature_list
 
 
-def row_number(df, col_name):
+def row_number(df, level):
     '''
     Explain:
-        col_nameをpartisionとしてrow_numberをつける。
+        levelをpartisionとしてrow_numberをつける。
         順番は入力されたDFのままで行う、ソートが必要な場合は事前に。
     Args:
     Return:
     '''
     index = np.arange(1, len(df)+1, 1)
     df['index'] = index
-    min_index = df.groupby(col_name)['index'].min().reset_index()
-    df = df.merge(min_index, on=col_name, how='inner')
+    min_index = df.groupby(level)['index'].min().reset_index()
+    df = df.merge(min_index, on=level, how='inner')
     df['row_no'] = df['index_x'] - df['index_y'] + 1
     df.drop(['index_x', 'index_y'], axis=1, inplace=True)
     return df
