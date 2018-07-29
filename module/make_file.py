@@ -26,7 +26,8 @@ def make_npy(result, ignore_list=[], prefix='', suffix='', select_list=[], path=
             #  result = result[[unique_id, feature]].sort_values(by=unique_id)
             #  result.reset_index(drop=True, inplace=True)
 
-            logger.info(result[feature].value_counts())
+            if logger:
+                logger.info(result[feature].value_counts())
 
             if len(select_list)==0:
                 np.save(f'{path}{filename}', result[feature].values)
