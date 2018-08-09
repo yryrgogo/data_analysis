@@ -29,6 +29,7 @@ def base_aggregation(data, level, feature, method, prefix='', suffix=''):
 
     return result
 
+
 def diff_feature(df, first, second):
     ' 大きい値がf1に来るようにする '
     if df[first].mean()<df[second].mean():
