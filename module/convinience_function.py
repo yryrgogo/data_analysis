@@ -8,7 +8,7 @@ import multiprocessing
 " 機械学習でよく使う系 "
 #  カテゴリ変数を取得する関数
 def get_categorical_features(data, ignore):
-    obj = [col for col in list(data.columns) if data[col].dtype == 'object' and col not in ignore]
+    obj = [col for col in list(data.columns) if (data[col].dtype == 'object') and col not in ignore]
     return obj
 
 
