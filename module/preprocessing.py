@@ -215,7 +215,7 @@ def split_dataset(dataset, val_no, val_col='valid_no'):
     return train, test
 
 
-def set_validation(data, target, unique_id, val_col='valid_no', fold=4, seed=1208, holdout_flg=0):
+def set_validation(data, target, unique_id, val_col='valid_no', fold=5, seed=1208, holdout_flg=0):
     '''
     Explain:
         データセットにvalidation番号を振る。繰り返し検証を行う際、
