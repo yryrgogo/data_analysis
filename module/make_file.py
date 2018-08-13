@@ -55,15 +55,20 @@ def make_feature_set(dataset, path):
 
 def make_raw_feature(data, prefix='', select_list=[], ignore_list=[], extension='npy', path='../features/raw_features/', word=''):
 
-    for col in data.columns:
-        if col in ignore_list: continue
+    for tmp_col in data.columns:
+        if tmp_col in ignore_list: continue
         if len(select_list)>0:
-            if f'{prefix}{col}' not in select_list:continue
+            if f'{prefix}{tmp_col}' not in select_list:continue
         if len(word)>0:
-            if not(col.count(word)): continue
+            if not(tmp_col.count(word)): continue
 
+<<<<<<< HEAD
         new_col = col.replace('/', '_').replace(':', '_').replace(' ', '_').replace('.', '_').replace('"', '')
         data.rename(columns={col:new_col}, inplace=True)
+=======
+        col = tmp_col.replace('/', '_').replace(':', '_').replace(' ', '_').replace('.', '_').replace('"', '')
+        data.rename(columns={tmp_col:col}, inplace=True)
+>>>>>>> 6ed08b61d4248c2d03c7cfafb851098776673dd1
         if extension.count('npy'):
             np.save(f'{path}{prefix}{new_col}.npy', data[new_col].values)
         elif extension.count('csv'):
