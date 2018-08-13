@@ -20,8 +20,7 @@ def make_npy(result, ignore_list=[], prefix='', suffix='', select_list=[], path=
         if feature.count('@') and feature not in ignore_list:
             filename = f'{prefix}{feature}'
             ' 環境パスと相性の悪い記号は置換する '
-            filename = filename.replace(
-                '/', '_').replace(':', '_').replace(' ', '_').replace('.', '_').replace('"', '')
+            filename = filename.replace('/', '_').replace(':', '_').replace(' ', '_').replace('.', '_').replace('"', '')
             ' .npyをloadして結合するとき、並びが変わらぬ様に昇順ソートしておく '
             #  result = result[[unique_id, feature]].sort_values(by=unique_id)
             #  result.reset_index(drop=True, inplace=True)
@@ -63,8 +62,10 @@ def make_raw_feature(data, prefix='', select_list=[], ignore_list=[], extension=
         if len(word)>0:
             if not(col.count(word)): continue
 
+        new_col = col.replace('/', '_').replace(':', '_').replace(' ', '_').replace('.', '_').replace('"', '')
+        data.rename(columns={col:new_col}, inplace=True)
         if extension.count('npy'):
-            np.save(f'{path}{prefix}{col}.npy', data[col].values)
+            np.save(f'{path}{prefix}{new_col}.npy', data[new_col].values)
         elif extension.count('csv'):
-            data[col].to_csv(f'{path}{prefix}{col}.csv')
+            data[new_col].to_csv(f'{path}{prefix}{new_col}.csv')
 
