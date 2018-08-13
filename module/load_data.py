@@ -58,7 +58,8 @@ def load_file(path):
         return pd.read_csv(path)
     elif path.count('.npy'):
         filename = re.search(r'/([^/.]*).npy', path).group(1)
-        return pd.Series(np.load(path), name=filename)
+        tmp = pd.Series(np.load(path), name=filename)
+        return tmp
 
 
 def pararell_load_data(path_list, kaggle=0):
