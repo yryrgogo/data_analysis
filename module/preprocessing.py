@@ -242,7 +242,7 @@ def set_validation(data, target, unique_id, val_col='valid_no', fold=5, seed=120
     else:
         ' データをfold数に分割してvalidation番号をつける '
         cv = StratifiedKFold(n_splits=fold, shuffle=True, random_state=seed)
-        data = data[[unique_id, target]]
+        data = data[[unique_id, target]].reset_index(drop=True)
         x = data[unique_id].to_frame()
         y = data[target].values
         cnt=0
@@ -254,11 +254,12 @@ def set_validation(data, target, unique_id, val_col='valid_no', fold=5, seed=120
             tmp = pd.DataFrame({'index':val_idx, val_col:valid_no})
 
             if cnt==1:
-                tmp_result = tmp
+                tmp_result = tmp.copy()
             else:
                 tmp_result = pd.concat([tmp_result, tmp], axis=0)
 
         tmp_result.set_index('index', inplace=True)
+
 
         result = data.join(tmp_result)
         result.drop(target, axis=1, inplace=True)
