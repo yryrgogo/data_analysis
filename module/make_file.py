@@ -62,10 +62,11 @@ def make_raw_feature(data, prefix='', select_list=[], ignore_list=[], extension=
         if len(word)>0:
             if not(tmp_col.count(word)): continue
 
-        col = tmp_col.replace('/', '_').replace(':', '_').replace(' ', '_').replace('.', '_').replace('"', '')
-        data.rename(columns={tmp_col:col}, inplace=True)
+        new_col = col.replace('/', '_').replace(':', '_').replace(' ', '_').replace('.', '_').replace('"', '')
+        data.rename(columns={col:new_col}, inplace=True)
+
         if extension.count('npy'):
-            np.save(f'{path}{prefix}{col}.npy', data[col].values)
+            np.save(f'{path}{prefix}{new_col}.npy', data[new_col].values)
         elif extension.count('csv'):
-            data[col].to_csv(f'{path}{prefix}{col}.csv')
+            data[new_col].to_csv(f'{path}{prefix}{new_col}.csv')
 
