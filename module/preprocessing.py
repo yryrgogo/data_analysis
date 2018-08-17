@@ -12,9 +12,10 @@ import multiprocessing
 """ 前処理系 """
 
 ' データセットを標準化、欠損値、無限値の中央値置き換え '
-def data_regulize(df, sc_flg=0):
+def data_regulize(df, sc_flg=0, ignore_feature_list):
     df = df.astype('float16')
     for col in df.columns:
+        if col in ignore_feature_list:continue
         df.loc[:,col] = df[col].replace(np.inf, np.median(df[col].values))
         df.loc[:,col] = df[col].replace(np.nan, np.median(df[col].values))
         ' 標準化 '
