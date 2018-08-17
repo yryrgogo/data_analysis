@@ -10,6 +10,24 @@ import multiprocessing
 
 
 """ 前処理系 """
+
+' データセットを標準化、欠損値、無限値の中央値置き換え '
+def data_regulize(df, sc_flg=0):
+    df = df.astype('float16')
+    for col in df.columns:
+        df.loc[:,col] = df[col].replace(np.inf, np.median(df[col].values))
+        df.loc[:,col] = df[col].replace(np.nan, np.median(df[col].values))
+        ' 標準化 '
+        if sc_flg==1:
+            df.loc[:,col] = sc.fit_transform(df[col])
+            #  avg = df[col].mean()
+            #  se = df[col].std()
+            #  df.loc[:,col] = (df[col] - avg) / se
+
+    return df
+
+
+' 外れ値除去 '
 def outlier(data, level, value, out_range=1.64, print_flg=0):
     '''
     Explain:
