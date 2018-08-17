@@ -12,15 +12,20 @@ import multiprocessing
 """ 前処理系 """
 
 ' データセットを標準化、欠損値、無限値の中央値置き換え '
-def data_regulize(df, sc_flg=0, ignore_feature_list=[]):
-    df = df.astype('float16')
+def data_regulize(df, sc_flg=0, float16_flg=0, ignore_feature_list=[]):
     for col in df.columns:
         if col in ignore_feature_list:continue
-        df.loc[:,col] = df[col].replace(np.inf, np.median(df[col].values))
-        df.loc[:,col] = df[col].replace(np.nan, np.median(df[col].values))
+        if len(df[col].isnull())==0 or len(df[col][df[col]==np.inf])==0:continue
+        print(df[col][df[col].replace(np.inf, np.median(df[col].values))==np.inf])
+
+        #  df.loc[:,col] = df[col].replace(np.inf, np.median(df[col].values))
+        #  df.loc[:,col] = df[col].replace(np.nan, np.median(df[col].values))
+        print(df[col][df[col]==np.inf])
         ' 標準化 '
         if sc_flg==1:
             df.loc[:,col] = sc.fit_transform(df[col])
+        if float16_flg==1:
+            df = df.astype('float16')
             #  avg = df[col].mean()
             #  se = df[col].std()
             #  df.loc[:,col] = (df[col] - avg) / se
