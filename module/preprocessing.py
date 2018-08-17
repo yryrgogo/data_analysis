@@ -12,7 +12,7 @@ import multiprocessing
 """ 前処理系 """
 
 ' データセットを標準化、欠損値、無限値の中央値置き換え '
-def data_regulize(df, sc_flg=0, ignore_feature_list):
+def data_regulize(df, sc_flg=0, ignore_feature_list=[]):
     df = df.astype('float16')
     for col in df.columns:
         if col in ignore_feature_list:continue
