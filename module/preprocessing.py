@@ -22,7 +22,8 @@ def data_regulize(df, sc_flg=0, float16_flg=0, ignore_feature_list=[]):
         #      df.drop(col, axis=1, inplace=True)
 
         #  df.loc[:,col] = df[col].replace(np.inf, np.median(df[col].values))
-        df.loc[:,col].fillna.(np.median(df[col].values), inplace=True)
+        df[col] = df[col].replace(np.inf, np.nan)
+        df[col].fillna.(np.median(df[col].values), inplace=True)
         print(df[col][df[col]==np.inf])
         ' 標準化 '
         if sc_flg==1:
