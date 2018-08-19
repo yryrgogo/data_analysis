@@ -38,6 +38,25 @@ def data_regulize(df, sc_flg=0, float16_flg=0, ignore_feature_list=[]):
     return df
 
 
+def inf_replace_mean(data):
+    for col in data.columns:
+        if len(data[col][data[col]==np.inf])>0:
+            data[col] = data[col].replace(np.inf, data[col].mean())
+
+    return data
+
+
+def max_min_regularize(data):
+    for col in data.columns:
+        c_max = data[col].max()
+        c_min = data[col].min()
+        if c_min<0:
+            data[col] = data[col] + np.abs(c_min)
+        data[col] = data[col]/c_max
+
+    return data
+
+
 ' 外れ値除去 '
 def outlier(data, level, value, out_range=1.64, print_flg=0):
     '''
