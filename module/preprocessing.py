@@ -14,7 +14,7 @@ sc = StandardScaler()
 """ 前処理系 """
 
 ' データセットを標準化、欠損値、無限値の中央値置き換え '
-def data_regulize(df, sc_flg=0, float16_flg=0, ignore_feature_list=[]):
+def data_regulize(df, sc_flg=0, mm_flg=0, float16_flg=0, ignore_feature_list=[]):
     for col in df.columns:
         if col in ignore_feature_list:continue
         if len(df[col].isnull())==0 or len(df[col][df[col]==np.inf])==0:continue
@@ -24,15 +24,17 @@ def data_regulize(df, sc_flg=0, float16_flg=0, ignore_feature_list=[]):
             df.drop(col, axis=1, inplace=True)
             continue
 
-        df[col] = df[col].replace(np.inf, np.median(df[col].values))
-        df[col].fillna(np.median(df[col].values), inplace=True)
+        df[col] = df[col].replace(np.inf, np.mean(df[col].values))
+        df[col].fillna(np.mean(df[col].values), inplace=True)
         #  print(df[col][df[col]==np.inf])
-        ' 標準化 '
+        ' 正規化 / 標準化 '
         if sc_flg==1:
             #  df[col] = sc.fit_transform(df[col])
             avg = df[col].mean()
             se = df[col].std()
             df[col] = (df[col] - avg) / se
+        elif mm_flg==1:
+            df = max_min_regularize(df)
         if float16_flg==1:
             df = df.astype('float16')
 
@@ -49,10 +51,11 @@ def inf_replace_mean(data):
 
 def max_min_regularize(data):
     for col in data.columns:
-        c_max = data[col].max()
         c_min = data[col].min()
         if c_min<0:
             data[col] = data[col] + np.abs(c_min)
+        c_max = data[col].max()
+        data[col] = data[col] / c_max
         data[col] = data[col]/c_max
 
     return data
