@@ -6,8 +6,10 @@ from sklearn.model_selection import StratifiedKFold
 from load_data import pararell_load_data
 from multiprocessing import Pool
 import multiprocessing
+from sklearn.preprocessing import StandardScaler
 
 
+sc = StandardScaler()
 
 """ 前処理系 """
 
@@ -21,17 +23,17 @@ def data_regulize(df, sc_flg=0, float16_flg=0, ignore_feature_list=[]):
         #  if len(df[col][df[col]==np.inf])>0:
         #      df.drop(col, axis=1, inplace=True)
 
-        #  df.loc[:,col] = df[col].replace(np.inf, np.median(df[col].values))
-        df.loc[:,col].fillna.(np.median(df[col].values), inplace=True)
-        print(df[col][df[col]==np.inf])
+        df[col] = df[col].replace(np.inf, np.median(df[col].values))
+        df[col].fillna(np.median(df[col].values), inplace=True)
+        #  print(df[col][df[col]==np.inf])
         ' 標準化 '
         if sc_flg==1:
-            df.loc[:,col] = sc.fit_transform(df[col])
+            #  df[col] = sc.fit_transform(df[col])
+            avg = df[col].mean()
+            se = df[col].std()
+            df[col] = (df[col] - avg) / se
         if float16_flg==1:
             df = df.astype('float16')
-            #  avg = df[col].mean()
-            #  se = df[col].std()
-            #  df.loc[:,col] = (df[col] - avg) / se
 
     return df
 
