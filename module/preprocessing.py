@@ -20,8 +20,9 @@ def data_regulize(df, sc_flg=0, float16_flg=0, ignore_feature_list=[]):
         if len(df[col].isnull())==0 or len(df[col][df[col]==np.inf])==0:continue
 
         ' np.infがあったらdrop '
-        #  if len(df[col][df[col]==np.inf])>0:
-        #      df.drop(col, axis=1, inplace=True)
+        if len(df[col][df[col]==np.inf])>0:
+            df.drop(col, axis=1, inplace=True)
+            continue
 
         df[col] = df[col].replace(np.inf, np.median(df[col].values))
         df[col].fillna(np.median(df[col].values), inplace=True)
@@ -36,6 +37,25 @@ def data_regulize(df, sc_flg=0, float16_flg=0, ignore_feature_list=[]):
             df = df.astype('float16')
 
     return df
+
+
+def inf_replace_mean(data):
+    for col in data.columns:
+        if len(data[col][data[col]==np.inf])>0:
+            data[col] = data[col].replace(np.inf, data[col].mean())
+
+    return data
+
+
+def max_min_regularize(data):
+    for col in data.columns:
+        c_max = data[col].max()
+        c_min = data[col].min()
+        if c_min<0:
+            data[col] = data[col] + np.abs(c_min)
+        data[col] = data[col]/c_max
+
+    return data
 
 
 ' 外れ値除去 '
