@@ -19,10 +19,10 @@ def data_regulize(df, sc_flg=0, mm_flg=0, float16_flg=0, ignore_feature_list=[])
         if col in ignore_feature_list:continue
         if len(df[col].isnull())==0 or len(df[col][df[col]==np.inf])==0:continue
 
-        ' np.infがあったらdrop '
-        if len(df[col][df[col]==np.inf])>0:
-            df.drop(col, axis=1, inplace=True)
-            continue
+        #  ' np.infがあったらdrop '
+        #  if len(df[col][df[col]==np.inf])>0:
+        #      df.drop(col, axis=1, inplace=True)
+        #      continue
 
         df[col] = df[col].replace(np.inf, np.mean(df[col].values))
         df[col].fillna(np.mean(df[col].values), inplace=True)
@@ -41,10 +41,17 @@ def data_regulize(df, sc_flg=0, mm_flg=0, float16_flg=0, ignore_feature_list=[])
     return df
 
 
-def inf_replace_mean(data):
+def inf_replace(data, logger=False, drop=False):
     for col in data.columns:
         if len(data[col][data[col]==np.inf])>0:
+            if drop:
+                data.drop(col, axis=1, inplace=True)
+                if logger:
+                    logger.info(f'drop: {col}')
+                continue
             data[col] = data[col].replace(np.inf, data[col].mean())
+            if logger:
+                logger.info(f'length: {len(data[col][data[col]==np.inf])}')
 
     return data
 
