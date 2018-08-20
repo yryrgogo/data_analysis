@@ -6,64 +6,98 @@ from sklearn.model_selection import StratifiedKFold
 from load_data import pararell_load_data
 from multiprocessing import Pool
 import multiprocessing
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 
 sc = StandardScaler()
+mm = MinMaxScaler()
 
 """ 前処理系 """
 
 ' データセットを標準化、欠損値、無限値の中央値置き換え '
-def data_regulize(df, sc_flg=0, mm_flg=0, float16_flg=0, ignore_feature_list=[]):
-    for col in df.columns:
-        if col in ignore_feature_list:continue
-        if len(df[col].isnull())==0 or len(df[col][df[col]==np.inf])==0:continue
+def data_regulize(df, na_flg=0, inf_flg=0, sc_flg=0, mm_flg=0, float16_flg=0, ignore_feature_list=[], logger=False):
 
-        #  ' np.infがあったらdrop '
-        #  if len(df[col][df[col]==np.inf])>0:
-        #      df.drop(col, axis=1, inplace=True)
-        #      continue
+    if inf_flg==1:
+        df = inf_replace(data=df, logger=logger, ignore_feature_list=ignore_feature_list)
+    if na_flg==1:
+        df = impute_avg(data=df, logger=logger, ignore_feature_list=ignore_feature_list)
 
-        df[col] = df[col].replace(np.inf, np.mean(df[col].values))
-        df[col].fillna(np.mean(df[col].values), inplace=True)
-        #  print(df[col][df[col]==np.inf])
-        ' 正規化 / 標準化 '
-        if sc_flg==1:
-            #  df[col] = sc.fit_transform(df[col])
-            avg = df[col].mean()
-            se = df[col].std()
-            df[col] = (df[col] - avg) / se
-        elif mm_flg==1:
-            df = max_min_regularize(df)
-        if float16_flg==1:
-            df = df.astype('float16')
+    ' 正規化 / 標準化 '
+    if sc_flg==1:
+        #  df[col] = sc.fit_transform(df[col])
+        avg = df[col].mean()
+        se = df[col].std()
+        df[col] = (df[col] - avg) / se
+    elif mm_flg==1:
+        df = max_min_regularize(df, ignore_feature_list=ignore_feature_list, logger=logger)
+    if float16_flg==1:
+        df = df.astype('float16')
 
     return df
 
 
-def inf_replace(data, logger=False, drop=False):
+def impute_avg(data, logger=False, drop=False, ignore_feature_list=[]):
     for col in data.columns:
+        if col in ignore_feature_list:continue
+        if len(data[col][data[col].isnull()])>0:
+            if drop:
+                data.drop(col, axis=1, inplace=True)
+                if logger:
+                    logger.info(f'drop: {col}')
+                continue
+            data[col] = data[col].fillna(data[col].mean())
+            if logger:
+                logger.info(f'{col} impute length: {len(data[col][data[col].isnull()])}')
+
+    return data
+
+
+def inf_replace(data, logger=False, drop=False, ignore_feature_list=[]):
+    for col in data.columns:
+        if col in ignore_feature_list:continue
+
+        inf_plus = np.where(data[col].values == float('inf') )
+        inf_minus = np.where(data[col].values == float('-inf') )
+        for i in range(len(inf_plus[0])):
+            data[col].values[inf_plus[0][i]] = float('nan')
+        for i in range(len(inf_minus[0])):
+            data[col].values[inf_minus[0][i]] = float('nan')
+        inf_plus = np.where(data[col].values == float('inf') )
+        inf_minus = np.where(data[col].values == float('-inf') )
+
         if len(data[col][data[col]==np.inf])>0:
             if drop:
                 data.drop(col, axis=1, inplace=True)
                 if logger:
                     logger.info(f'drop: {col}')
                 continue
-            data[col] = data[col].replace(np.inf, data[col].mean())
+            data[col] = data[col].replace(float(np.inf), data[col].mean())
+            data[col] = data[col].replace(float(-np.inf), data[col].mean())
             if logger:
                 logger.info(f'length: {len(data[col][data[col]==np.inf])}')
 
     return data
 
 
-def max_min_regularize(data):
+def max_min_regularize(data, ignore_feature_list=[], logger=False):
     for col in data.columns:
+        if col in ignore_feature_list:continue
+        #  try:
+        #      data[col] = mm.fit_transform(data[col].values)
+        #  except TypeError:
+        #      if logger:
+        #          logger.info('TypeError')
+        #          logger.info(data[col].drop_duplicates())
+        #  except ValueError:
+        #      if logger:
+        #          logger.info('ValueError')
+        #          logger.info(data[col].shape)
+        #          logger.info(data[col].head())
         c_min = data[col].min()
         if c_min<0:
             data[col] = data[col] + np.abs(c_min)
         c_max = data[col].max()
         data[col] = data[col] / c_max
-        data[col] = data[col]/c_max
 
     return data
 
@@ -150,8 +184,8 @@ def contraction(data, value, limit, max_flg=1, nan_flg=0):
     Explain:
         収縮法。limitより大きいor小さい値をlimitの値で置換する。
     Args:
-        data    : 
-        value   : 
+        data    :
+        value   :
         limit   : 収縮を適用する閾値
         max_flg : limitより大きい値を収縮する場合は1。小さい値を収縮する場合は0。
         null_flg: limitの値ではなくNaNに置換する場合は1。
@@ -170,41 +204,41 @@ def contraction(data, value, limit, max_flg=1, nan_flg=0):
     return data
 
 
-def impute_avg(data=None, unique_id=None, level=None, index=1, value=None):
-    '''
-    Explain:
-        平均値で欠損値補完を行う
-    Args:
-        data(DF)       : NULLを含み、欠損値補完を行うデータ
-        level(list)    : 集計を行う粒度。最終的に欠損値補完を行う粒度が1カラム
-                         でなく、複数カラム必要な時はリストで渡す。
-                         ただし、欠損値補完の集計を行う粒度がリストと異なる場合、
-                         次のindex変数にリストのうち集計に使うカラム数を入力する
-                         (順番注意)
-        index(int)     : 欠損値補完の際に集計する粒度カラム数
-        value(float)   : 欠損値補完する値のカラム名
-    Return:
-        result(DF): 欠損値補完が完了したデータ
-    '''
+#  def impute_avg(data=None, unique_id=none, level=None, index=1, value=None):
+#      '''
+#      Explain:
+#          平均値で欠損値補完を行う
+#      Args:
+#          data(DF)       : nullを含み、欠損値補完を行うデータ
+#          level(list)    : 集計を行う粒度。最終的に欠損値補完を行う粒度が1カラム
+#                           でなく、複数カラム必要な時はリストで渡す。
+#                           ただし、欠損値補完の集計を行う粒度がリストと異なる場合、
+#                           次のindex変数にリストのうち集計に使うカラム数を入力する
+#                           (順番注意)
+#          index(int)     : 欠損値補完の際に集計する粒度カラム数
+#          value(float)   : 欠損値補完する値のカラム名
+#      Return:
+#          result(DF): 欠損値補完が完了したデータ
+#      '''
 
-    ' 元データとの紐付けをミスらない様にインデックスをセット '
-    #  data.set_index(unique_id, inplace=True)
+#      ' 元データとの紐付けをミスらない様にインデックスをセット '
+#      #  data.set_index(unique_id, inplace=true)
 
-    ' Null埋めする為、level粒度の平均値を取得 '
-    use_cols = level + [value]
-    data = data[use_cols]
-    imp_avg = data.groupby(level, as_index=False)[value].mean()
+#      ' Null埋めする為、level粒度の平均値を取得 '
+#      use_cols = level + [value]
+#      data = data[use_cols]
+#      imp_avg = data.groupby(level, as_index=False)[value].mean()
 
-    ' 平均値でNull埋め '
-    null = data[data[value].isnull()]
-    #  null = null.reset_index()
-    fill_null = null.merge(imp_avg, on=level[:index], how='inner')
+#      ' 平均値でNull埋め '
+#      null = data[data[value].isnull()]
+#      #  null = null.reset_index()
+#      fill_null = null.merge(imp_avg, on=level[:index], how='inner')
 
-    ' インデックスをカラムに戻して、Null埋めしたDFとconcat '
-    data = data[data[value].dropna()]
-    result = pd.concat([data, fill_null], axis=0)
+#      ' インデックスをカラムに戻して、Null埋めしたDFとconcat '
+#      data = data[data[value].dropna()]
+#      result = pd.concat([data, fill_null], axis=0)
 
-    return result
+#      return result
 
 
 def lag_feature(data, col_name, lag, level=[]):
