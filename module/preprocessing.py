@@ -62,8 +62,6 @@ def inf_replace(data, logger=False, drop=False, ignore_feature_list=[]):
             data[col].values[inf_plus[0][i]] = float('nan')
         for i in range(len(inf_minus[0])):
             data[col].values[inf_minus[0][i]] = float('nan')
-        inf_plus = np.where(data[col].values == float('inf') )
-        inf_minus = np.where(data[col].values == float('-inf') )
 
         if len(data[col][data[col]==np.inf])>0:
             if drop:

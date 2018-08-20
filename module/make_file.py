@@ -53,7 +53,7 @@ def make_feature_set(dataset, path):
     return dataset
 
 
-def make_raw_feature(data, prefix='', select_list=[], ignore_list=[], extension='npy', path='../features/raw_features/', word=''):
+def make_raw_feature(data, prefix='', select_list=[], ignore_list=[], extension='npy', path='../features/raw_features/', word='', logger=False):
 
     for tmp_col in data.columns:
         if tmp_col in ignore_list: continue
