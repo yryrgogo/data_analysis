@@ -6,7 +6,7 @@ import sys
 def base_aggregation(data, level, feature, method, prefix='', suffix=''):
     '''
     Explain:
-        levelの粒度で集約を行う。この関数が受け取るカラムは一つなので、
+        levelの粒度で集約を行う。この関数が受け取る集計対象カラムは一つなので、
         複数カラムを集計する時はループで繰り返し引数を渡す
     Args:
         level: str/list/tuple。要素数は何個でもOK
