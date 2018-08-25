@@ -295,12 +295,14 @@ def split_dataset(dataset, val_no, val_col='valid_no'):
         test(df) : 検証用データフレーム(validationカラムはdrop)
     """
 
-    train = dataset[dataset[val_col] != val_no].copy()
-    test = dataset[dataset[val_col] == val_no].copy()
+    train = dataset[dataset[val_col] != val_no]
+    test = dataset[dataset[val_col] == val_no]
 
     for col in train.columns:
         if col.count('valid_no'):
             train.drop(col, axis=1, inplace=True)
+    for col in test.columns:
+        if col.count('valid_no'):
             test.drop(col, axis=1, inplace=True)
 
     return train, test
