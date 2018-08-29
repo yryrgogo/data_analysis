@@ -36,7 +36,7 @@ def make_npy(result, ignore_list=[], prefix='', suffix='', select_list=[], path=
                     np.save(f'{path}{filename}', result[feature].values)
 
 
-def make_feature_set(dataset, path):
+def make_feature_set(dataset, path, use_feature=[]):
 
     '''
     Explain:
@@ -45,7 +45,8 @@ def make_feature_set(dataset, path):
     Return:
     '''
 
-    use_feature = glob.glob(path)
+    if len(use_feature)==0:
+        use_feature = glob.glob(path)
     p_list = pararell_load_data(use_feature, 0)
     df_use = pd.concat(p_list, axis=1)
 
