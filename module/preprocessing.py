@@ -55,13 +55,25 @@ def impute_avg(data, logger=False, drop=False, ignore_feature_list=[]):
 def inf_replace(data, logger=False, drop=False, ignore_feature_list=[]):
     for col in data.columns:
         if col in ignore_feature_list:continue
+        data[col] = data[col].replace(np.inf, np.nan)
+        data[col] = data[col].replace(-1*np.inf, np.nan)
 
         inf_plus = np.where(data[col].values == float('inf') )
         inf_minus = np.where(data[col].values == float('-inf') )
         for i in range(len(inf_plus[0])):
-            data[col].values[inf_plus[0][i]] = float('nan')
+            logger.info(f'inf include: {col}')
+            data[col].values[inf_plus[0][i]] = np.nan
         for i in range(len(inf_minus[0])):
-            data[col].values[inf_minus[0][i]] = float('nan')
+            data[col].values[inf_minus[0][i]] = np.nan
+            logger.info(f'-inf include: {col}')
+
+        inf_plus = np.where(data[col].values == float('inf') )
+        inf_minus = np.where(data[col].values == float('-inf') )
+
+        if len(inf_plus)>1 or len(inf_minus)>1:
+            logger.info(f'inf : {inf_plus}')
+            logger.info(f'-inf : {inf_minus}')
+            sys.exit()
 
         if len(data[col][data[col]==np.inf])>0:
             if drop:
