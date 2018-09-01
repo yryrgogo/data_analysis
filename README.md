@@ -72,6 +72,9 @@
 
 #### Feature Table
 
+#### Feature Grouping
+
+#### Google Cloud Storage
 
 ### 5. Machine Learning
 
