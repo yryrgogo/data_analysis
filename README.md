@@ -1,61 +1,97 @@
 # data_analysis
 
-## My System for Data Mining Competition
+## For Data Mining
 
 ### 0. EDA
 
 #### correlation
 
+#### Adversarial Distribusion
 
+##### X-ray
 
 ### 1. Preprocessing
 
 #### Outlier
 
+##### -Construciton
+
 #### Impute
 
-##### Impute by Averaging
+##### -Impute by BaseAggregation
 
-##### Impute by Regression
+##### -Impute by Regression(LGBM)
 
+#### Replace
 
 ### 2. Feature Engineering
 
-#### Likelihood Encoding(Target Encoding)
+#### Categorical Encoding
 
-#### Count Encoding
+##### -Likelihood Encoding(Target Encoding)
 
-#### One Hot Encoding
+##### -Count Encoding
 
-#### Label Encoding
+##### -One Hot Encoding
+
+##### -Label Encoding
 
 #### Base Aggregation
 
-#### Dimentional Reduction
+#### Dimentional Reduction(Embedding)
 
-##### PCA
+##### -PCA
 
-##### LDA
+##### -LDA
+
+##### -tSNE
+
+##### -UMAP
 
 #### Clustering
 
-##### KMEANS
+##### -KMEANS
 
-##### EM Algorithm
-
-#### Embedding
-
-##### T-SNE
-
-##### UMAP
+##### -EM Algorithm
 
 
 ### 3. Feature Selection
 
-#### Feature Importance (GBDT)
+#### Feature Importance (LGBM)
 
-#### LIME
+#### Feature Impact (Decrease the Degree)
+
+#### Feature Weight (about Fold)
 
 #### Shap
 
-#### Partial differential
+#### LIME(Unexecuted)
+
+
+### 4. Feature Management
+
+#### Feature Table
+
+
+### 5. Machine Learning
+
+#### LightGBM
+
+##### -LightGBM Extension
+
+#### -XGBoost
+
+#### -ExtraTrees
+
+#### -LogisticRegression
+
+#### -Ridge
+
+#### -Stan(Bayes)
+
+#### -Keras
+
+
+### 6. Prediction Management
+
+#### Sample Weight
