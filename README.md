@@ -8,7 +8,7 @@
 
 #### Adversarial Distribusion
 
-##### X-ray
+##### -X-ray
 
 ### 1. Preprocessing
 
