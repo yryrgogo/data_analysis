@@ -50,7 +50,7 @@
 
 #### Clustering
 
-##### -KMEANS
+##### -Kmeans
 
 ##### -EM Algorithm
 
