@@ -79,17 +79,19 @@
 
 ##### -LightGBM Extension
 
-#### -XGBoost
+#### XGBoost
 
-#### -ExtraTrees
+#### ExtraTrees
 
-#### -LogisticRegression
+#### LogisticRegression
 
-#### -Ridge
+#### Ridge
 
-#### -Stan(Bayes)
+#### Stan(Bayes)
 
-#### -Keras
+##### -Bayesian LogisticRegression
+
+#### Keras
 
 
 ### 6. Prediction Management
