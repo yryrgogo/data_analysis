@@ -6,9 +6,8 @@ from sklearn.metrics import log_loss, roc_auc_score
 import datetime
 from tqdm import tqdm
 import sys
-sys.path.append('../../../github/module')
-from load_data import load_data, x_y_split
-from preprocessing import set_validation, split_dataset
+sys.path.append('../../../github/library')
+from preprocessing import set_validation, split_data
 from params_lgbm import train_params, train_params_0729, train_params_0815, xgb_params_0814, extra_params, lgr_params
 import xgboost as xgb
 from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier
@@ -35,7 +34,7 @@ def sc_metrics(test, pred, metric='auc'):
         print('score caliculation error!')
 
 
-def cross_validation(logger, dataset, target, val_col='valid_no', params=train_params, metric='auc', categorical_feature=[], feim_log=[1], truncate_flg=0, num_iterations=3500, learning_rate=0.04, early_stopping_rounds=150, model_type='lgb'):
+def cross_validation(logger, data, target, val_col=None, fold=5, seed=1208, params=train_params, metric='auc', categorical_feature=[], feim_log=[1], truncate_flg=0, num_iterations=3500, learning_rate=0.04, early_stopping_rounds=150, model_type='lgb'):
     '''
     Explain:
         CVで評価を行う.
@@ -52,18 +51,27 @@ def cross_validation(logger, dataset, target, val_col='valid_no', params=train_p
     elif metric == 'logloss':
         best_score = 100
 
+    y = data[target]
     cv_feim = pd.DataFrame([])
-    valid_list = dataset[val_col].drop_duplicates().values
+
+    #  if val_col != None:
+    #      valid_list = data[val_col].drop_duplicates().values
+    #  else:
+    #      valid_list = []
     ' カラム名をソートし、カラム順による影響をなくす '
-    dataset.sort_index(axis=1, inplace=True)
+    data.sort_index(axis=1, inplace=True)
 
-    for i, val_no in enumerate(valid_list):
+    folds =StratifiedKFold(n_splits=fold, shuffle=True, random_state=seed) #1
+    use_cols = [f for f in data.columns if f not in ['SK_ID_CURR']]
 
-        train, valid = split_dataset(dataset, val_no, val_col=val_col)
-        x_train, y_train = x_y_split(train, target)
-        x_val, y_val = x_y_split(valid, target)
+    for n_fold, (trn_idx, val_idx) in enumerate(folds.split(data,y)):
 
-        use_cols = list(x_train.columns)
+    #  for i, val_no in enumerate(valid_list):
+
+        x_train, y_train = data.iloc[use_cols].iloc[trn_idx], y.iloc[trn_idx]
+        x_val, y_val = data[use_cols].iloc[val_idx], y.iloc[val_idx]
+
+        #  train, valid = split_data(data, val_no, val_col=val_col)
         if i==0:
             logger.info(f'\nTrainset Col Number: {len(use_cols)}')
 
@@ -137,7 +145,7 @@ def cross_validation(logger, dataset, target, val_col='valid_no', params=train_p
     return cv_feim, len(use_cols)
 
 
-def validation(logger, dataset, val_no, target, categorical, viz_flg=0, pts_score='0', best_score=0):
+def validation(logger, data, val_no, target, categorical, viz_flg=0, pts_score='0', best_score=0):
     '''
     Explain:
         trainセットとvalidationセットを読み込み、モデルを検証する。
@@ -146,18 +154,19 @@ def validation(logger, dataset, val_no, target, categorical, viz_flg=0, pts_scor
     Return:
     '''
     # 学習用、テスト用データセットを作成
-    dataset = dataset.set_index('SK_ID_CURR')
-    train, valid = split_dataset(dataset, val_no)
-    x_train, y_train = x_y_split(train, target)
-    x_val, y_val = x_y_split(valid, target)
+    data = data.set_index('SK_ID_CURR')
+    train, valid = split_data(data, val_no)
+
+    x_train, y_train = train, train[target]
+    x_val, y_val = valid, valid[target]
 
     ' 全サンプルに対する予測を出力する '
-    x_all, y_all = x_y_split(dataset, target)
+    x_all, y_all = data, data[target]
 
     use_cols = list(x_train.columns.values)
 
-    lgb_train = lgb.Dataset(data=x_train, label=y_train)
-    lgb_eval = lgb.Dataset(data=x_val, label=y_val)
+    lgb_train = lgb.data(data=x_train, label=y_train)
+    lgb_eval = lgb.data(data=x_val, label=y_val)
 
     ' 学習 '
     clf = lgb.train(train_params,
@@ -194,7 +203,7 @@ def validation(logger, dataset, val_no, target, categorical, viz_flg=0, pts_scor
 
 def prediction(logger, train, test, target, categorical_feature=[], metric='auc', params={}, num_iterations=20000, learning_rate=0.02, model_type='lgb'):
 
-    x_train, y_train = x_y_split(train, target)
+    x_train, y_train = train, train[target]
     use_cols = x_train.columns.values
     use_cols = [col for col in use_cols if col not in ignore_features and not(col.count('valid_no'))]
     test = test[use_cols]
@@ -235,9 +244,9 @@ def cross_prediction(logger, train, test, target, categorical_feature=[], val_co
 
     for i, val_no in enumerate(valid_list):
 
-        trn_set, valid = split_dataset(train, val_no, val_col=val_col)
-        x_train, y_train = x_y_split(trn_set, target)
-        x_val, y_val = x_y_split(valid, target)
+        trn_set, valid = split_data(train, val_no, val_col=val_col)
+        x_train, y_train = trn_set, trn_set[target]
+        x_val, y_val = valid, valid[target]
 
         use_cols = list(x_train.columns)
         if i==0:
@@ -340,9 +349,9 @@ def classifier_model(x_train, y_train, x_val=[], y_val=[], test=[], params={}, c
 
     ' LightGBM / XGBoost / ExtraTrees / LogisticRegression'
     if model_type=='lgb':
-        lgb_train = lgb.Dataset(data=x_train, label=y_train)
+        lgb_train = lgb.data(data=x_train, label=y_train)
         if len(x_val)>0:
-            lgb_eval = lgb.Dataset(data=x_val, label=y_val)
+            lgb_eval = lgb.data(data=x_val, label=y_val)
             clf = lgb.train(params=params,
                             train_set=lgb_train,
                             valid_sets=lgb_eval,
