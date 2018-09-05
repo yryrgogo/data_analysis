@@ -20,12 +20,11 @@ from time import time, sleep
 from datetime import datetime
 from multiprocessing import cpu_count, Pool
 import gc
+import pickle
 
 # =============================================================================
 # global variables
 # =============================================================================
-
-COMPETITION_NAME = 'home-credit-default-risk'
 
 # =============================================================================
 # def
@@ -82,7 +81,28 @@ def to_feather(df, path):
     return
 
 
-def to_pickles(df, path, fname='', split_size=3):
+def to_pickle(path, obj):
+    with open(path, 'wb') as f:
+        pickle.dump(obj=obj, file=f)
+        print(f"""
+#==============================================================================
+# PICKLE TO SUCCESS !!! {path}
+#==============================================================================
+""")
+
+
+def read_pickle(path):
+    with open(path, 'rb') as f:
+        obj = pickle.load(f)
+        print(f"""
+#==============================================================================
+# PICKLE READ SUCCESS !!! {path}
+#==============================================================================
+""")
+        return obj
+
+
+def to_df_pickle(df, path, fname='', split_size=3):
     """
     path = '../output/mydf'
 
@@ -104,7 +124,7 @@ def to_pickles(df, path, fname='', split_size=3):
     return
 
 
-def read_pickles(path, col=None, use_tqdm=True):
+def read_df_pickle(path, col=None, use_tqdm=True):
     if col is None:
         if use_tqdm:
             df = pd.concat([pd.read_pickle(f)
@@ -380,3 +400,38 @@ def stop_instance():
     send_line('stop instance')
     os.system(
         f'gcloud compute instances stop {os.uname()[1]} --zone us-east1-b')
+
+
+def x_y_split(data, target):
+    x = data.drop(target, axis=1)
+    y = data[target].values
+    return x, y
+
+
+def load_file(path):
+    if path.count('.csv'):
+        return pd.read_csv(path)
+    elif path.count('.npy'):
+        filename = re.search(r'/([^/.]*).npy', path).group(1)
+        tmp = pd.Series(np.load(path), name=filename)
+        return tmp
+
+
+def pararell_load_data(path_list):
+    p = Pool(multiprocessing.cpu_count())
+    p_list = p.map(load_file, path_list)
+    p.close
+
+    return p_list
+
+
+def path_info(path):
+
+    path_dict = {}
+    path_dict['filename'] = re.search(r'/([^/.]*).csv', path).group(1)  # Linux
+    path_dict['particle'] = re.search(r'feature_([0-9]+)@', path).group(1)
+    path_dict['time'] = re.search(r'@([^.]*)@', path).group(1)
+    path_dict['elem'] = re.search(r'\D@([^.]*).csv', path).group(1)
+
+    return path_dict
+

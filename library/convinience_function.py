@@ -47,9 +47,9 @@ def row_number(df, level):
 " 並列処理 "
 def pararell_process(func, arg_list):
     p = Pool(multiprocessing.cpu_count())
-    p_list = p.map(func, arg_list)
+    callback = p.map(func, arg_list)
     p.close
-    return p_list
+    return callback
 
 
 "  評価関数  "

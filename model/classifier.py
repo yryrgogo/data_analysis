@@ -6,8 +6,10 @@ from sklearn.metrics import log_loss, roc_auc_score
 import datetime
 from tqdm import tqdm
 import sys
-sys.path.append('../../../github/library')
-from preprocessing import set_validation, split_data
+from x_ray import x_ray
+sys.path.append('../library')
+from utils import x_y_split
+from preprocessing import set_validation, split_dataset
 from params_lgbm import train_params, train_params_0729, train_params_0815, xgb_params_0814, extra_params, lgr_params
 import xgboost as xgb
 from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier
@@ -23,6 +25,33 @@ unique_id = 'SK_ID_CURR'
 target = 'TARGET'
 ignore_features = [unique_id, target, 'valid_no', 'is_train', 'is_test', 'valid_no_2', 'valid_no_3', 'valid_no_4']
 
+train_params = {
+    #  'boosting':'dart',
+    'num_threads': 35,
+    'learning_rate':0.02,
+    #  'colsample_bytree':0.01,
+    'colsample_bytree':0.02,
+    #  'subsample':0.9,
+    'min_split_gain':0.01,
+    'objective':'binary',
+    'boosting_type':'gbdt',
+    'metric':'auc',
+    'max_depth':6,
+    'min_child_weight':18,
+    #  'min_child_weight':36,
+    #  'max_bin':250,
+    #  'min_child_samples':96,
+    #  'min_data_in_bin':96,
+
+    'lambda_l1':0.1,
+    'lambda_l2':90,
+    'num_leaves':20,
+    #  'num_leaves':11,
+    'random_seed': 1208,
+    'bagging_seed':1208,
+    'feature_fraction_seed':1208,
+    'data_random_seed':1208
+    }
 
 
 def sc_metrics(test, pred, metric='auc'):
@@ -62,61 +91,61 @@ def cross_validation(logger, data, target, val_col=None, fold=5, seed=1208, para
     data.sort_index(axis=1, inplace=True)
 
     folds =StratifiedKFold(n_splits=fold, shuffle=True, random_state=seed) #1
-    use_cols = [f for f in data.columns if f not in ['SK_ID_CURR']]
+    use_cols = [f for f in data.columns if f not in ignore_features]
 
     for n_fold, (trn_idx, val_idx) in enumerate(folds.split(data,y)):
 
     #  for i, val_no in enumerate(valid_list):
 
-        x_train, y_train = data.iloc[use_cols].iloc[trn_idx], y.iloc[trn_idx]
-        x_val, y_val = data[use_cols].iloc[val_idx], y.iloc[val_idx]
+        x_train, y_train = data[use_cols].iloc[trn_idx, :], y.iloc[trn_idx]
+        x_val, y_val = data[use_cols].iloc[val_idx, :], y.iloc[val_idx]
 
         #  train, valid = split_data(data, val_no, val_col=val_col)
-        if i==0:
+        if n_fold==0:
             logger.info(f'\nTrainset Col Number: {len(use_cols)}')
 
         clf, y_pred = classifier_model(x_train=x_train, y_train=y_train, x_val=x_val, y_val=y_val, params=params, categorical_feature=categorical_feature, num_iterations=num_iterations, early_stopping_rounds=early_stopping_rounds, learning_rate=learning_rate, model_type=model_type)
 
+        result = x_ray(model=clf, valid=x_val)
+        return result
+
+        import pickle
+        with open('clf.pickle', 'wb') as f:
+            pickle.dump(obj=clf, file=f)
+        sys.exit()
+
+
         sc_score = sc_metrics(y_val, y_pred, metric)
-        if val_no==2:
-            val_2_score = sc_score
+        if n_fold==0:
+            fold0_score = sc_score
 
         list_score.append(sc_score)
         #  list_best_iterations.append(clf.current_iteration())
-        logger.info(f'validation: {val_no} / {metric}: {sc_score}')
+        logger.info(f'validation: {n_fold} / {metric}: {sc_score}')
 
         if truncate_flg==1:
             sum_score = sum(list_score)
             ' 一定基準を満たさなかったら打ち止め '
-            #  if val_no==2 and sum_score<0.807:
-            #  if val_no==2 and sum_score<0.8110:
-            if val_no==2 and sum_score<0.813:
-            #  if val_no==2 and sum_score<0.8038:
+            if n_fold==0 and sum_score<0.813:
                 return [val_2_score], 0
-            #  elif val_no==1 and sum_score<1.6110:
-            elif val_no==1 and sum_score<1.6155:
-            #  elif val_no==1 and sum_score<1.5967:
+            elif n_fold==1 and sum_score<1.6155:
                 return [val_2_score], 0
-            #  elif val_no==5 and (sum_score<2.406 or sc_score<0.8065):
-            elif val_no==5 and sum_score<2.3:
-            #  elif val_no==5 and (sum_score<2.395 or sc_score<0.798):
+            elif n_fold==2 and sum_score<2.3:
                 return [val_2_score], 0
-            #  elif val_no==3 and sum_score<3.209:
-            elif val_no==3 and sum_score<3.1:
-            #  elif val_no==3 and sum_score<3.193:
-                return [val_2_score], 0
+            elif n_fold==3 and sum_score<3.1:
+                return [fold0_score], 0
 
         ' Feature Importance '
         if model_type=='lgb':
-            tmp_feim = pd.Series(clf.feature_importance(), name=f'{val_no}_importance')
+            tmp_feim = pd.Series(clf.feature_importance(), name=f'{n_fold}_importance')
             feature_name = pd.Series(use_cols, name='feature')
             feim = pd.concat([feature_name, tmp_feim], axis=1)
         elif model_type=='xgb':
             tmp_feim = clf.get_fscore()
-            feim = pd.Series(tmp_feim,  name=f'{val_no}_importance').to_frame().reset_index().rename(columns={'index':'feature'})
+            feim = pd.Series(tmp_feim,  name=f'{n_fold}_importance').to_frame().reset_index().rename(columns={'index':'feature'})
         elif model_type=='ext':
             tmp_feim = clf.feature_importance_()
-            feim = pd.Series(tmp_feim,  name=f'{val_no}_importance').to_frame().reset_index().rename(columns={'index':'feature'})
+            feim = pd.Series(tmp_feim,  name=f'{n_fold}_importance').to_frame().reset_index().rename(columns={'index':'feature'})
 
         if len(cv_feim)==0:
             cv_feim = feim.copy()
@@ -130,13 +159,13 @@ def cross_validation(logger, data, target, val_col=None, fold=5, seed=1208, para
     cv_feim['cv_score'] = cv_score
 
     importance = []
-    for val_no in valid_list:
+    for n_fold in range(n_fold+1):
         if len(importance)==0:
-            importance = cv_feim[f'{val_no}_importance'].values
+            importance = cv_feim[f'{n_fold}_importance'].values
         else:
-            importance += cv_feim[f'{val_no}_importance'].values
+            importance += cv_feim[f'{n_fold}_importance'].values
 
-    cv_feim['avg_importance'] = importance / len(valid_list)
+    cv_feim['avg_importance'] = importance / n_fold+1
     cv_feim.sort_values(by=f'avg_importance', ascending=False, inplace=True)
     cv_feim['rank'] = np.arange(len(cv_feim))+1
 
@@ -157,16 +186,16 @@ def validation(logger, data, val_no, target, categorical, viz_flg=0, pts_score='
     data = data.set_index('SK_ID_CURR')
     train, valid = split_data(data, val_no)
 
-    x_train, y_train = train, train[target]
-    x_val, y_val = valid, valid[target]
+    x_train, y_train = x_y_split(tarin, target)
+    x_val, y_val = x_y_split(valid, target)
 
     ' 全サンプルに対する予測を出力する '
     x_all, y_all = data, data[target]
 
     use_cols = list(x_train.columns.values)
 
-    lgb_train = lgb.data(data=x_train, label=y_train)
-    lgb_eval = lgb.data(data=x_val, label=y_val)
+    lgb_train = lgb.Dataset(data=x_train, label=y_train)
+    lgb_eval = lgb.Dataset(data=x_val, label=y_val)
 
     ' 学習 '
     clf = lgb.train(train_params,
@@ -240,13 +269,23 @@ def cross_prediction(logger, train, test, target, categorical_feature=[], val_co
 
     ' カラム名をソートし、カラム順による精度への影響をなくす '
     train.sort_index(axis=1, inplace=True)
+    y = train[target]
     test.sort_index(axis=1, inplace=True)
+    use_cols = [f for f in train.columns if f not in ignore_features]
 
-    for i, val_no in enumerate(valid_list):
+    #  for i, val_no in enumerate(valid_list):
 
-        trn_set, valid = split_data(train, val_no, val_col=val_col)
-        x_train, y_train = trn_set, trn_set[target]
-        x_val, y_val = valid, valid[target]
+    folds =StratifiedKFold(n_splits=fold, shuffle=True, random_state=seed) #1
+    for n_fold, (trn_idx, val_idx) in enumerate(folds.split(train,y)):
+
+    #  for i, val_no in enumerate(valid_list):
+
+        x_train, y_train = train.iloc[use_cols].iloc[trn_idx], y.iloc[trn_idx]
+        x_val, y_val = train[use_cols].iloc[val_idx], y.iloc[val_idx]
+
+        #  trn_set, valid = split_data(train, val_no, val_col=val_col)
+        #  x_train, y_train = x_y_split(trn_set, target)
+        #  x_val, y_val = x_y_split(valid, target)
 
         use_cols = list(x_train.columns)
         if i==0:
@@ -349,9 +388,11 @@ def classifier_model(x_train, y_train, x_val=[], y_val=[], test=[], params={}, c
 
     ' LightGBM / XGBoost / ExtraTrees / LogisticRegression'
     if model_type=='lgb':
-        lgb_train = lgb.data(data=x_train, label=y_train)
+        if len(params)==0:
+            params = train_params
+        lgb_train = lgb.Dataset(data=x_train, label=y_train)
         if len(x_val)>0:
-            lgb_eval = lgb.data(data=x_val, label=y_val)
+            lgb_eval = lgb.Dataset(data=x_val, label=y_val)
             clf = lgb.train(params=params,
                             train_set=lgb_train,
                             valid_sets=lgb_eval,
