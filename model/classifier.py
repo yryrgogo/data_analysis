@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import lightgbm as lgb
-from sklearn.model_selection import ParameterGrid, StratifiedKFold
+from sklearn.model_selection import ParameterGrid, StratifiedKFold, GroupKFold
 from sklearn.metrics import log_loss, roc_auc_score
 import datetime
 from tqdm import tqdm
@@ -62,95 +62,91 @@ def sc_metrics(test, pred, metric='auc'):
     else:
         print('score caliculation error!')
 
+def judgement(score, iter_no, return_score):
+    ' 一定基準を満たさなかったら打ち止め '
+    if iter_no==0 and score<0.813:
+        return [re_value], True
+    elif iter_no==1 and score<1.6155:
+        return [re_value], True
+    elif iter_no==2 and score<2.3:
+        return [re_value], True
+    elif iter_no==3 and score<3.1:
+        return [re_value], True
+    else:
+        return [re_value], False
 
-def cross_validation(logger, data, target, val_col=None, fold=5, seed=1208, params=train_params, metric='auc', categorical_feature=[], feim_log=[1], truncate_flg=0, num_iterations=3500, learning_rate=0.04, early_stopping_rounds=150, model_type='lgb'):
-    '''
-    Explain:
-        CVで評価を行う.
-    Args:
-    Return:
-    '''
+
+def df_feature_importance(model, model_type, feim_name='importance'):
+    ' Feature Importance '
+    if model_type=='lgb':
+        tmp_feim = pd.Series(clf.feature_importance(), name=feim_name)
+        feature_name = pd.Series(use_cols, name='feature')
+        feim = pd.concat([feature_name, tmp_feim], axis=1)
+    elif model_type=='xgb':
+        tmp_feim = clf.get_fscore()
+        feim = pd.Series(tmp_feim,  name=feim_name).to_frame().reset_index().rename(columns={'index':'feature'})
+    elif model_type=='ext':
+        tmp_feim = clf.feature_importance_()
+        feim = pd.Series(tmp_feim,  name=feim_name).to_frame().reset_index().rename(columns={'index':'feature'})
+
+    return feim
+
+
+def cross_validation(logger, train, target, fold_type='stratified', fold=5, seed=1208, params=train_params, metric='auc', categorical_feature=[], truncate_flg=0, num_iterations=3500, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb'):
 
     list_score = []
-    list_best_iterations = []
-    best_params = None
+    y = train[target]
+    cv_feim = pd.trainFrame([])
 
-    if metric == 'auc':
-        best_score = 0
-    elif metric == 'logloss':
-        best_score = 100
-
-    y = data[target]
-    cv_feim = pd.DataFrame([])
-
-    #  if val_col != None:
-    #      valid_list = data[val_col].drop_duplicates().values
-    #  else:
-    #      valid_list = []
     ' カラム名をソートし、カラム順による影響をなくす '
-    data.sort_index(axis=1, inplace=True)
+    train.sort_index(axis=1, inplace=True)
 
-    folds =StratifiedKFold(n_splits=fold, shuffle=True, random_state=seed) #1
-    use_cols = [f for f in data.columns if f not in ignore_features]
+    ' KFold '
+    if fold_type=='stratified':
+        folds = StratifiedKFold(n_splits=fold, shuffle=True, random_state=seed) #1
+        kfold = folds.split(train,y)
+    elif fold_type=='group':
+        folds = GroupKFold(n_splits=fold)
+        kfold = folds.split(train,y, groups=train.index.values)
 
-    for n_fold, (trn_idx, val_idx) in enumerate(folds.split(data,y)):
+    use_cols = [f for f in train.columns if f not in ignore_features]
 
-    #  for i, val_no in enumerate(valid_list):
+    for n_fold, (trn_idx, val_idx) in enumerate(kfold):
 
-        x_train, y_train = data[use_cols].iloc[trn_idx, :], y.iloc[trn_idx]
-        x_val, y_val = data[use_cols].iloc[val_idx, :], y.iloc[val_idx]
+        x_train, y_train = train[use_cols].iloc[trn_idx, :], y.iloc[trn_idx]
+        x_val, y_val = train[use_cols].iloc[val_idx, :], y.iloc[val_idx]
 
-        #  train, valid = split_data(data, val_no, val_col=val_col)
         if n_fold==0:
             logger.info(f'\nTrainset Col Number: {len(use_cols)}')
 
-        clf, y_pred = classifier_model(x_train=x_train, y_train=y_train, x_val=x_val, y_val=y_val, params=params, categorical_feature=categorical_feature, num_iterations=num_iterations, early_stopping_rounds=early_stopping_rounds, learning_rate=learning_rate, model_type=model_type)
+        clf, y_pred = classifier(x_train=x_train, y_train=y_train, x_val=x_val, y_val=y_val, params=params, categorical_feature=categorical_feature, num_iterations=num_iterations, early_stopping_rounds=early_stopping_rounds, learning_rate=learning_rate, model_type=model_type)
 
-        result = x_ray(model=clf, valid=x_val)
-        return result
-
-        import pickle
-        with open('clf.pickle', 'wb') as f:
-            pickle.dump(obj=clf, file=f)
-        sys.exit()
-
+        ' 自作x-rayのテスト '
+        #  result = x_ray(model=clf, valid=x_val)
+        #  return result
+        #  import pickle
+        #  with open('clf.pickle', 'wb') as f:
+        #      pickle.dump(obj=clf, file=f)
+        #  sys.exit()
 
         sc_score = sc_metrics(y_val, y_pred, metric)
         if n_fold==0:
-            fold0_score = sc_score
+            first_score = sc_score
 
         list_score.append(sc_score)
-        #  list_best_iterations.append(clf.current_iteration())
-        logger.info(f'validation: {n_fold} / {metric}: {sc_score}')
+        logger.info(f'validation: {n_fold} | {metric}: {sc_score}')
 
         if truncate_flg==1:
-            sum_score = sum(list_score)
-            ' 一定基準を満たさなかったら打ち止め '
-            if n_fold==0 and sum_score<0.813:
-                return [val_2_score], 0
-            elif n_fold==1 and sum_score<1.6155:
-                return [val_2_score], 0
-            elif n_fold==2 and sum_score<2.3:
-                return [val_2_score], 0
-            elif n_fold==3 and sum_score<3.1:
-                return [fold0_score], 0
+            re_value, judge = judgement(score=sum(list_score), iter_no=n_fold, re_value=first_score)
+            if judge: return re_value, 0
 
-        ' Feature Importance '
-        if model_type=='lgb':
-            tmp_feim = pd.Series(clf.feature_importance(), name=f'{n_fold}_importance')
-            feature_name = pd.Series(use_cols, name='feature')
-            feim = pd.concat([feature_name, tmp_feim], axis=1)
-        elif model_type=='xgb':
-            tmp_feim = clf.get_fscore()
-            feim = pd.Series(tmp_feim,  name=f'{n_fold}_importance').to_frame().reset_index().rename(columns={'index':'feature'})
-        elif model_type=='ext':
-            tmp_feim = clf.feature_importance_()
-            feim = pd.Series(tmp_feim,  name=f'{n_fold}_importance').to_frame().reset_index().rename(columns={'index':'feature'})
+        feim_name = f'{n_fold}_importance'
+        feim = df_feature_importance(model=clf, model_type=model_type, feim_name=feim_name)
 
-        if len(cv_feim)==0:
-            cv_feim = feim.copy()
-        else:
-            cv_feim = cv_feim.merge(feim, on='feature', how='inner')
+    if len(cv_feim)==0:
+        cv_feim = feim.copy()
+    else:
+        cv_feim = cv_feim.merge(feim, on='feature', how='inner')
 
     cv_score = np.mean(list_score)
     logger.info(f'train shape: {x_train.shape}')
@@ -161,7 +157,7 @@ def cross_validation(logger, data, target, val_col=None, fold=5, seed=1208, para
     importance = []
     for n_fold in range(n_fold+1):
         if len(importance)==0:
-            importance = cv_feim[f'{n_fold}_importance'].values
+            importance = cv_feim[f'{n_fold}_importance'].values.copy()
         else:
             importance += cv_feim[f'{n_fold}_importance'].values
 
@@ -169,68 +165,10 @@ def cross_validation(logger, data, target, val_col=None, fold=5, seed=1208, para
     cv_feim.sort_values(by=f'avg_importance', ascending=False, inplace=True)
     cv_feim['rank'] = np.arange(len(cv_feim))+1
 
-    #  cv_feim.to_csv(f'../output/cv_feature_importances_{metric}_{cv_score}.csv')
-
     return cv_feim, len(use_cols)
 
 
-def validation(logger, data, val_no, target, categorical, viz_flg=0, pts_score='0', best_score=0):
-    '''
-    Explain:
-        trainセットとvalidationセットを読み込み、モデルを検証する。
-        必要な場合は予測結果を探索する為、入力データに予測値を結合したデータを返す。
-    Args:
-    Return:
-    '''
-    # 学習用、テスト用データセットを作成
-    data = data.set_index('SK_ID_CURR')
-    train, valid = split_data(data, val_no)
-
-    x_train, y_train = x_y_split(tarin, target)
-    x_val, y_val = x_y_split(valid, target)
-
-    ' 全サンプルに対する予測を出力する '
-    x_all, y_all = data, data[target]
-
-    use_cols = list(x_train.columns.values)
-
-    lgb_train = lgb.Dataset(data=x_train, label=y_train)
-    lgb_eval = lgb.Dataset(data=x_val, label=y_val)
-
-    ' 学習 '
-    clf = lgb.train(train_params,
-                    lgb_train,
-                    valid_sets=lgb_eval,
-                    early_stopping_rounds=150,
-                    verbose_eval=200
-                    )
-
-    y_pred = clf.predict(x_val)
-
-    ' スコア '
-    sc_score = sc_metrics(y_val, y_pred)
-
-    logger.info('prediction score: {}'.format(sc_score))
-
-    ' feature importance output '
-    ftim = pd.DataFrame({'feature': use_cols, 'importance': clf.feature_importance()})
-    ftim['score'] = sc_score
-
-    ' best_scoreを更新したら、全サンプルに予測値をつけて出力（可視化用） '
-    if sc_score > best_score:
-        ftim.sort_values(by='importance', ascending=False, inplace=True)
-        ftim.to_csv(f"../prediction/use_features/{start_time[:11]}_valid{val_no}_use_{len(use_cols)}col_auc_{str(sc_score).replace('.', '_')}.csv", index=False)
-        y_pred = clf.predict(x_all[use_cols])
-        x_all = x_all.reset_index()[[unique_id, 'valid_no']]
-        x_all['prediction'] = y_pred
-        x_all['valid_no'] = x_all['valid_no'].map(lambda x:val_no if x==val_no else 0)
-        x_all[f'score_cv{val_no}'] = sc_score
-        x_all.to_csv(f"../prediction/{start_time[:11]}_valid{val_no}_{len(use_cols)}col_auc_{str(sc_score).replace('.', '_')}.csv", index=False)
-
-    return ftim
-
-
-def prediction(logger, train, test, target, categorical_feature=[], metric='auc', params={}, num_iterations=20000, learning_rate=0.02, model_type='lgb'):
+def prediction(logger, train, test, target, categorical_feature=[], metric='auc', params={}, num_iterations=20000, learning_rate=0.02, model_type='lgb', oof_flg=False):
 
     x_train, y_train = train, train[target]
     use_cols = x_train.columns.values
@@ -238,30 +176,15 @@ def prediction(logger, train, test, target, categorical_feature=[], metric='auc'
     test = test[use_cols]
 
     ' 学習 '
-    clf, y_pred = classifier_model(x_train=x_train[use_cols], y_train=y_train, params=params, test=test, categorical_feature=categorical_feature, num_iterations=num_iterations, learning_rate=learning_rate, model_type=model_type)
+    clf, y_pred = classifier(x_train=x_train[use_cols], y_train=y_train, params=params, test=test, categorical_feature=categorical_feature, num_iterations=num_iterations, learning_rate=learning_rate, model_type=model_type)
 
     return y_pred, len(use_cols)
 
 
 def cross_prediction(logger, train, test, target, categorical_feature=[], val_col='valid_no', metric='auc', params={}, num_iterations=20000, learning_rate=0.02, early_stopping_rounds=150, model_type='lgb'):
-    '''
-    Explain:
-        交差検証を行う.
-        必要な場合はグリッドサーチでパラメータを探索する.
-    Args:
-    Return:
-    '''
 
     list_score = []
     list_pred = []
-    list_best_iterations = []
-    best_params = None
-
-    if metric == 'auc':
-        best_score = 0
-    elif metric == 'logloss':
-        best_score = 100
-
 
     valid_list = train[val_col].drop_duplicates().values
     prediction = np.array([])
@@ -273,22 +196,14 @@ def cross_prediction(logger, train, test, target, categorical_feature=[], val_co
     test.sort_index(axis=1, inplace=True)
     use_cols = [f for f in train.columns if f not in ignore_features]
 
-    #  for i, val_no in enumerate(valid_list):
-
     folds =StratifiedKFold(n_splits=fold, shuffle=True, random_state=seed) #1
     for n_fold, (trn_idx, val_idx) in enumerate(folds.split(train,y)):
-
-    #  for i, val_no in enumerate(valid_list):
 
         x_train, y_train = train.iloc[use_cols].iloc[trn_idx], y.iloc[trn_idx]
         x_val, y_val = train[use_cols].iloc[val_idx], y.iloc[val_idx]
 
-        #  trn_set, valid = split_data(train, val_no, val_col=val_col)
-        #  x_train, y_train = x_y_split(trn_set, target)
-        #  x_val, y_val = x_y_split(valid, target)
-
         use_cols = list(x_train.columns)
-        if i==0:
+        if n_fold==0:
             logger.info(f'\nTrainset Col Number: {len(use_cols)}')
 
         if model_type=='xgb':
@@ -302,56 +217,41 @@ def cross_prediction(logger, train, test, target, categorical_feature=[], val_co
             x_val.columns = use_cols
             test.columns = use_cols
 
-        clf, y_pred = classifier_model(x_train=x_train, y_train=y_train, x_val=x_val, y_val=y_val, params=params, categorical_feature=categorical_feature, num_iterations=num_iterations, early_stopping_rounds=early_stopping_rounds, learning_rate=learning_rate, model_type=model_type)
+        clf, y_pred = classifier(x_train=x_train, y_train=y_train, x_val=x_val, y_val=y_val, params=params, categorical_feature=categorical_feature, num_iterations=num_iterations, early_stopping_rounds=early_stopping_rounds, learning_rate=learning_rate, model_type=model_type)
 
         sc_score = sc_metrics(y_val, y_pred)
 
         list_score.append(sc_score)
-        #  list_best_iterations.append(clf.current_iteration())
-        logger.info(f'validation: {val_no} / {metric}: {sc_score}')
+        logger.info(f'validation: {val_no} | {metric}: {sc_score}')
 
-        ' validationの予測値をとる '
-        #  val_pred = clf.predict(x_val[use_cols])
-        val_pred = y_pred
-        if i==0:
-            val_stack = x_val.reset_index()[unique_id].to_frame()
-            val_stack[target] = val_pred
-        else:
-            tmp = x_val.reset_index()[unique_id].to_frame()
-            tmp[target] = val_pred
-            val_stack = pd.concat([val_stack, tmp], axis=0)
-        logger.info(f'valid_no: {val_no} | valid_stack shape: {val_stack.shape} | cnt_id: {len(val_stack[unique_id].drop_duplicates())}')
+        ' OOF for Stackng '
+        if oof_flg:
+            val_pred = y_pred
+            if n_fold==0:
+                val_stack = x_val.reset_index()[unique_id].to_frame()
+                val_stack[target] = val_pred
+            else:
+                tmp = x_val.reset_index()[unique_id].to_frame()
+                tmp[target] = val_pred
+                val_stack = pd.concat([val_stack, tmp], axis=0)
+            logger.info(f'valid_no: {val_no} | valid_stack shape: {val_stack.shape} | cnt_id: {len(val_stack[unique_id].drop_duplicates())}')
 
         if model_type != 'xgb':
             test_pred = clf.predict(test[use_cols])
         elif model_type == 'xgb':
-            #  columns = []
-            #  for col in test.columns:
-            #      if col not in use_cols:continue
-            #      columns.append(col.replace("[", "-").replace("]", "--").replace(",", "---"))
-            #  tmp_test = test[use_cols].copy()
-            #  tmp_test.columns = columns
             test_pred = clf.predict(xgb.DMatrix(test))
 
         if len(prediction)==0:
-            #  prediction = test_pred
             prediction = test_pred / len(valid_list)
         else:
-            #  prediction += test_pred
             prediction += test_pred / len(valid_list)
 
         ' Feature Importance '
-        if model_type=='lgb':
-            tmp_feim = pd.Series(clf.feature_importance(), name=f'{val_no}_importance')
-            feature_name = pd.Series(use_cols, name='feature')
-            feim = pd.concat([feature_name, tmp_feim], axis=1)
-
-        elif model_type=='xgb':
-            tmp_feim = clf.get_fscore()
-            feim = pd.Series(tmp_feim,  name=f'{val_no}_importance', index=use_cols).to_frame().reset_index().rename(columns={'index':'feature'})
+        feim_name = f'{n_fold}_importance'
+        feim = df_feature_importance(model=clf, model_type=model_type, feim_name=feim_name)
 
         if len(cv_feim)==0:
-            cv_feim = feim
+            cv_feim = feim.copy()
         else:
             cv_feim = cv_feim.merge(feim, on='feature', how='inner')
 
@@ -363,15 +263,19 @@ def cross_prediction(logger, train, test, target, categorical_feature=[], val_co
     ' fold数で平均をとる '
     prediction = prediction / len(valid_list)
 
-    pred_stack = test.reset_index()[unique_id].to_frame()
-    pred_stack[target] = prediction
-    result_stack = pd.concat([val_stack, pred_stack], axis=0)
-    logger.info(f'result_stack shape: {result_stack.shape} | cnt_id: {len(result_stack[unique_id].drop_duplicates())}')
+    ' OOF for Stackng '
+    if oof_flg:
+        pred_stack = test.reset_index()[unique_id].to_frame()
+        pred_stack[target] = prediction
+        result_stack = pd.concat([val_stack, pred_stack], axis=0)
+        logger.info(f'result_stack shape: {result_stack.shape} | cnt_id: {len(result_stack[unique_id].drop_duplicates())}')
+    else:
+        result_stack=[]
 
     importance = []
     for val_no in valid_list:
         if len(importance)==0:
-            importance = cv_feim[f'{val_no}_importance'].values
+            importance = cv_feim[f'{val_no}_importance'].values.copy()
         else:
             importance += cv_feim[f'{val_no}_importance'].values
 
@@ -384,11 +288,11 @@ def cross_prediction(logger, train, test, target, categorical_feature=[], val_co
     return prediction, cv_score, len(use_cols), result_stack
 
 
-def classifier_model(x_train, y_train, x_val=[], y_val=[], test=[], params={}, categorical_feature=[], num_iterations=3500, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb'):
+def classifier(x_train, y_train, x_val=[], y_val=[], test=[], params={}, categorical_feature=[], num_iterations=3500, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb'):
 
     ' LightGBM / XGBoost / ExtraTrees / LogisticRegression'
     if model_type=='lgb':
-        if len(params)==0:
+    classifiers)==0:
             params = train_params
         lgb_train = lgb.Dataset(data=x_train, label=y_train)
         if len(x_val)>0:
@@ -456,3 +360,4 @@ def classifier_model(x_train, y_train, x_val=[], y_val=[], test=[], params={}, c
         logger.info(f'{model_type} is not supported.')
 
     return clf, y_pred
+

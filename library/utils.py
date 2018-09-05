@@ -102,7 +102,7 @@ def read_pickle(path):
         return obj
 
 
-def to_df_pickle(df, path, fname='', split_size=3):
+def to_df_pickle(df, path, fname='', split_size=3, index=False):
     """
     path = '../output/mydf'
 
@@ -113,8 +113,9 @@ def to_df_pickle(df, path, fname='', split_size=3):
     """
     print(f'shape: {df.shape}')
 
-    df.reset_index(drop=True, inplace=True)
-    gc.collect()
+    if index:
+        df.reset_index(drop=True, inplace=True)
+        gc.collect()
     mkdir_p(path)
 
     ' データセットを切り分けて保存しておく '
