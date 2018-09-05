@@ -1,4 +1,5 @@
 from logging import StreamHandler, DEBUG, Formatter, FileHandler, getLogger
+from utils import mkdir_p
 
 
 def logger_func():
@@ -10,6 +11,7 @@ def logger_func():
     handler.setFormatter(log_fmt)
     logger.addHandler(handler)
 
+    mkdir_p('../output')
     handler = FileHandler('../output/py_train.py.log', 'a')
     handler.setLevel(DEBUG)
     handler.setFormatter(log_fmt)

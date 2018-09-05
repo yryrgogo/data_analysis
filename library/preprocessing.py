@@ -3,7 +3,7 @@ import numpy as np
 import sys, re, glob
 import gc
 from sklearn.model_selection import StratifiedKFold
-from load_data import pararell_load_data
+from utils import pararell_load_data
 from multiprocessing import Pool
 import multiprocessing
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
@@ -55,37 +55,22 @@ def impute_avg(data, logger=False, drop=False, ignore_feature_list=[]):
 def inf_replace(data, logger=False, drop=False, ignore_feature_list=[]):
     for col in data.columns:
         if col in ignore_feature_list:continue
+
+        ' count of inf '
+        inf_plus = np.where(data[col].values == float('inf') )
+        inf_minus = np.where(data[col].values == float('-inf') )
+        logger.info(f'{col} >> inf count: {len(inf_plus)} | -inf count: {len(inf_minus)}')
+
         data[col].replace(np.inf, np.nan, inplace=True)
         data[col].replace(-1*np.inf, np.nan, inplace=True)
+        logger.info(f'*****inf replace SUCCESS!!*****')
     return data
 
-    #      inf_plus = np.where(data[col].values == float('inf') )
-    #      inf_minus = np.where(data[col].values == float('-inf') )
     #      for i in range(len(inf_plus[0])):
     #          logger.info(f'inf include: {col}')
     #          data[col].values[inf_plus[0][i]] = np.nan
-    #      for i in range(len(inf_minus[0])):
     #          data[col].values[inf_minus[0][i]] = np.nan
     #          logger.info(f'-inf include: {col}')
-
-    #      inf_plus = np.where(data[col].values == float('inf') )
-    #      inf_minus = np.where(data[col].values == float('-inf') )
-
-    #      if len(inf_plus)>1 or len(inf_minus)>1:
-    #          logger.info(f'inf : {inf_plus}')
-    #          logger.info(f'-inf : {inf_minus}')
-    #          sys.exit()
-
-    #      if len(data[col][data[col]==np.inf])>0:
-    #          if drop:
-    #              data.drop(col, axis=1, inplace=True)
-    #              if logger:
-    #                  logger.info(f'drop: {col}')
-    #              continue
-    #          data[col] = data[col].replace(float(np.inf), data[col].mean())
-    #          data[col] = data[col].replace(float(-np.inf), data[col].mean())
-    #          if logger:
-    #              logger.info(f'length: {len(data[col][data[col]==np.inf])}')
 
     #  return data
 
@@ -114,80 +99,96 @@ def max_min_regularize(data, ignore_feature_list=[], logger=False):
 
 
 ' 外れ値除去 '
-def outlier(data, level, value, out_range=1.64, print_flg=0):
+def outlier(df, value=False, out_range=1.96, print_flg=False, replace_value=False, drop=False, replace_inner=False, logger=False, plus_replace=True, minus_replace=True, plus_limit=False, minus_limit=False, z_replace=False):
     '''
     Explain:
     Args:
         data(DF)        : 外れ値を除外したいデータフレーム
-        level(str)      : 標準偏差を計算する粒度
         value(float)    : 標準偏差を計算する値
         out_range(float): 外れ値とするZ値の範囲.初期値は1.64としている
     Return:
         data(DF): 入力データフレームから外れ値を外したもの
     '''
 
-    if len(level)==0:
+    std = df[value].std()
+    avg = df[value].mean()
 
-        std = data[value].std()
-        avg = data[value].mean()
-        df = data.copy()
-
-    else:
-        tmp = data.groupby(level, as_index=False)[value].agg(
-            {'avg': 'mean',
-             'std': 'std'
-             })
-        df = data.merge(tmp, on=level, how='inner')
-        avg = df['avg'].values
-        std = df['std'].values
-    param = df[value].values
-    z_value = (param - avg)/std
+    tmp_val = df[value].values
+    z_value = (tmp_val - avg)/std
     df['z'] = z_value
 
-    if print_flg==1:
-        print(df.query(f'z > {out_range}')[value].count())
-        print(df.query(f'z > {out_range}')[value].head().sort_values(ascending=False))
-        print(df.query(f'z < -1*{out_range}')[value].count())
-        print(df.query(f'z < -1*{out_range}')[value].head().sort_values(ascending=True))
-        return data
+    inner = df[df['z'].between(left=-1*out_range, right=out_range)]
+    plus_out  = df[df['z']>out_range]
+    minus_out = df[df['z']<-1*out_range]
 
-    null = df[df[value].isnull()]
+    if logger:
+        length = len(df)
+        in_len = len(inner)
+        logger.info(f'''
+#==========================================
+# value         : {value}
+# out_range     : {out_range}
+# replace_value : {replace_value}
+# plus_replace  : {plus_replace}
+# minus_replace : {minus_replace}
+# z_replace     : {z_replace}
+# plus_limit    : {plus_limit}
+# minus_limit   : {minus_limit}
+# drop          : {drop}
+# all max       : {df[value].max()}
+# inner  max    : {inner[value].max()}
+# all min       : {df[value].min()}
+# inner  min    : {inner[value].min()}
+# all length    : {length}
+# inner length  : {in_len}
+# diff length   : {length-in_len}
+# plus out len  : {len(plus_out)}
+# minus out len : {len(minus_out)}
+#==========================================
+        ''')
 
-    inner = df[-1*out_range <= df['z']].copy()
-    inner = inner[inner['z'] <= out_range]
+    # replace_valueを指定してz_valueを使い置換する場合
+    if replace_value:
+        if z_replace:
+            if plus_replace:
+                df[value] = df[value].where(df['z']<=out_range, replace_value)
+            if minus_replace:
+                df[value] = df[value].where(df['z']>=-out_range, replace_value)
+        if plus_limit:
+            df[value] = df[value].where(df['z']<=plus_limit, replace_value)
+        if minus_limit:
+            df[value] = df[value].where(df['z']>=-minus_limit, replace_value)
 
-    out_minus = df[-1*out_range > df['z']]
-    if len(level)==0:
-        minus_max = out_minus[value].max()
-        out_minus[value] = minus_max
-    else:
-        minus_max = out_minus.groupby(level, as_index=False)[value].max()
-        out_minus.drop(value, axis=1, inplace=True)
-        out_minus = out_minus.merge(minus_max, on=level, how='inner')
 
-    out_plus = df[df['z'] > out_range]
+    # 外れ値を除去する場合
+    elif drop:
+        if plus_replace:
+            df = df[df['z']>=-1*out_range]
+        elif minus_replace:
+            df = df[df['z']<=out_range]
+    # replace_valueを指定せず、innerのmax, minを使い有意水準の外を置換する場合
+    elif replace_inner:
+        inner_max = inner[value].max()
+        inner_min = inner[value].min()
+        if plus_replace:
+            df[value] = df[value].where(df['z']<=out_range, inner_max)
+        elif minus_replace:
+            df[value] = df[value].where(df['z']>=-out_range, inner_min)
 
-    if len(level)==0:
-        plus_min = out_plus[value].min()
-        out_plus[value] = plus_min
-    else:
-        plus_min = out_plus.groupby(level, as_index=False)[value].min()
-        out_plus.drop(value, axis=1, inplace=True)
-        out_plus = out_plus.merge(plus_min, on=level, how='inner')
+    plus_out_val  = df[df['z']>out_range][value].drop_duplicates().values
+    minus_out_val = df[df['z']<-1*out_range][value].drop_duplicates().values
+    logger.info(f'''
+#==========================================
+# RESULT
+# plus out value  : {plus_out_val}
+# minus out value : {minus_out_val}
+#==========================================
+    ''')
 
-    result = pd.concat([inner, out_minus, out_plus, null], axis=0)
-
-    if len(level)==0:
-        result.drop(['z'], axis=1, inplace=True)
-    else:
-        result.drop(['avg', 'std', 'z'], axis=1, inplace=True)
-
-    result.reset_index(drop=True, inplace=True)
-
-    del df, out_minus, out_plus
+    del plus_out, minus_out
     gc.collect()
 
-    return result
+    return df
 
 
 def contraction(data, value, limit, max_flg=1, nan_flg=0):
