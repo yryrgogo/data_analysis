@@ -73,17 +73,7 @@ ignore_features = [unique_id, target, 'valid_no', 'is_train', 'is_test']
 
 
 
-def make_submission(data, dummie=0, path='', val_col='valid_no'):
-
-    data = make_feature_set(data, path)
-    keras_1 = pd.read_csv('../output/20180829_105454_442features_auc0.71133_keras_prediction.csv')
-    keras_1.fillna(0, inplace=True)
-    t_value_1 = keras_1[target].values
-    p_value_1 = keras_1['prediction'].values
-    #  keras_1['prediction'] = t_value_1 + p_value_1
-    data['emb_buro_prev'] = keras_1['prediction']
-    #  logger.info(data['emb_buro_prev'].sort_values())
-    data.set_index(unique_id, inplace=True)
+def make_submission(data, dummie=0, val_col='valid_no'):
 
     categorical = get_categorical_features(data, [])
 
@@ -94,8 +84,8 @@ def make_submission(data, dummie=0, path='', val_col='valid_no'):
         data = get_dummies(data, categorical)
         categorical=[]
 
-    train = data.query('is_train==1')
-    test = data.query('is_test==1')
+    train = data[data[target]>=0]
+    test = data[data[target].isnull()]
     logger.info(f'train shape: {train.shape}')
     logger.info(f'test shape: {test.shape}')
     train.drop(['is_train', 'is_test'], axis=1, inplace=True)
@@ -192,19 +182,24 @@ def make_submission(data, dummie=0, path='', val_col='valid_no'):
     result_stack.to_csv(f'../output/{start_time[:12]}_stack_{model_type}_rate{learning_rate}_{feature_num}features_CV{score_avg}_LB_early{early_stopping_rounds}_iter{num_iterations}.csv', index=False)
 
 
-def check_length():
-    path_list = glob.glob('../features/3_winner/*.npy')
-    for path in path_list:
-        data = np.load(path)
-        print(path)
-        print(data.shape)
-
-
 def main():
-    #  check_length()
-    #  sys.exit()
-    #  data = pd.read_csv('../data/sample_submission.csv')
-    data = pd.read_csv('../data/base.csv')
+    base = pd.read_csv('../input/base.csv')
+    base[target] = base[target].where(base[target]>=0, np.nan)
+    print(base[target].drop_duplicates())
+    sys.exit()
+    base.to_csv('../input/base.csv', index=False)
+    sys.exit()
+    data = make_feature_set(data, path)
+
+    keras_1 = pd.read_csv('../output/20180829_105454_442features_auc0.71133_keras_prediction.csv')
+    keras_1.fillna(0, inplace=True)
+    t_value_1 = keras_1[target].values
+    p_value_1 = keras_1['prediction'].values
+    #  keras_1['prediction'] = t_value_1 + p_value_1
+    data['emb_buro_prev'] = keras_1['prediction']
+    #  logger.info(data['emb_buro_prev'].sort_values())
+    data.set_index(unique_id, inplace=True)
+
 
     #  nn_train = pd.read_csv('../output/oof_preds_NN_go_1195_dr_01_l2_0005_561_dr_01_l2_0005_0.797315952118905.csv')
     #  nn_test = pd.read_csv('../output/submission_NN_go_1195_dr_01_l2_0005_561_dr_01_l2_0005_0.797315952118905.csv')
@@ -212,11 +207,7 @@ def main():
     #  data['nn_07973'] = nn['oof_preds']
 
     dummie=0
-    val_col='valid_no_4'
-    #  val_col='valid_no_2'
-    #  val_col='valid_no'
     #  path = f'../features/{dir_num}_winner/*.npy'
-    path = f'../features/rawgo/*.npy'
     path = f'../features/3_winner/*.npy'
     #  path = f'../features/CV08028/*.npy'
     #  if model_type=='xgb':
