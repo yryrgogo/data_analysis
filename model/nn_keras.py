@@ -1,4 +1,3 @@
-epoch_size = 10
 import os
 import datetime
 import sys
@@ -16,11 +15,9 @@ import pandas as pd
 import numpy as np
 from scipy import sparse as ssp
 import pylab as plt
-from sklearn.preprocessing import LabelEncoder, LabelBinarizer, MinMaxScaler, OneHotEncoder
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+' 何これ？ '
 from sklearn.decomposition import TruncatedSVD, NMF, PCA, FactorAnalysis
 from sklearn.feature_selection import SelectFromModel, SelectPercentile, f_classif
-from sklearn.decomposition import TruncatedSVD
 from sklearn.metrics import log_loss, roc_auc_score
 from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.cross_validation import StratifiedKFold, KFold
@@ -41,7 +38,6 @@ from keras.optimizers import Adam
 from keras.models import Model
 from keras.callbacks import EarlyStopping
 from keras.layers import Concatenate
-from sklearn.preprocessing import MinMaxScaler
 
 
 @contextmanager
@@ -95,7 +91,7 @@ early_stopping_window = 5
 embedding_hidden_units = 100
 embedding_regularizer = None
 embedding_size = 10
-#  epoch_size = 10**9
+epoch_size = 10
 learning_rate = 'adaptive'
 learning_rate_init = 0.001
 momentum = 0.9
@@ -165,135 +161,6 @@ class AucCallback(Callback):  # inherits from Callback
               (epoch, current, self.best))
 
 
-def make_batches(size, batch_size):
-    nb_batch = int(np.ceil(size/float(batch_size)))
-    return [(i*batch_size, min(size, (i+1)*batch_size)) for i in range(0, nb_batch)]
-
-
-def keras_classifier(data):
-
-    data = data.query('is_train==1')
-    #  data.drop('is_train', axis=1, inplace=True)
-    columns = data.columns.tolist()
-    columns = [col for col in columns if not(
-        col.count('is_train')) and not(col.count('is_test'))]
-    data = data[columns]
-    flatten_layers = []
-    inputs = []
-    use_cols = []
-    for c in columns:
-        if c in ignore_features:
-            continue
-        use_cols.append(c)
-
-        #  inputs_c = Input(shape=(1,), dtype='int32')
-        inputs_c = Input(shape=(1,), dtype='float16')
-
-        num_c = len(np.unique(data[c].values))
-
-        embed_c = Embedding(
-            num_c,
-            dim,
-            dropout=0.2,
-            input_length=1,
-            embeddings_regularizer=None
-        )(inputs_c)
-        flatten_c = Flatten()(embed_c)
-
-        inputs.append(inputs_c)
-        flatten_layers.append(flatten_c)
-
-    #  flatten = merge(flatten_layers, mode='concat')
-    flatten = Concatenate()(flatten_layers)
-
-    fc1 = Dense(hidden, activation='relu')(flatten)
-    dp1 = Dropout(0.5)(fc1)
-
-    outputs = Dense(1, activation='sigmoid')(dp1)
-
-    model = Model(input=inputs, output=outputs)
-    model.compile(
-        optimizer='adam',
-        loss='binary_crossentropy',
-    )
-    #  del data
-
-    logger.info(f'create dataset start.')
-#     train, valid = split_dataset(data, val_no, val_col=val_col)
-    train = data.query("valid_no_4 != 2")
-    valid = data.query("valid_no_4 == 2")
-    x_train, y_train = x_y_split(train, target)
-    x_val, y_val = x_y_split(valid, target)
-
-#     use_cols = [col for col in x_train.columns if col not in ignore_features]
-
-    x_train = x_train[use_cols].values
-    x_train = [x_train[:, i] for i in range(x_train.shape[1])]
-    x_val = x_val[use_cols].values
-    x_val = [x_val[:, i] for i in range(x_val.shape[1])]
-
-    logger.info(f'create dataset end.')
-
-    model_name = 'mlp_residual_%s_%s.hdf5' % (dim, hidden)
-    model_checkpoint = ModelCheckpoint(
-        model_name, monitor='val_loss', save_best_only=True)
-    auc_callback = AucCallback(validation_data=(x_val, y_val), patience=2,
-                               is_regression=True, best_model_name=path+'best_keras.mdl', feval='roc_auc_score')
-
-    nb_epoch = 10
-    #  nb_epoch = 10**9
-
-    #  batch_size = 1024*8
-    batch_size = 128
-    load_model = False
-
-    if load_model:
-        print('Load Model')
-        model.load_weights(path+model_name)
-        # model.load_weights(path+'best_keras.mdl')
-
-    # Early-stopping
-    early_stopping = EarlyStopping(monitor='val_loss', patience=10, verbose=1)
-
-    logger.info(f'model fitting start.')
-    model.fit(
-        x_train,
-        y_train,
-        batch_size=batch_size,
-        nb_epoch=nb_epoch,
-        verbose=1,
-        shuffle=True,
-        validation_data=[x_val, y_val],
-        callbacks=[early_stopping]
-        # callbacks = [
-        # model_checkpoint,
-        # auc_callback,
-        # ],
-    )
-
-    # model.load_weights(model_name)
-    # model.load_weights(path+'best_keras.mdl')
-
-    logger.info(f'prediction start')
-    #  y_preds = model.predict(X_test, batch_size=1024*8)
-    y_preds = model.predict(x_val, batch_size=batch_size)
-    sc_score = roc_auc_score(y_val, y_preds)
-    logger.info(f'auc: {sc_score}')
-
-    return y_preds
-    #  sys.exit()
-
-    # print('Make submission')
-    #  X_t = [X_t[:, i] for i in range(X_t.shape[1])]
-    #  outcome = model.predict(X_t, batch_size=1024*8)
-    #  outcome = model.predict(X_t, batch_size=128)
-    #  submission = pd.DataFrame()
-    #  submission['activity_id'] = activity_id
-    #  submission['outcome'] = outcome
-    #  submission.to_csv('submission_residual_%s_%s.csv' %
-    #                    (dim, hidden), index=False)
-
-
 def redhat_keras(x_train, y_train, x_val, y_val, x_test, dim):
 
     # モデル定義
@@ -332,92 +199,6 @@ def redhat_keras(x_train, y_train, x_val, y_val, x_test, dim):
     test_pred = model.predict(x_test, batch_size=2048)
 
     return y_pred, sc_score, test_pred
-
-
-def mlp_clf(x_train, y_train):
-    ' sklearn '
-    from sklearn.neural_network import MLPClassifier
-    params = {
-        'hidden_layer_sizes': 128,
-        'activation': 'relu',
-        'solver': 'adam',
-        'alpha': 0.0001,
-        'batch_size': 128,
-        'learning_rate': 'adaptive',
-        'learning_rate_init': 0.001,
-        'power_t': 0.5,
-        'max_iter': 2000,
-        'shuffle': True,
-        'random_state': 1208,
-        'tol': 0.0001,
-        'verbose': False,
-        'warm_start': False,
-        'momentum': 0.9,
-        'nesterovs_momentum': True,
-        'early_stopping': True,
-        'validation_fraction': 0.2,
-        'beta_1': 0.9,
-        'beta_2': 0.999,
-        'epsilon': 1e-08
-    }
-
-    clf = MLPClassifier(**params)
-    clf.fit(x_train, y_train)
-    logger.info(f'auc: {clf.score(x_val, y_val)}')
-
-
-def kernel_keras(x_train, y_train, x_val, y_val, x_test, dim):
-
-    print('Setting up neural network...')
-    nn = Sequential()
-    nn.add(Dense(units=400, kernel_initializer='normal', input_dim=dim))
-    nn.add(PReLU())
-    nn.add(Dropout(.3))
-    nn.add(Dense(units=160, kernel_initializer='normal'))
-    nn.add(PReLU())
-    nn.add(BatchNormalization())
-    nn.add(Dropout(.3))
-    nn.add(Dense(units=64, kernel_initializer='normal'))
-    nn.add(PReLU())
-    nn.add(BatchNormalization())
-    nn.add(Dropout(.3))
-    nn.add(Dense(units=26, kernel_initializer='normal'))
-    nn.add(PReLU())
-    nn.add(BatchNormalization())
-    nn.add(Dropout(.3))
-    nn.add(Dense(units=12, kernel_initializer='normal'))
-    nn.add(PReLU())
-    nn.add(BatchNormalization())
-    nn.add(Dropout(.3))
-    nn.add(Dense(1, kernel_initializer='normal', activation='sigmoid'))
-    #  nn.compile(loss='binary_crossentropy', optimizer='adam')
-    nn.compile(loss='binary_crossentropy', optimizer='adam' , metrics=[auc_roc])
-
-    # Early-stopping
-    early_stopping = EarlyStopping(monitor='val_loss', patience=10, verbose=1)
-
-    print('Fitting neural network...')
-    nn.fit(x_train,
-           y_train,
-           epochs=epoch_size,
-           batch_size=batch_size,
-           verbose=2,
-           callbacks=[early_stopping],
-           validation_data=(x_val, y_val)
-           )
-
-    print('Predicting...')
-    #  y_pred = nn.predict(x_val).flatten().clip(0, 1)
-    y_pred = nn.predict(x_val, batch_size=1024)
-    #  test_pred = nn.predict(x_test).flatten().clip(0, 1)
-    #  test_pred = nn.predict(x_test)
-
-    sc_score = roc_auc_score(y_val, y_pred)
-    logger.info(f'auc: {sc_score}')
-
-    #  return y_pred, sc_score, test_pred
-    return y_pred, sc_score, 0
-
 
 
 def dense_bn_block(x, size, act='elu'):  # LeakyReLU(alpha=0.01)):
@@ -566,23 +347,6 @@ def keras_ANN(x_train, y_train, x_val, y_val, x_test, dim):
 
 
 def main(path):
-    #  a = np.load('../output/keras_valid1.0.npy')
-    #  print(a)
-    #  sys.exit()
-
-    #  path = '../features/3_winner/*.npy'
-    #  path = '../features/regularize_select_target_feature/*.npy'
-    #  path = '../features/regularize_first_feature/*.npy'
-    #  path = '../features/regularize_before_add_kernel_select_target_CV0.7992_avg/*.npy'
-    #  base = pd.read_csv('../data/base.csv')
-    #  tmp_data = make_feature_set(base, path)
-    #  tmp_data = tmp_data.astype('float16')
-
-    #  data = pd.read_csv('../data/0819_keras_target_feature.csv')
-
-    #  data = data_regulize(df=data, mm_flg=1, na_flg=1, inf_flg=1, float16_flg=1, ignore_feature_list=ignore_features, logger=logger)
-    #  make_raw_feature(data=data, path='../features/regularize_before_add_kernel_select_target_CV0.7992_avg/', ignore_list=ignore_features, logger=logger)
-    #  sys.exit()
     tmp_data = pd.read_csv('../data/regular_no_app_2.csv')
     base = pd.read_csv('../data/base.csv')
     tmp_data['is_train'] = base['is_train'].values
@@ -596,13 +360,6 @@ def main(path):
     tmp_pred = np.zeros(len(test))
     valid_list = data[val_col].drop_duplicates().values
     score_list = []
-
-    ' MLP '
-    #  x_train, y_train = x_y_split(data, target)
-    #  use_cols = [col for col in x_train.columns if col not in ignore_features and not(col.count('Unname'))]
-    #  x_train = x_train[use_cols].values
-    #  mlp_clf(x_train, y_train)
-    #  sys.exit()
 
     result = pd.DataFrame([])
     for val_no in valid_list:
@@ -652,14 +409,10 @@ def main(path):
     result = pd.concat([result, submit], axis=0)
     result.to_csv(f'../output/{start_time}_{len(use_cols)}features_auc{str(score)[:7]}_keras_prediction.csv', index=False)
 
-    #  keras_classifier(data)
-
 
 if __name__ == '__main__':
     path_list = [
         '../features/regularize_select_target_feature/*.npy'
-        #  ,'../features/regularize_first_feature/*.npy'
-        #  ,'../features/regularize_before_add_kernel_select_target_CV0.7992_avg/*.npy'
     ]
     for path in path_list:
         main(path)

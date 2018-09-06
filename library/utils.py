@@ -32,11 +32,11 @@ import pickle
 def start(fname):
     global st_time
     st_time = time()
-    print("""
+    print(f"""
 #==============================================================================
-# START!!! {}    PID: {}    time: {}
+# START!!! {fname}    PID: {os.getpid()}    time: {datetime.today()}
 #==============================================================================
-""".format(fname, os.getpid(), datetime.today()))
+""")
     send_line(f'{HOSTNAME}  START {fname}  time: {elapsed_minute():.2f}min')
     return
 
@@ -48,11 +48,11 @@ def reset_time():
 
 
 def end(fname):
-    print("""
+    print(f"""
 #==============================================================================
-# SUCCESS !!! {}
+# SUCCESS !!! {fname}
 #==============================================================================
-""".format(fname))
+"""
     print('time: {:.2f}min'.format(elapsed_minute()))
     send_line(f'{HOSTNAME}  FINISH {fname}  time: {elapsed_minute():.2f}min')
     return
