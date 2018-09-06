@@ -20,39 +20,37 @@ from feature_engineering import base_aggregation
 #  logger = logger_func()
 start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 
-path_data = '../data/'
-key_app_train = 'application_train.csv'
-key_bureau = 'bureau.csv'
-key_bureau_balance = 'bureau_balance.csv'
-
-unique_id = 'SK_ID_CURR'
-target = 'TARGET'
-ignore_features = [unique_id, target, 'valid_no', 'is_train', 'is_test']
+ignore_features = [key, target, 'valid_no', 'is_train', 'is_test']
 
 
-def target_encoding(base, data, unique_id, level, method_list, prefix='', test=0, select_list=[], impute=1208, val_col='valid_no', npy_key='@'):
+def target_encoding(base, data, key, target, level, method_list, prefix='', test=0, select_list=[], impute=1208):
     '''
     Explain:
         TARGET関連の特徴量を4partisionに分割したデータセットから作る.
         1partisionの特徴量は、残り3partisionの集計から作成する。
         test対する特徴量は、train全てを使って作成する
     Args:
-        data(DF)             : 入力データ。カラムにはunique_idとvalid_noがある前提
-        level(str/list/taple): 目的変数を集計する粒度。
+        data(DF)             : 入力データ。カラムにはkeyとvalid_noがある前提
+        level(str/list/taple): 目的変数を集計する粒度
+        key                  : ユニークカラム名
+        target               : 目的変数となるカラム名
         method(str)          : 集計のメソッド
         select_list(list)    : 特定のfeatureのみ保存したい場合はこちらにリストでfeature名を格納
     Return:
         カラム名は{prefix}{target}@{level}
     '''
 
+    ' levelはリストである必要がある '
     if str(type(level)).count('str'):
         level = [level]
     elif str(type(level)).count('tuple'):
         level = list(level)
 
-    tmp_base = data[[unique_id, val_col] + level].drop_duplicates()
+    ' KFold '
+
+    tmp_base = data[[key, val_col] + level].drop_duplicates()
     if len(base)>0:
-        base = base[unique_id].to_frame().merge(tmp_base, on=unique_id, how='left')
+        base = base[key].to_frame().merge(tmp_base, on=key, how='left')
 
     for method in method_list:
         result = pd.DataFrame([])
@@ -77,7 +75,12 @@ def target_encoding(base, data, unique_id, level, method_list, prefix='', test=0
             #  logger.info(f"\ndf_agg: {df_agg.shape}")
 
             #  logger.info(f'\nlevel: {level}\nvalid_no: {valid_no}')
-            df_agg = base_aggregation(df_agg, level, target, method)
+            df_agg = base_aggregation(
+                data=df_agg,
+                level=level,
+                feature=target,
+                method=method
+            )
 
             ' リークしないようにvalidation側のデータにJOIN '
             tmp_result = df_val.merge(df_agg, on=level, how='left')
@@ -107,7 +110,7 @@ def target_encoding(base, data, unique_id, level, method_list, prefix='', test=0
 
 def main():
 
-    level = unique_id
+    level = key
     #  method_list = ['sum', 'mean', 'std']
     method_list = ['mean', 'std']
     #  method_list = ['max', 'min']
