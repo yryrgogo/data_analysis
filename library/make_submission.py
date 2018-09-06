@@ -7,7 +7,7 @@ import os
 HOME = os.path.expanduser('~')
 
 sys.path.append(f'{HOME}/kaggle/github/model/')
-from lgbm_clf import prediction, cross_prediction
+from classifier import prediction, cross_prediction
 
 sys.path.append(f"{HOME}/kaggle/github/library/")
 import utils
@@ -17,17 +17,17 @@ from convinience_function import get_categorical_features, get_numeric_features
 start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 
 
-def make_submission(logger, data, key, target, submit, params, model_type, dummie=0, seed_num=1):
+def make_submission(logger, data, key, target, fold, fold_type, params, model_type, dummie=0, seed_num=1, ignore_list=[], pred_type=1, stack_name=''):
 
     logger.info(f'''
-    #==============================================================================
-    # DATA CHECK START
-    #==============================================================================''')
+#==============================================================================
+# DATA CHECK START
+#==============================================================================''')
     categorical_feature = get_categorical_features(data, [])
     logger.info(f'''
-                CATEGORICAL FEATURE: {categorical_feature}
-                LENGTH: {len(categorical_feature)}
-                DUMMIE: {dummie}
+CATEGORICAL FEATURE: {categorical_feature}
+LENGTH: {len(categorical_feature)}
+DUMMIE: {dummie}
                 ''')
 
     if dummie==0:
@@ -45,7 +45,8 @@ def make_submission(logger, data, key, target, submit, params, model_type, dummi
     for col in test.columns:
         length = len(test[col].drop_duplicates())
         if length <=1:
-            logger.info(f'***********WARNING************* LENGTH {length} COLUMN: {col}')
+            logger.info(f'''
+***********WARNING************* LENGTH {length} COLUMN: {col}''')
 
     seed_list = [
         1208,
@@ -62,52 +63,52 @@ def make_submission(logger, data, key, target, submit, params, model_type, dummi
     logger.info(f'SEED LIST: {seed_list}')
 
     logger.info(f'''
-    #==============================================================================
-    # DATA CHECK END
-    #==============================================================================''')
+#==============================================================================
+# DATA CHECK END
+#==============================================================================''')
 
     tmp_result = np.zeros(len(test))
     score_list = []
+    result_stack = []
 
     for i, seed in enumerate(seed_list):
         if model_type=='lgb':
-            submit_params['bagging_seed'] = seed
-            submit_params['data_random_seed'] = seed
-            submit_params['feature_fraction_seed'] = seed
-            submit_params['random_seed'] = seed
+            params['bagging_seed'] = seed
+            params['data_random_seed'] = seed
+            params['feature_fraction_seed'] = seed
+            params['random_seed'] = seed
         elif model_type=='xgb':
-            submit_params['seed'] = seed
+            params['seed'] = seed
         elif model_type=='extra':
-            submit_params['seed'] = seed
+            params['seed'] = seed
 
         if pred_type==0:
             ' 予測 '
-            result,feature_num = prediction(
+            result = prediction(
                 logger=logger,
                 train=train,
                 test=test,
                 target=target,
                 categorical_feature=categorical_feature,
                 params = params,
-                num_iterations=num_iterations,
-                learning_rate=learning_rate,
                 model_type=model_type
             )
             score = '?'
         elif pred_type==1:
             ' 予測 '
-            y_pred, score, feature_num, stack = cross_prediction(
+            y_pred, score, stack = cross_prediction(
                 logger=logger,
                 train=train,
                 test=test,
+                key=key,
                 target=target,
-                categorical_feature=categorical,
-                val_col=val_col,
+                fold=fold,
+                fold_type=fold_type,
+                categorical_feature=categorical_feature,
                 params = params,
-                num_iterations=num_iterations,
-                learning_rate=learning_rate,
-                early_stopping_rounds=early_stopping_rounds,
-                model_type=model_type
+                model_type=model_type,
+                ignore_list=ignore_list,
+                oof_flg=len(stack_name)
             )
 
             ' for stacking pred_value '
@@ -125,21 +126,15 @@ def make_submission(logger, data, key, target, submit, params, model_type, dummi
             score_list.append(score)
             score_avg = np.mean(score_list)
             logger.info(f'''
-                        #==============================================================================
-                        # CURRENT AUC AVERAGE: {score_avg}
-                        #==============================================================================''')
+#==============================================================================
+# CURRENT AUC AVERAGE: {score_avg}
+#==============================================================================''')
 
     result = tmp_result / len(seed_list)
 
-    submit[target] = result
-    if pred_type==0:
-        submit.to_csv(f'../submit/{start_time[:12]}_submit_{model_type}_rate{learning_rate}_{feature_num}features_CV{score}_LB_early{early_stopping_rounds}_iter{num_iterations}.csv', index=False)
-    elif pred_type==1:
-        submit.to_csv(f'../submit/{start_time[:12]}_submit_{model_type}_rate{learning_rate}_{feature_num}features_CV{score_avg}_LB_early{early_stopping_rounds}_iter{num_iterations}.csv', index=False)
-
-    if len(stack)>0:
+    if len(result_stack)>0:
         result_stack[target] = result_stack[target].values / len(seed_list)
-        result_stack = base[key].to_frame().merge(result_stack, on=key, how='inner')
-        result_stack.to_csv(f'../output/{start_time[:12]}_stack_{model_type}_rate{learning_rate}_{feature_num}features_CV{score_avg}_LB_early{early_stopping_rounds}_iter{num_iterations}.csv', index=False)
-        logger.info(f'result_stack shape: {result_stack.shape}')
+
+    return score_avg, result, result_stack
+
 
