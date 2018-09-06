@@ -7,14 +7,14 @@ import multiprocessing
 
 " 機械学習でよく使う系 "
 #  カテゴリ変数を取得する関数
-def get_categorical_features(data, ignore):
-    obj = [col for col in list(data.columns) if (data[col].dtype == 'object') and col not in ignore]
+def get_categorical_features(df, ignore):
+    obj = [col for col in list(df.columns) if (df[col].dtype == 'object') and col not in ignore]
     return obj
 
 
 #  連続値カラムを取得する関数
-def get_numeric_features(data, ignore):
-    num = [col for col in list(data.columns) if (str(data[col].dtype).count('int') or str(data[col].dtype).count('float')) and col not in ignore]
+def get_numeric_features(df, ignore):
+    num = [col for col in list(df.columns) if (str(df[col].dtype).count('int') or str(df[col].dtype).count('float')) and col not in ignore]
     return num
 
 

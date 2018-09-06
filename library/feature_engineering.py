@@ -3,7 +3,7 @@ import pandas as pd
 import sys
 
 
-def base_aggregation(data, level, feature, method, prefix='', suffix=''):
+def base_aggregation(df, level, feature, method, prefix='', suffix=''):
     '''
     Explain:
         levelの粒度で集約を行う。この関数が受け取る集計対象カラムは一つなので、
@@ -21,7 +21,7 @@ def base_aggregation(data, level, feature, method, prefix='', suffix=''):
     elif str(type(level)).count('tuple'):
         level = list(level)
 
-    df = data[level+[feature]]
+    df = df[level+[feature]]
 
     result = df.groupby(level)[feature].agg({'tmp': {method}})
     result = result['tmp'].reset_index().rename(
@@ -97,7 +97,7 @@ def num_cat_encoding(df, bins=0):
 
     if bins>0:
 
-        bin_list = get_numeric_features(data=df, ignore=ignore_features)
+        bin_list = get_numeric_features(df=df, ignore=ignore_features)
 
         logger.info(df.shape)
         for col in bin_list:
@@ -114,13 +114,13 @@ def num_cat_encoding(df, bins=0):
             df.drop(col, axis=1, inplace=True)
             #  df.rename(columns={col:f'bin{bin}_{col}'}, inplace=True)
 
-    app = pd.read_csv('../data/application_summary_set.csv')
+    app = pd.read_csv('../df/application_summary_set.csv')
     #  print(app.columns)
     #  print(app['bin10_a_ORGANIZATION_TYPE'].drop_duplicates())
     #  sys.exit()
 
     label_list = ['a_REGION_RATING_CLIENT_W_CITY', 'a_HOUSE_HOLD_CODE@']
-    cat_list = get_categorical_features(data=app, ignore=ignore_features) + label_list
+    cat_list = get_categorical_features(df=app, ignore=ignore_features) + label_list
     cat_list = [col for col in cat_list if not(col.count('bin')) or (col.count('TION_TYPE'))]
     #  cat_list = ['a_HOUSE_HOLD_CODE@']
     #  cat_list = [col for col in cat_list if not(col.count('FLAG')) and not(col.count('GEND'))]
@@ -144,11 +144,11 @@ def num_cat_encoding(df, bins=0):
     select_list = []
     val_col = 'valid_no_4'
 
-    base = pd.read_csv('../data/base.csv')
+    base = pd.read_csv('../df/base.csv')
     for cat in tqdm(categorical_list):
         length = len(df[cat].drop_duplicates())
         prefix = f'new_len{length}_'
         #  prefix = f'abp_vc{length}_'
-        target_encoding(base=base, data=df, unique_id=unique_id, level=cat, method_list=method_list,
+        target_encoding(base=base, df=df, unique_id=unique_id, level=cat, method_list=method_list,
                         prefix=prefix, select_list=select_list, test=1, impute=1208, val_col=val_col, npy_key=target)
 
