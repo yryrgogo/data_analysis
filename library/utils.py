@@ -52,7 +52,7 @@ def end(fname):
 #==============================================================================
 # SUCCESS !!! {fname}
 #==============================================================================
-"""
+""")
     print('time: {:.2f}min'.format(elapsed_minute()))
     send_line(f'{HOSTNAME}  FINISH {fname}  time: {elapsed_minute():.2f}min')
     return
