@@ -12,93 +12,15 @@ sys.path.append('../../../github/module/')
 from preprocessing import set_validation, split_dataset, get_dummies, factorize_categoricals
 from convinience_function import get_categorical_features, get_numeric_features
 from load_data import pararell_load_data
-from logger import logger_func
 from feature_engineering import base_aggregation
 from make_file import make_npy, make_feature_set
 
-
-#  logger = logger_func()
 start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 
-unique_id = 'SK_ID_CURR'
+method_list = ['sum', 'mean', 'std', 'max', 'min']
+key = 'SK_ID_CURR'
 target = 'TARGET'
-ignore_features = [unique_id, target, 'valid_no', 'valid_no_4', 'is_train', 'is_test']
-
-
-def make_win_set(base):
-    path = '../features/5_engineering/*.npy'
-    df = make_feature_set(base, path)
-
-    'positive率とサンプル数によってラベリングする'
-    'GENDER'
-    df['a_CODE_GENDER'] = df['a_CODE_GENDER'].map(lambda x: 'F' if x.count('NA') else x)
-
-    ' SUITE'
-    df['a_NAME_TYPE_SUITE'] = df['a_NAME_TYPE_SUITE'].fillna('XNA')
-    df['a_NAME_TYPE_SUITE'] = df['a_NAME_TYPE_SUITE'].map(lambda x: 'row_risk' if x.count('Child') or x.count('Family') or x.count('part') else 'middle_risk')
-
-    ' INCOME_TYPE'
-    df['a_NAME_INCOME_TYPE'] = df['a_NAME_INCOME_TYPE'].map(lambda x: 'Pensioner' if x.count(
-        'Business') or x.count('Student') or x.count('State') else 'Working' if x.count('Unemployed') or x.count('Maternity') else x)
-
-    ' EDUCATION_TYPE'
-    df['a_NAME_EDUCATION_TYPE'] = df['a_NAME_EDUCATION_TYPE'].map(
-        lambda x: 'Secondary / secondary special' if x.count('secondary') or x.count('Incomp') else 'Higher education' if x.count('Academic') else x)
-
-    ' FAMILY_TYPE'
-    df['a_NAME_FAMILY_STATUS'] = df['a_NAME_FAMILY_STATUS'].map(lambda x: 'Married' if x.count(
-        'Widow') or x.count('Unknown') else 'Civil marriage' if x.count('Single') or x.count('Separated') else x)
-
-    ' HOUSING_TYPE'
-    df['a_NAME_HOUSING_TYPE'] = df['a_NAME_HOUSING_TYPE'].map(
-        lambda x: 'row_housing' if x.count('Co') or x.count('House') or x.count('Off') else 'high_housing' if x.count('Mun') or x.count('Rent') or x.count('With') else x)
-
-    ' ORGANIZATION '
-    org_list = ['a_ORGANIZATION_TYPE', 'a_OCCUPATION_TYPE']
-    for category in org_list:
-        ' TARGETエンコーディングしてbinを作成する '
-        df = cat_to_target_bin_enc(df, df.query('TARGET != -1') , category, bins=10)
-
-    df['a_CNT_ANNUITY_diff_ANNUITY'] = (df['a_AMT_CREDIT'] - df['a_AMT_ANNUITY_impute']) / df['a_AMT_ANNUITY_impute']
-    df['a_AMT_YIELD_diff_ANNUITY'] = (df['a_AMT_CREDIT'] - df['a_AMT_ANNUITY_impute']) / df['a_AMT_GOODS_PRICE_impute']
-    df['a_AMT_INCOME_div_CREDIT'] = df['a_AMT_INCOME_TOTAL']  / df['a_AMT_CREDIT']
-    df['a_AMT_INCOME_div_ANNUITY'] = df['a_AMT_INCOME_TOTAL']  / df['a_AMT_ANNUITY_impute']
-
-    df['a_DAYS_EMPLOYED_impute_div_a_DAYS_BIRTH'] = df['a_DAYS_EMPLOYED_impute'] / df['a_DAYS_BIRTH']
-
-    #  df.drop(['a_AMT_ANNUITY_impute', 'a_AMT_GOODS_PRICE_impute'], axis=1, inplace=True)
-
-    ' binをカテゴリとする場合はこちら '
-    num_list = get_numeric_features(data=df, ignore=ignore_features)
-    bins_list = [10, 20, 30]
-    bin_feat_list = []
-    for bins in bins_list:
-        for num in num_list:
-            ' binより値の種類が少ない時は計算しない '
-            if len(df[num].drop_duplicates()) < bins:
-                continue
-            else:
-                df[f'bin{bins}_{num}'] = pd.qcut( x=df[num], q=bins, duplicates='drop')
-                bin_feat_list.append(f'bin{bins}_{num}')
-
-    ' 可視化チェック '
-    #  cat_list = get_categorical_features(data=df, ignore=ignore_features)
-    #  for cat in cat_list:
-    #      tmp = df.query('TARGET!=-1')
-    #      logger.info( tmp.groupby(cat)[target].size())
-    #  logger.info( tmp.groupby('a_ORGANIZATION_TYPE')[target].mean())
-    #  logger.info( tmp.groupby('a_OCCUPATION_TYPE')[target].mean())
-    #  for col in bin_feat_list:
-    #      tmp = df.query('TARGET!=-1')
-    #      logger.info( tmp.groupby(col)[target].size())
-    #      logger.info( tmp.groupby(col)[target].mean())
-    #  sys.exit()
-
-    df.drop(['a_ORGANIZATION_TYPE', 'a_OCCUPATION_TYPE'], axis=1, inplace=True)
-    df.to_csv('../data/application_summary_set.csv', index=False)
-    sys.exit()
-
-    return df
+ignore_features = [key, target, 'valid_no', 'valid_no_4', 'is_train', 'is_test']
 
 
 def cat_to_target_bin_enc(df, df_target, category, bins=10):
@@ -132,25 +54,6 @@ def cat_to_target_bin_enc(df, df_target, category, bins=10):
     df[category] = df[category].map(bin_sort)
 
     return df
-
-
-# One-hot encoding for categorical columns with get_dummies
-def one_hot_encoder(df, nan_as_category = True):
-    '''
-    Explain:
-        One-hot encoding for categorical columns with get_dummies
-    Args:
-    Return:
-        df (DataFrame):
-        include One-hot columns and raw columns.
-        new_columns(list):
-        One-hot column list
-    '''
-    original_columns = list(df.columns)
-    categorical_columns = [col for col in df.columns if df[col].dtype == 'object']
-    df = pd.get_dummies(df, columns= categorical_columns, dummy_na= nan_as_category)
-    new_columns = [c for c in df.columns if c not in original_columns]
-    return df, new_columns
 
 
 def col_rename(data, level, ignore_features, prefix='', suffix=''):
@@ -291,29 +194,15 @@ def cnt_encoding(base, data, level, cat_list, ignore_list, prefix):
 
 def main():
 
-
-    level = unique_id
-    method_list = ['sum', 'mean', 'std', 'max', 'min']
-
     " データの読み込み "
-    base = pd.read_csv('../data/base.csv')[unique_id].to_frame()
-
-    #  make_win_set(base)
-    #  sys.exit()
-
-    ' previousのロード '
-    #  data = pd.read_csv('../data/previous_application_after.csv')
-    data = pd.read_csv('../data/dima_prev_feature_select.csv')
-    sk_id = 'SK_ID_PREV'
-    prefix = 'dima_'
-
+    base = pd.read_csv('../data/base.csv')[key].to_frame()
 
     ' BASE AGGRIGATION '
     num_list = get_numeric_features(data=data, ignore=ignore_features)
     for num in num_list:
         for method in method_list:
-            tmp_result = base_aggregation(data=data, level=unique_id, method=method, prefix=prefix, feature=num)
-            result = base.merge(tmp_result, on=unique_id, how='left')
+            tmp_result = base_aggregation(data=data, level=key, method=method, prefix=prefix, feature=num)
+            result = base.merge(tmp_result, on=key, how='left')
             make_npy(result=result, ignore_list=ignore_features, logger=logger)
     sys.exit()
 
