@@ -10,49 +10,12 @@ from x_ray import x_ray
 sys.path.append('../library')
 from utils import x_y_split
 from preprocessing import set_validation, split_dataset
-from params_lgbm import train_params, train_params_0729, train_params_0815, xgb_params_0814, extra_params, lgr_params
 import xgboost as xgb
 from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression, ridge
-from sklearn.preprocessing import StandardScaler
 
 
 start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
-sc = StandardScaler()
-
-' データセットからそのまま使用する特徴量 '
-unique_id = 'SK_ID_CURR'
-target = 'TARGET'
-ignore_features = [unique_id, target, 'valid_no', 'is_train', 'is_test', 'valid_no_2', 'valid_no_3', 'valid_no_4']
-
-train_params = {
-    #  'boosting':'dart',
-    'num_threads': 35,
-    'learning_rate':0.02,
-    #  'colsample_bytree':0.01,
-    'colsample_bytree':0.02,
-    #  'subsample':0.9,
-    'min_split_gain':0.01,
-    'objective':'binary',
-    'boosting_type':'gbdt',
-    'metric':'auc',
-    'max_depth':6,
-    'min_child_weight':18,
-    #  'min_child_weight':36,
-    #  'max_bin':250,
-    #  'min_child_samples':96,
-    #  'min_data_in_bin':96,
-
-    'lambda_l1':0.1,
-    'lambda_l2':90,
-    'num_leaves':20,
-    #  'num_leaves':11,
-    'random_seed': 1208,
-    'bagging_seed':1208,
-    'feature_fraction_seed':1208,
-    'data_random_seed':1208
-    }
-
 
 def sc_metrics(test, pred, metric='auc'):
     if metric == 'logloss':
@@ -92,7 +55,7 @@ def df_feature_importance(model, model_type, feim_name='importance'):
     return feim
 
 
-def cross_validation(logger, train, target, fold_type='stratified', fold=5, seed=1208, params=train_params, metric='auc', categorical_feature=[], truncate_flg=0, num_iterations=3500, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb'):
+def cross_validation(logger, train, target, fold_type='stratified', fold=5, seed=1208, params={}, metric='auc', categorical_feature=[], truncate_flg=0, num_iterations=3500, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb'):
 
     list_score = []
     y = train[target]
@@ -181,12 +144,11 @@ def prediction(logger, train, test, target, categorical_feature=[], metric='auc'
     return y_pred, len(use_cols)
 
 
-def cross_prediction(logger, train, test, target, categorical_feature=[], val_col='valid_no', metric='auc', params={}, num_iterations=20000, learning_rate=0.02, early_stopping_rounds=150, model_type='lgb'):
+def cross_prediction(logger, train, test, target, categorical_feature=[], metric='auc', params={}, num_iterations=20000, learning_rate=0.02, early_stopping_rounds=150, model_type='lgb', oof_flg=True):
 
     list_score = []
     list_pred = []
 
-    valid_list = train[val_col].drop_duplicates().values
     prediction = np.array([])
     cv_feim = pd.DataFrame([])
 
