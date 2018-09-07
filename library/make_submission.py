@@ -42,11 +42,16 @@ DUMMIE: {dummie}
     logger.info(f'TRAIN SHAPE: {train.shape}')
     logger.info(f'TEST SHAPE: {test.shape}')
 
+    drop_list = []
     for col in test.columns:
         length = len(test[col].drop_duplicates())
         if length <=1:
             logger.info(f'''
 ***********WARNING************* LENGTH {length} COLUMN: {col}''')
+            if col!=target:
+                drop_list.append(col)
+    train.drop(drop_list, axis=1, inplace=True)
+    test.drop(drop_list, axis=1, inplace=True)
 
     seed_list = [
         1208,
