@@ -144,7 +144,7 @@ def prediction(logger, train, test, target, categorical_feature=[], metric='auc'
     return y_pred, len(use_cols)
 
 
-def cross_prediction(logger, train, test, key, target, fold_type='stratified', fold=5, categorical_feature=[], metric='auc', params={}, num_iterations=20000, learning_rate=0.02, early_stopping_rounds=150, model_type='lgb', oof_flg=True, ignore_list=[]):
+def cross_prediction(logger, train, test, key, target, fold_type='stratified', fold=5, seed=605, categorical_feature=[], metric='auc', params={}, num_iterations=20000, learning_rate=0.02, early_stopping_rounds=150, model_type='lgb', oof_flg=True, ignore_list=[]):
 
     list_score = []
     list_pred = []

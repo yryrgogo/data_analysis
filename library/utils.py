@@ -22,6 +22,9 @@ from multiprocessing import cpu_count, Pool
 import gc
 import pickle
 
+from logging import StreamHandler, DEBUG, Formatter, FileHandler, getLogger
+
+
 # =============================================================================
 # global variables
 # =============================================================================
@@ -60,13 +63,6 @@ def end(fname):
 
 def elapsed_minute():
     return (time() - st_time)/60
-
-
-def mkdir_p(path):
-    try:
-        os.stat(path)
-    except:
-        os.mkdir(path)
 
 
 def to_feather(df, path):
@@ -401,6 +397,33 @@ def stop_instance():
     send_line('stop instance')
     os.system(
         f'gcloud compute instances stop {os.uname()[1]} --zone us-east1-b')
+
+
+def mkdir_p(path):
+    try:
+        os.stat(path)
+    except:
+        os.mkdir(path)
+
+def logger_func():
+    logger = getLogger(__name__)
+    log_fmt = Formatter('%(asctime)s %(name)s %(lineno)d [%(levelname)s]\
+    [%(funcName)s] %(message)s ')
+    handler = StreamHandler()
+    handler.setLevel('INFO')
+    handler.setFormatter(log_fmt)
+    logger.addHandler(handler)
+
+    mkdir_p('../output')
+    handler = FileHandler('../output/py_train.py.log', 'a')
+    handler.setLevel(DEBUG)
+    handler.setFormatter(log_fmt)
+    logger.setLevel(DEBUG)
+    logger.addHandler(handler)
+
+    logger.info('start')
+
+    return logger
 
 
 def x_y_split(data, target):
