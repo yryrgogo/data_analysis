@@ -1,5 +1,4 @@
 from logging import StreamHandler, DEBUG, Formatter, FileHandler, getLogger
-from utils import mkdir_p
 
 
 def logger_func():

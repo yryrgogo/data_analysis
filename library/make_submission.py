@@ -109,6 +109,7 @@ DUMMIE: {dummie}
                 target=target,
                 fold=fold,
                 fold_type=fold_type,
+                #  seed=seed,
                 categorical_feature=categorical_feature,
                 params = params,
                 model_type=model_type,
