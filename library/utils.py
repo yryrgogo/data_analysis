@@ -25,9 +25,11 @@ import pickle
 from logging import StreamHandler, DEBUG, Formatter, FileHandler, getLogger
 
 
+
 # =============================================================================
 # global variables
 # =============================================================================
+COMPETITION_NAME = 'home-credit-default-risk'
 
 # =============================================================================
 # def
@@ -372,8 +374,8 @@ def submit(file_path, comment='from API'):
     message = 'SCORE!!!\n'
     for i, j in zip(col.split(','), values.split(',')):
         message += f'{i}: {j}\n'
-#        print(f'{i}: {j}') # TODO: comment out later?
-    send_line(message.rstrip())
+        print(f'{i}: {j}') # TODO: comment out later?
+    #  send_line(message.rstrip())
 
 
 import requests
