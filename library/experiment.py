@@ -60,7 +60,7 @@ from params_lgbm import train_params, valid_params, train_params_0729, train_par
 sys.path.append('../../../github/module/')
 from preprocessing import set_validation, split_dataset, factorize_categoricals, get_dummies, data_regulize
 from load_data import pararell_load_data, x_y_split
-from convinience_function import get_categorical_features, get_numeric_features
+from utils import get_categorical_features, get_numeric_features
 from logger import logger_func
 from make_file import make_feature_set, make_npy
 from statistics_info import correlation

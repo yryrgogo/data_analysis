@@ -8,7 +8,7 @@ sys.path.append('../library')
 import xgboost as xgb
 from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression, ridge
-from convinience_function import pararell_process
+from utils import pararell_process
 
 
 def x_ray_caliculation(valid, col, value, model):

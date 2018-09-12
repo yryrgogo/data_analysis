@@ -13,7 +13,7 @@ import sys, re
 sys.path.append('../../../github/module/')
 from preprocessing import factorize_categoricals
 from make_file import make_npy, make_feature_set
-from convinience_function import get_categorical_features, get_numeric_features
+from utils import get_categorical_features, get_numeric_features
 from logger import logger_func
 from categorical_encoding import select_category_value_agg
 
