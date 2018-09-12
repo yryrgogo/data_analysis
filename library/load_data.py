@@ -5,6 +5,14 @@ import sys
 import re
 from multiprocessing import Pool
 import multiprocessing
+import os
+HOME = os.path.expanduser('~')
+sys.path.append(f"{HOME}/kaggle/github/library/")
+import utils
+from utils import logger_func, get_categorical_features, get_numeric_features, pararell_process
+pd.set_option('max_columns', 200)
+pd.set_option('max_rows', 200)
+
 
 
 def load_data(path):
@@ -60,14 +68,15 @@ def load_file(path):
         filename = re.search(r'/([^/.]*).npy', path).group(1)
         tmp = pd.Series(np.load(path), name=filename)
         return tmp
+    elif path.count('.fp'):
+        filename = re.search(r'/([^/.]*).fp', path).group(1)
+        tmp = pd.Series(utils.read_pkl_gzip(path), name=filename)
+        return tmp
 
 
-def pararell_load_data(path_list, kaggle=0):
+def pararell_load_data(path_list):
     p = Pool(multiprocessing.cpu_count())
-    if kaggle==1:
-        p_list = p.map(kaggle_load_csv, path_list)
-    else:
-        p_list = p.map(load_file, path_list)
+    p_list = p.map(load_file, path_list)
     p.close
 
     return p_list
