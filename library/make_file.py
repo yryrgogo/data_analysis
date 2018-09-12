@@ -47,7 +47,7 @@ def make_feature_set(base, path, use_feature=[]):
 
     if len(use_feature)==0:
         use_feature = glob.glob(path)
-    p_list = pararell_load_data(use_feature, 0)
+    p_list = pararell_load_data(use_feature)
     feature_set = pd.concat(p_list, axis=1)
     df = pd.concat([base, feature_set], axis=1)
     return df
