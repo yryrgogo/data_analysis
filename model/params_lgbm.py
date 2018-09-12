@@ -43,8 +43,8 @@ def train_params_dima():
     #  'min_data_in_bin':96,
 
     'lambda_l1':0.1,
-    'lambda_l2':90,
-    'num_leaves':20,
+    'lambda_l2':110,
+    'num_leaves':30,
     #  'num_leaves':11,
     'random_seed': 1208,
     'bagging_seed':1208,
