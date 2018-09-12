@@ -105,7 +105,7 @@ def to_pkl_gzip(obj, path):
     #  df.to_pickle(path)
     with open(path, 'wb') as f:
         pickle.dump(obj=obj, file=f)
-    os.system('gzip ' + path)
+    os.system('gzip -f ' + path)
     os.system('rm ' + path)
     return
 
