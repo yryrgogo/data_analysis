@@ -2,6 +2,14 @@ import numpy as np
 import pandas as pd
 import sys, glob
 from load_data import pararell_load_data
+import os
+HOME = os.path.expanduser('~')
+sys.path.append(f"{HOME}/kaggle/github/library/")
+import utils
+from utils import logger_func, get_categorical_features, get_numeric_features, pararell_process
+logger = logger_func()
+pd.set_option('max_columns', 200)
+pd.set_option('max_rows', 200)
 
 
 def make_npy(result, ignore_list=[], prefix='', suffix='', select_list=[], path='../features/1_first_valid/', logger=False, npy_key='@'):
