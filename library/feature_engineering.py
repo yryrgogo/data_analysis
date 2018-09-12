@@ -3,7 +3,7 @@ import pandas as pd
 import sys
 
 
-def base_aggregation(df, level, feature, method, prefix='', suffix=''):
+def base_aggregation(df, level, feature, method, prefix='', suffix='', base=[]):
     '''
     Explain:
         levelの粒度で集約を行う。この関数が受け取る集計対象カラムは一つなので、
@@ -24,8 +24,9 @@ def base_aggregation(df, level, feature, method, prefix='', suffix=''):
     df = df[level+[feature]]
 
     result = df.groupby(level)[feature].agg({'tmp': {method}})
-    result = result['tmp'].reset_index().rename(
-        columns={f'{method}': f'{prefix}{feature}_{method}{suffix}@{level}'})
+    result = result['tmp'].reset_index().rename(columns={f'{method}': f'{prefix}{feature}_{method}{suffix}@'})
+    if len(base):
+        result = base[level].to_frame().merge(result, on=level, how='left')[f'{prefix}{feature}_{method}{suffix}@']
 
     return result
 
@@ -196,7 +197,7 @@ def col_rename(data, level, ignore_features, prefix='', suffix=''):
     return data
 
 
-def select_category_value_agg(base, data, level, cat_list=[], num_list=[], method_list=[], ignore_list=[], prefix='', null_val='XNA'):
+def select_category_value_agg(base, df, key, category_col, value, method, path='../features/1_first_valid', ignore_list=[], prefix='', null_val='XNA'):
     '''
     Explain:
         likelifood encoding
@@ -207,43 +208,26 @@ def select_category_value_agg(base, data, level, cat_list=[], num_list=[], metho
     Return:
     '''
 
-    ' dataそのものがbaseとなる場合 '
-    if len(base) == 0:
-        base = data
+    df = df[[level, category_col, value]]
+    ' カテゴリカラムにNullがある場合はXNAとして集計する '
+    df[category_col].fillna(null_val, inplace=True)
 
-    if len(cat_list) == 0:
-        cat_list = get_categorical_features(data, ignore_features)
+    ' 集計するカテゴリカラムの中身 '
+    for cat_val in df[category_col].drop_duplicates().values:
 
-    ' カテゴリカラム '
-    for cat in cat_list:
-        ' カテゴリカラムにNullがある場合はUnknownとして集計する '
-        data[cat] = data[cat].fillna(null_val)
-        ' 集計するカテゴリカラムの中身 '
-        for cat_val in data[cat].drop_duplicates().values:
+        ' 集計するカテゴリに絞る '
+        df_cat = df.query("{category_col} == '{cat_val}'")
 
-            ' 集計するカテゴリに絞る '
-            df_cat = data[data[cat] == cat_val]
+        if df_cat[value].dtype != 'object':
 
-            if len(num_list) == 0:
-                num_list = get_numeric_features(data, ignore_features)
+            logger.info(f"\ncat: {category_col}\ncat_val: {cat_val}\nval: {value}\nmethod: {method}")
 
-            ' 集計対象のカラム '
-            for val in num_list:
-                if df_cat[val].dtype != 'object':
+            result = base_aggregation(df_cat, level, value, method)
+            result = base.merge(result, on=level, how='left')
 
-                    for method in method_list:
-
-                        logger.info(
-                            f"\ncat: {cat}\ncat_val: {cat_val}\nval: {val}\nmethod: {method}")
-
-                        result = base_aggregation(df_cat, level, val, method)
-                        #  if len(result.dropna()) / len(result) < 0.01:
-                        #      continue
-                        result = base.merge(result, on=level, how='left')
-                        ' どのカテゴリカラムでどのVALUEについて集計したか分かるように '
-                        prename = f'{prefix}{cat}_{cat_val}_'
-
-                        make_npy(result, ignore_features, prename, method, logger=logger)
+            feature_list = [col for col in result.columns if col.count('@')]
+            for feature in feature_list:
+                utils.to_pickle(path=f'{path}/{prefix}{feature}.fp', obj=result[feature].values)
 
 
 def cnt_encoding(df, category_col, ignore_list):
@@ -253,3 +237,13 @@ def cnt_encoding(df, category_col, ignore_list):
     ' 元データの行数とインデックスを保つ為、Left Join '
     result = df.merge(cnt_enc, on=category_col, how='left').drop(category_col, axis=1)
     return result
+
+
+def exclude_feature(col_name, feature):
+    if np.var(feature)==0:
+        logger.info(f'''
+        #========================================================================
+        # ***WARNING!!*** VARIANCE 0 COLUMN : {col_name}
+        #========================================================================''')
+        return True
+    return False

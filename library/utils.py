@@ -2,7 +2,6 @@
 gsutil -m cp ../feature/* gs://homecredit_ko
 gsutil -m rsync -d -r ../feature gs://homecredit_ko
 """
-
 import warnings
 warnings.filterwarnings("ignore")
 import pandas as pd
@@ -18,9 +17,11 @@ from tqdm import tqdm
 from sklearn.model_selection import KFold
 from time import time, sleep
 from datetime import datetime
-from multiprocessing import cpu_count, Pool
 import gc
 import pickle
+import gzip
+from multiprocessing import Pool
+import multiprocessing
 
 from logging import StreamHandler, DEBUG, Formatter, FileHandler, getLogger
 
@@ -98,6 +99,21 @@ def read_pickle(path):
 #==============================================================================
 """)
         return obj
+
+
+def to_pkl_gzip(obj, path):
+    #  df.to_pickle(path)
+    with open(path, 'wb') as f:
+        pickle.dump(obj=obj, file=f)
+    os.system('gzip ' + path)
+    os.system('rm ' + path)
+    return
+
+
+def read_pkl_gzip(path):
+    with gzip.open(path, mode='rb') as fp:
+        data = fp.read()
+    return pickle.loads(data)
 
 
 def to_df_pickle(df, path, fname='', split_size=3, index=False):
@@ -267,13 +283,6 @@ def reduce_mem_usage(df):
         df[col_cat] = df[col_cat].astype('category')
 
 
-def to_pkl_gzip(df, path):
-    df.to_pickle(path)
-    os.system('gzip ' + path)
-    os.system('rm ' + path)
-    return
-
-
 def check_var(df, var_limit=0, sample_size=None):
     if sample_size is not None:
         if df.shape[0] > sample_size:
@@ -365,11 +374,9 @@ def get_use_files(prefixes=[], is_train=True):
 # other API
 # =============================================================================
 def submit(file_path, comment='from API'):
-    os.system(
-        f'kaggle competitions submit -c {COMPETITION_NAME} -f {file_path} -m "{comment}"')
-    sleep(60)  # tekito~~~~
-    tmp = os.popen(
-        f'kaggle competitions submissions -c {COMPETITION_NAME} -v | head -n 2').read()
+    os.system(f'kaggle competitions submit -c {COMPETITION_NAME} -f {file_path} -m "{comment}"')
+    sleep(50)  # tekito~~~~
+    tmp = os.popen(f'kaggle competitions submissions -c {COMPETITION_NAME} -v | head -n 2').read()
     col, values = tmp.strip().split('\n')
     message = 'SCORE!!!\n'
     for i, j in zip(col.split(','), values.split(',')):
@@ -460,4 +467,44 @@ def path_info(path):
     path_dict['elem'] = re.search(r'\D@([^.]*).csv', path).group(1)
 
     return path_dict
+
+
+" 並列処理 "
+def pararell_process(func, arg_list):
+    process = Pool(multiprocessing.cpu_count())
+    #  p = Pool(len(arg_list))
+    callback = process.map(func, arg_list)
+    process.close
+    return callback
+
+
+" 機械学習でよく使う系 "
+def row_number(df, level):
+    '''
+    Explain:
+        levelをpartisionとしてrow_numberをつける。
+        順番は入力されたDFのままで行う、ソートが必要な場合は事前に。
+    Args:
+    Return:
+    '''
+    index = np.arange(1, len(df)+1, 1)
+    df['index'] = index
+    min_index = df.groupby(level)['index'].min().reset_index()
+    df = df.merge(min_index, on=level, how='inner')
+    df['row_no'] = df['index_x'] - df['index_y'] + 1
+    df.drop(['index_x', 'index_y'], axis=1, inplace=True)
+    return df
+
+
+#  カテゴリ変数を取得する関数
+def get_categorical_features(df, ignore):
+    obj = [col for col in list(df.columns) if (df[col].dtype == 'object') and col not in ignore]
+    return obj
+
+
+#  連続値カラムを取得する関数
+def get_numeric_features(df, ignore):
+    num = [col for col in list(df.columns) if (str(df[col].dtype).count('int') or str(df[col].dtype).count('float')) and col not in ignore]
+    return num
+
 
