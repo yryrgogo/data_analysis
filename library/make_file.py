@@ -53,7 +53,7 @@ def make_feature_set(base, path, use_feature=[]):
     return df
 
 
-def make_raw_feature(data, prefix='', select_list=[], ignore_list=[], extension='npy', path='../features/raw_features/', word='', logger=False):
+def make_raw_feature(data, prefix='', select_list=[], ignore_list=[], extension='pkl', path='../features/1_first_valid', word='', logger=False):
 
     for tmp_col in data.columns:
         if tmp_col in ignore_list: continue
@@ -66,7 +66,9 @@ def make_raw_feature(data, prefix='', select_list=[], ignore_list=[], extension=
         data.rename(columns={tmp_col:new_col}, inplace=True)
 
         if extension.count('npy'):
-            np.save(f'{path}{prefix}{new_col}.npy', data[new_col].values)
+            np.save(f'{path}/{prefix}{new_col}.npy', data[new_col].values)
         elif extension.count('csv'):
-            data[new_col].to_csv(f'{path}{prefix}{new_col}.csv')
+            data[new_col].to_csv(f'{path}/{prefix}{new_col}.csv')
+        elif extension.count('pkl'):
+            utils.to_pkl_gzip(path=f'{path}/{prefix}{new_col}.fp', obj=data[new_col].values)
 

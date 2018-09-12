@@ -12,7 +12,7 @@ import utils
 from logger import logger_func
 logger = logger_func()
 import eda
-from convinience_function import get_categorical_features
+from utils import get_categorical_features
 
 
 #==============================================================================

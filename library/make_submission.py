@@ -12,7 +12,7 @@ from classifier import prediction, cross_prediction
 sys.path.append(f"{HOME}/kaggle/github/library/")
 import utils
 from preprocessing import factorize_categoricals, get_dummies
-from convinience_function import get_categorical_features, get_numeric_features
+from utils import get_categorical_features, get_numeric_features
 
 start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 

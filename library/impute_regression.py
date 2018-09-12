@@ -13,7 +13,7 @@ from lgbm_reg import prediction, cross_prediction
 
 sys.path.append('../../../github/module/')
 from preprocessing import set_validation, split_dataset, factorize_categoricals
-from convinience_function import get_categorical_features, get_numeric_features
+from utils import get_categorical_features, get_numeric_features
 from make_file import make_feature_set
 from logger import logger_func
 from load_data import pararell_load_data, x_y_split
