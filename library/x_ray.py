@@ -9,8 +9,6 @@ import xgboost as xgb
 from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression, ridge
 from convinience_function import pararell_process
-from multiprocessing import Pool
-import multiprocessing
 
 
 def x_ray_caliculation(valid, col, value, model):
