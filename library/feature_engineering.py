@@ -281,34 +281,34 @@ def target_encoding(logger, base, df, key, target, enc_feat, level, method_list=
     elif str(type(level)).count('tuple'):
         level = list(level)
 
-    train = df[~df[target].isnull()]
+    #  train = df[~df[target].isnull()]
     test = df[df[target].isnull()]
 
-    cnt=0
-    val_col = 'valid_no'
-    tmp_val = train[key].reset_index(drop=True).to_frame()
-    x = train[key].to_frame()
-    y = train[target].values
+    #  cnt=0
+    #  val_col = 'valid_no'
+    #  tmp_val = train[key].reset_index(drop=True).to_frame()
+    #  x = train[key].to_frame()
+    #  y = train[target].values
 
-    ' KFold '
-    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=seed)
-    for trn_idx, val_idx in cv.split(x, y):
-        cnt+=1
+    #  ' KFold '
+    #  cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=seed)
+    #  for trn_idx, val_idx in cv.split(x, y):
+    #      cnt+=1
 
-        valid_no = np.zeros(len(val_idx))+cnt
-        tmp = pd.DataFrame({'index':val_idx, val_col:valid_no})
+    #      valid_no = np.zeros(len(val_idx))+cnt
+    #      tmp = pd.DataFrame({'index':val_idx, val_col:valid_no})
 
-        if cnt==1:
-            tmp_result = tmp.copy()
-        else:
-            tmp_result = pd.concat([tmp_result, tmp], axis=0)
+    #      if cnt==1:
+    #          tmp_result = tmp.copy()
+    #      else:
+    #          tmp_result = pd.concat([tmp_result, tmp], axis=0)
 
-    tmp_result.set_index('index', inplace=True)
+    #  tmp_result.set_index('index', inplace=True)
 
-    ' valid_colをつける '
-    df_val = tmp_val.join(tmp_result)
-    df = df.merge(df_val, on=key, how='left')
-    df[val_col] = df[val_col].where(df[val_col]>=0, -1)
+    #  ' valid_colをつける '
+    #  df_val = tmp_val.join(tmp_result)
+    #  df = df.merge(df_val, on=key, how='left')
+    #  df[val_col] = df[val_col].where(df[val_col]>=0, -1)
 
     # valid_noをカラムとして保存
     #  utils.to_pkl_gzip(obj=df[val_col].values, path=f'../input/{val_col}.fp')
@@ -317,6 +317,7 @@ def target_encoding(logger, base, df, key, target, enc_feat, level, method_list=
     del train, tmp_val, df_val, x, y
     gc.collect()
 
+    utils.read_pkl_gzip(path='../input/valid_no.pkl.gz')
     tmp_base = df[[key, val_col] + level].drop_duplicates()
     if len(base)>0:
         base = base[key].to_frame().merge(tmp_base, on=key, how='left')
