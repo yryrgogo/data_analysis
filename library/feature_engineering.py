@@ -310,6 +310,10 @@ def target_encoding(logger, base, df, key, target, enc_feat, level, method_list=
     df = df.merge(df_val, on=key, how='left')
     df[val_col] = df[val_col].where(df[val_col]>=0, -1)
 
+    # valid_noをカラムとして保存
+    #  utils.to_pkl_gzip(obj=df[val_col].values, path=f'../input/{val_col}.fp')
+    #  sys.exit()
+
     del train, tmp_val, df_val, x, y
     gc.collect()
 
