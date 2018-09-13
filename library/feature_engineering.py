@@ -282,6 +282,7 @@ def target_encoding(logger, base, df, key, target, enc_feat, level, method_list=
         level = list(level)
 
     train = df[~df[target].isnull()]
+    test = df[df[target].isnull()]
 
     cnt=0
     val_col = 'valid_no'
@@ -326,6 +327,7 @@ def target_encoding(logger, base, df, key, target, enc_feat, level, method_list=
                 tmp = df
             else:
                 tmp = df.query('is_train==1')
+
             '''
             集計に含めないpartisionのDFをdf_val.
             集計するpartisionのDFをdf_aggとして作成
@@ -334,6 +336,8 @@ def target_encoding(logger, base, df, key, target, enc_feat, level, method_list=
             #  logger.info(f"\ndf_val: {df_val.shape}")
 
             df_agg = tmp[tmp[val_col] != valid_no][level+[enc_feat]]
+            if enc_feat.count('EXT_SOURCE'):
+                df_agg = pd.concat([df_agg, test[level+[enc_feat]]], axis=0)
             #  logger.info(f"\ndf_agg: {df_agg.shape}")
 
             #  logger.info(f'\nlevel: {level}\nvalid_no: {valid_no}')
