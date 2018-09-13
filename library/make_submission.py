@@ -33,6 +33,7 @@ DUMMIE: {dummie}
 
     if exclude_category:
         for cat in categorical_feature:
+            data.drop(cat, axis=1, inplace=True)
             move_feature(feature_name=cat)
         categorical_feature = []
     elif dummie==0:
