@@ -4,9 +4,11 @@ import datetime
 import glob
 import sys
 import re
+import gc
 from multiprocessing import Pool
 import multiprocessing
 from itertools import combinations
+from sklearn.model_selection import StratifiedKFold
 
 sys.path.append('../../../github/module/')
 from preprocessing import set_validation, split_dataset, factorize_categoricals
@@ -20,17 +22,17 @@ from feature_engineering import base_aggregation
 #  logger = logger_func()
 start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 
-ignore_features = [key, target, 'valid_no', 'is_train', 'is_test']
+ignore_list = [key, target, 'valid_no', 'is_train', 'is_test']
 
 
-def target_encoding(base, data, key, target, level, method_list, prefix='', test=0, select_list=[], impute=1208):
+def target_encoding(base, df, key, target, method_list, prefix='', test=0, select_list=[], impute=1208, seed=1208):
     '''
     Explain:
         TARGET関連の特徴量を4partisionに分割したデータセットから作る.
         1partisionの特徴量は、残り3partisionの集計から作成する。
         test対する特徴量は、train全てを使って作成する
     Args:
-        data(DF)             : 入力データ。カラムにはkeyとvalid_noがある前提
+        df(DF)               : 入力データ。カラムにはkeyとvalid_noがある前提
         level(str/list/taple): 目的変数を集計する粒度
         key                  : ユニークカラム名
         target               : 目的変数となるカラム名
@@ -46,7 +48,38 @@ def target_encoding(base, data, key, target, level, method_list, prefix='', test
     elif str(type(level)).count('tuple'):
         level = list(level)
 
+    train = df[~df[target].isnull()]
+
+    val_col = 'valid_no'
+    tmp_val = train[[key, target]].reset_index(drop=True)
+    x = train[key].to_frame()
+    y = train[target].values
+
     ' KFold '
+    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=seed)
+    for trn_idx, val_idx in cv.split(x, y):
+        cnt+=1
+
+        valid_no = np.zeros(len(val_idx))+cnt
+        tmp = pd.DataFrame({'index':val_idx, val_col:valid_no})
+
+        if cnt==1:
+            tmp_result = tmp.copy()
+        else:
+            tmp_result = pd.concat([tmp_result, tmp], axis=0)
+
+    tmp_result.set_index('index', inplace=True)
+
+    ' valid_colをつける '
+    df_val = tmp_val.join(tmp_result)
+    df = df.merge(df_val, on=key, how='left')
+    df[val_col] = df[val_col].where(df[val_col]>=0, -1)
+
+    print(df[val_col].value_counts())
+    sys.exit()
+
+    del train, tmp_val, x, y
+    gc.collect()
 
     tmp_base = data[[key, val_col] + level].drop_duplicates()
     if len(base)>0:
@@ -105,7 +138,7 @@ def target_encoding(base, data, key, target, level, method_list, prefix='', test
         #  logger.info(f'\nresult shape: {result.shape}')
         #  logger.info(f'\n{result.head()}')
 
-        make_npy(result, ignore_features, prefix, select_list=select_list, npy_key=npy_key)
+        make_npy(result, ignore_list, prefix, select_list=select_list, npy_key=npy_key)
 
 
 def main():
