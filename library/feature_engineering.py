@@ -35,7 +35,11 @@ def base_aggregation(df, level, feature, method, prefix='', suffix='', base=[]):
     result = df.groupby(level)[feature].agg({'tmp': {method}})
     result = result['tmp'].reset_index().rename(columns={f'{method}': f'{prefix}{feature}_{method}{suffix}@'})
     if len(base):
-        result = base[level].to_frame().merge(result, on=level, how='left')[f'{prefix}{feature}_{method}{suffix}@']
+        try:
+            result = base[level].to_frame().merge(result, on=level, how='left')[f'{prefix}{feature}_{method}{suffix}@']
+        except AttributeError:
+            result = base[level].merge(result, on=level, how='left')[f'{prefix}{feature}_{method}{suffix}@']
+
 
     return result
 
@@ -274,6 +278,7 @@ def target_encoding(logger, base, df, key, target, enc_feat, level, method_list=
     Return:
         カラム名は{prefix}{target}@{level}
     '''
+    val_col = 'valid_no'
 
     ' levelはリストである必要がある '
     if str(type(level)).count('str'):
@@ -282,10 +287,8 @@ def target_encoding(logger, base, df, key, target, enc_feat, level, method_list=
         level = list(level)
 
     #  train = df[~df[target].isnull()]
-    test = df[df[target].isnull()]
 
     #  cnt=0
-    #  val_col = 'valid_no'
     #  tmp_val = train[key].reset_index(drop=True).to_frame()
     #  x = train[key].to_frame()
     #  y = train[target].values
@@ -314,13 +317,21 @@ def target_encoding(logger, base, df, key, target, enc_feat, level, method_list=
     #  utils.to_pkl_gzip(obj=df[val_col].values, path=f'../input/{val_col}.fp')
     #  sys.exit()
 
-    del train, tmp_val, df_val, x, y
-    gc.collect()
+    #  del train, tmp_val, df_val, x, y
+    #  gc.collect()
 
-    utils.read_pkl_gzip(path='../input/valid_no.pkl.gz')
+    #  valid_no = pd.Series(utils.read_pkl_gzip(path='../input/valid_no.fp.gz'), name='valid_no')
+    base[val_col] = utils.read_pkl_gzip(path='../input/valid_no.fp.gz')
+    if enc_feat.count(target):
+        df = df.merge(base[[key, val_col, target]], on=key, how='inner')
+    else:
+        df = df.merge(base[[key, val_col, enc_feat, target]], on=key, how='inner')
+    test = df[df[target].isnull()]
+
+    ' key, valid_no, エンコードするカラムをもたせたbaseを作る '
     tmp_base = df[[key, val_col] + level].drop_duplicates()
     if len(base)>0:
-        base = base[key].to_frame().merge(tmp_base, on=key, how='left')
+        ex_base = base[key].to_frame().merge(tmp_base, on=key, how='left')
 
     for method in method_list:
         result = pd.DataFrame([])
@@ -361,7 +372,20 @@ def target_encoding(logger, base, df, key, target, enc_feat, level, method_list=
             else:
                 result = pd.concat([result, tmp_result], axis=0)
 
-        result = base.merge(result, on=level+[val_col], how='left')
+        result = ex_base.merge(result, on=level+[val_col], how='left')
+
+        if True:
+            for col in result.columns:
+                if col.count('@') and col not in ignore_list:
+                    for i, method in enumerate(['mean', 'var', 'min']):
+                        tmp = base_aggregation(df=result[[key, col]], level=key, feature=col, method=method, base=base).to_frame().rename(columns={col:f'{col}_{method}'})
+                        tmp = pd.concat([base[key], tmp], axis=1)
+                        if i==0:
+                            tmp_result = tmp.copy()
+                        else:
+                            tmp_result = tmp_result.merge(tmp, on=key, how='left')
+            result = tmp_result
+        gc.collect()
 
         #  make_npy(result, ignore_list, prefix, select_list=select_list, npy_key=npy_key)
         level = '-'.join(level)
