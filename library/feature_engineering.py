@@ -1,6 +1,15 @@
+import gc
 import numpy as np
 import pandas as pd
 import sys
+from sklearn.model_selection import StratifiedKFold
+import os
+HOME = os.path.expanduser('~')
+sys.path.append(f"{HOME}/kaggle/github/library/")
+import utils
+from utils import logger_func, get_categorical_features, get_numeric_features, pararell_process
+pd.set_option('max_columns', 200)
+pd.set_option('max_rows', 200)
 
 
 def base_aggregation(df, level, feature, method, prefix='', suffix='', base=[]):
@@ -249,7 +258,7 @@ def exclude_feature(col_name, feature):
     return False
 
 
-def target_encoding(base, df, key, target, method_list, prefix='', test=0, select_list=[], impute=1208, seed=1208):
+def target_encoding(logger, base, df, key, target, enc_feat, level, method_list=['mean'], path='../features/1_first_valid', prefix='', select_list=[], ignore_list=[], seed=1208):
     '''
     Explain:
         TARGET関連の特徴量を4partisionに分割したデータセットから作る.
@@ -259,7 +268,7 @@ def target_encoding(base, df, key, target, method_list, prefix='', test=0, selec
         df(DF)               : 入力データ。カラムにはkeyとvalid_noがある前提
         level(str/list/taple): 目的変数を集計する粒度
         key                  : ユニークカラム名
-        target               : 目的変数となるカラム名
+        target               : エンコーディングに使うカラム名
         method(str)          : 集計のメソッド
         select_list(list)    : 特定のfeatureのみ保存したい場合はこちらにリストでfeature名を格納
     Return:
@@ -274,8 +283,9 @@ def target_encoding(base, df, key, target, method_list, prefix='', test=0, selec
 
     train = df[~df[target].isnull()]
 
+    cnt=0
     val_col = 'valid_no'
-    tmp_val = train[[key, target]].reset_index(drop=True)
+    tmp_val = train[key].reset_index(drop=True).to_frame()
     x = train[key].to_frame()
     y = train[target].values
 
@@ -299,43 +309,38 @@ def target_encoding(base, df, key, target, method_list, prefix='', test=0, selec
     df = df.merge(df_val, on=key, how='left')
     df[val_col] = df[val_col].where(df[val_col]>=0, -1)
 
-    print(df[val_col].value_counts())
-    sys.exit()
-
-    del train, tmp_val, x, y
+    del train, tmp_val, df_val, x, y
     gc.collect()
 
-    tmp_base = data[[key, val_col] + level].drop_duplicates()
+    tmp_base = df[[key, val_col] + level].drop_duplicates()
     if len(base)>0:
         base = base[key].to_frame().merge(tmp_base, on=key, how='left')
 
     for method in method_list:
         result = pd.DataFrame([])
-        valid_list = data[val_col].drop_duplicates().values
-        if test == 0:
-            valid_list.remove(-1)
+        valid_list = df[val_col].drop_duplicates().values
 
         for valid_no in valid_list:
 
             if valid_no == -1:
-                df = data
+                tmp = df
             else:
-                df = data.query('is_train==1')
+                tmp = df.query('is_train==1')
             '''
             集計に含めないpartisionのDFをdf_val.
             集計するpartisionのDFをdf_aggとして作成
             '''
-            df_val = df[df[val_col] == valid_no][level].drop_duplicates()
+            df_val = tmp[tmp[val_col] == valid_no][level].drop_duplicates()
             #  logger.info(f"\ndf_val: {df_val.shape}")
 
-            df_agg = df[df[val_col] != valid_no][level+[target]]
+            df_agg = tmp[tmp[val_col] != valid_no][level+[enc_feat]]
             #  logger.info(f"\ndf_agg: {df_agg.shape}")
 
             #  logger.info(f'\nlevel: {level}\nvalid_no: {valid_no}')
             df_agg = base_aggregation(
-                data=df_agg,
+                df=df_agg,
                 level=level,
-                feature=target,
+                feature=enc_feat,
                 method=method
             )
 
@@ -347,19 +352,18 @@ def target_encoding(base, df, key, target, method_list, prefix='', test=0, selec
                 result = tmp_result
             else:
                 result = pd.concat([result, tmp_result], axis=0)
-            #  logger.info(f'\ntmp_result shape: {result.shape}')
 
         result = base.merge(result, on=level+[val_col], how='left')
 
+        #  make_npy(result, ignore_list, prefix, select_list=select_list, npy_key=npy_key)
+        level = '-'.join(level)
         for col in result.columns:
-            if col.count('bin') and not(col.count(target)):
-                result.drop(col, axis=1, inplace=True)
+            if col.count('@') and col not in ignore_list:
+                utils.to_pkl_gzip(obj=result[col].values, path=f"{path}/{prefix}tgec-{col}-{level}.fp")
+                logger.info(f'''
+#========================================================================
+# COMPLETE TARGET ENCODING!!
+# FEATURE : {prefix}tgec-{col}-{level}.fp
+# LENGTH  : {len(result[col])}
+#========================================================================''')
 
-        if impute != 1208:
-            print(result.head())
-            result.fillna(impute, inplace=True)
-
-        #  logger.info(f'\nresult shape: {result.shape}')
-        #  logger.info(f'\n{result.head()}')
-
-        make_npy(result, ignore_list, prefix, select_list=select_list, npy_key=npy_key)
