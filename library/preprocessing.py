@@ -358,7 +358,7 @@ def set_validation(df, target, unique_id, val_col='valid_no', fold=5, seed=1208,
             cnt+=1
 
             valid_no = np.zeros(len(val_idx))+cnt
-            tmp = pd.dfFrame({'index':val_idx, val_col:valid_no})
+            tmp = pd.DataFrame({'index':val_idx, val_col:valid_no})
 
             if cnt==1:
                 tmp_result = tmp.copy()

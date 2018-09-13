@@ -28,7 +28,11 @@ def load_file(path):
         return tmp
     elif path.count('.fp'):
         filename = re.search(r'/([^/.]*).fp', path).group(1)
-        tmp = pd.Series(utils.read_pkl_gzip(path), name=filename)
+        try:
+            tmp = pd.Series(utils.read_pkl_gzip(path), name=filename)
+        except OSError:
+            print(f'No gzip ERROR: {filename}')
+            tmp = pd.Series([])
         return tmp
 
 
