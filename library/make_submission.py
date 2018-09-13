@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import datetime
 import os
+from select_feature import move_feature
 HOME = os.path.expanduser('~')
 
 sys.path.append(f'{HOME}/kaggle/github/model/')
@@ -17,7 +18,7 @@ from utils import get_categorical_features, get_numeric_features
 start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 
 
-def make_submission(logger, data, key, target, fold, fold_type, params, model_type, dummie=0, seed_num=1, ignore_list=[], pred_type=1, stack_name=''):
+def make_submission(logger, data, key, target, fold, fold_type, params, model_type, dummie=1, seed_num=1, ignore_list=[], pred_type=1, stack_name='', exclude_category=True):
 
     logger.info(f'''
 #==============================================================================
@@ -30,7 +31,11 @@ LENGTH: {len(categorical_feature)}
 DUMMIE: {dummie}
                 ''')
 
-    if dummie==0:
+    if exclude_category:
+        for cat in categorical_feature:
+            move_feature(feature_name=cat)
+        categorical_feature = []
+    elif dummie==0:
         data = factorize_categoricals(data, categorical_feature)
         categorical_feature=[]
     elif dummie==1:
@@ -48,6 +53,7 @@ DUMMIE: {dummie}
         if length <=1:
             logger.info(f'''
 ***********WARNING************* LENGTH {length} COLUMN: {col}''')
+            move_feature(feature_name=col)
             if col!=target:
                 drop_list.append(col)
     train.drop(drop_list, axis=1, inplace=True)

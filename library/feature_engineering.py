@@ -325,7 +325,7 @@ def target_encoding(logger, base, df, key, target, enc_feat, level, method_list=
             if valid_no == -1:
                 tmp = df
             else:
-                tmp = df.query('is_train==1')
+                tmp = df[~df[target].isnull()]
             '''
             集計に含めないpartisionのDFをdf_val.
             集計するpartisionのDFをdf_aggとして作成
