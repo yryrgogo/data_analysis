@@ -20,45 +20,8 @@ start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 
 def make_submission(logger, data, key, target, fold, fold_type, params, model_type, dummie=1, seed_num=1, ignore_list=[], pred_type=1, stack_name='', exclude_category=True):
 
-    logger.info(f'''
-#==============================================================================
-# DATA CHECK START
-#==============================================================================''')
-    categorical_feature = get_categorical_features(data, [])
-    logger.info(f'''
-CATEGORICAL FEATURE: {categorical_feature}
-LENGTH: {len(categorical_feature)}
-DUMMIE: {dummie}
-                ''')
-
-    if exclude_category:
-        for cat in categorical_feature:
-            data.drop(cat, axis=1, inplace=True)
-            move_feature(feature_name=cat)
-        categorical_feature = []
-    elif dummie==0:
-        data = factorize_categoricals(data, categorical_feature)
-        categorical_feature=[]
-    elif dummie==1:
-        data = get_dummies(data, categorical_feature)
-        categorical_feature=[]
-
-    train = data[data[target]>=0]
+    train = data[~data[target].isnull()]
     test = data[data[target].isnull()]
-    logger.info(f'TRAIN SHAPE: {train.shape}')
-    logger.info(f'TEST SHAPE: {test.shape}')
-
-    drop_list = []
-    for col in test.columns:
-        length = len(test[col].drop_duplicates())
-        if length <=1:
-            logger.info(f'''
-***********WARNING************* LENGTH {length} COLUMN: {col}''')
-            move_feature(feature_name=col)
-            if col!=target:
-                drop_list.append(col)
-    train.drop(drop_list, axis=1, inplace=True)
-    test.drop(drop_list, axis=1, inplace=True)
 
     seed_list = [
         1208,
@@ -73,11 +36,6 @@ DUMMIE: {dummie}
         1212
     ][:seed_num]
     logger.info(f'SEED LIST: {seed_list}')
-
-    logger.info(f'''
-#==============================================================================
-# DATA CHECK END
-#==============================================================================''')
 
     tmp_result = np.zeros(len(test))
     score_list = []

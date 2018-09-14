@@ -560,37 +560,8 @@ def optimize(base, path, metric):
 
 def first_train(dataset, path, dummie=0, val_col='valid_no'):
 
-    dataset = make_feature_set(dataset, path)
-    dataset = dataset.set_index(unique_id)
-
-    #  for col in dataset.columns:
-    #      dataset[col] = dataset.replace(dataset>0, 4)
-    #  print(dataset.head())
-    #  sys.exit()
-
-    ' テストデータ行にデータが入ってるか？ '
-    #  for col in dataset.columns:
-    #      if col.count('b_') and col.count('bin'):
-    #          print(col)
-    #          print(dataset[col].query('TARGET==-1'))
-    #  sys.exit()
-
-    if experience_code!=4:
-        train = dataset.query('is_train==1')
-        logger.info(f'train shape: {train.shape}')
-        train.drop(['is_train', 'is_test'], axis=1, inplace=True)
-    elif experience_code==4:
-        dataset = dataset.reset_index()
-        train = dataset
-        train.drop(['is_train', 'is_test'], axis=1, inplace=True)
-        ' Trainセットダウンロード用 '
-        train.drop(['valid_no', 'valid_no_2', 'valid_no_3'], axis=1, inplace=True)
-        logger.info(f'train shape: {train.shape}')
-        #  train.to_csv(f'../output/{start_time[:11]}_home_credit_train_{len(train.columns)}features_Go_best_model_CV08028.csv')
-        train.to_csv(f'../output/{start_time[:11]}_home_credit_train_{len(train.columns)}features_Go_best_model_CV08036_regularize_for_NN.csv')
-        sys.exit()
-
-    #  logger.info(f'First Feature: {train.columns.values}')
+    train = make_feature_set(dataset, path)
+    train = dataset.set_index(unique_id)
 
     first, col_length = get_cv_result(train=train, target=target, val_col=val_col, params=train_params, logger=logger, dummie=0)
 
