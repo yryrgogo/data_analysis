@@ -6,13 +6,15 @@ from sklearn.metrics import log_loss, roc_auc_score
 import datetime
 from tqdm import tqdm
 import sys
-from x_ray import x_ray
 sys.path.append('../library')
-from utils import x_y_split
+from utils import get_categorical_features
+from preprocessing import factorize_categoricals
 from preprocessing import set_validation, split_dataset
 import xgboost as xgb
 from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression, ridge
+import pickle
+from sklearn.ensemble.partial_dependence import partial_dependence
 
 
 start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
@@ -55,11 +57,62 @@ def df_feature_importance(model, model_type, use_cols, feim_name='importance'):
     return feim
 
 
+def data_check(logger, df, target, test=False, dummie=0, exclude_category=False, ignore_list=[]):
+    logger.info(f'''
+#==============================================================================
+# DATA CHECK START
+#==============================================================================''')
+    categorical_feature = get_categorical_features(df, ignore=ignore_list)
+    logger.info(f'''
+CATEGORICAL FEATURE: {categorical_feature}
+LENGTH: {len(categorical_feature)}
+DUMMIE: {dummie}
+                ''')
+
+    if exclude_category:
+        for cat in categorical_feature:
+            df.drop(cat, axis=1, inplace=True)
+            move_feature(feature_name=cat)
+        categorical_feature = []
+    elif dummie==0:
+        df = factorize_categoricals(df, categorical_feature)
+        categorical_feature=[]
+    elif dummie==1:
+        df = get_dummies(df, categorical_feature)
+        categorical_feature=[]
+
+    logger.info(f'df SHAPE: {df.shape}')
+
+    if test:
+        drop_list = []
+        for col in df.columns:
+            length = len(df[col].drop_duplicates())
+            if length <=1:
+                logger.info(f'''
+    ***********WARNING************* LENGTH {length} COLUMN: {col}''')
+                move_feature(feature_name=col)
+                if col!=target:
+                    drop_list.append(col)
+        df.drop(drop_list, axis=1, inplace=True)
+
+    ' カラム名をソートし、カラム順による学習への影響をなくす '
+    df.sort_index(axis=1, inplace=True)
+
+    logger.info(f'''
+#==============================================================================
+# DATA CHECK END
+#==============================================================================''')
+
+    return df
+
+
 def cross_validation(logger, train, target, fold_type='stratified', fold=5, seed=1208, params={}, metric='auc', categorical_feature=[], truncate_flg=0, num_iterations=3500, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb', ignore_list=[]):
+
+    train = data_check(logger, train, target)
 
     list_score = []
     y = train[target]
-    cv_feim = pd.trainFrame([])
+    cv_feim = pd.DataFrame([])
 
     ' カラム名をソートし、カラム順による影響をなくす '
     train.sort_index(axis=1, inplace=True)
@@ -88,9 +141,10 @@ def cross_validation(logger, train, target, fold_type='stratified', fold=5, seed
         #  result = x_ray(model=clf, valid=x_val)
         #  return result
         #  import pickle
-        #  with open('clf.pickle', 'wb') as f:
-        #      pickle.dump(obj=clf, file=f)
         #  sys.exit()
+        with open('../output/clf.pickle', 'wb') as f:
+            pickle.dump(obj=clf, file=f)
+        sys.exit()
 
         sc_score = sc_metrics(y_val, y_pred, metric)
         if n_fold==0:
@@ -146,16 +200,15 @@ def prediction(logger, train, test, target, categorical_feature=[], metric='auc'
 
 def cross_prediction(logger, train, test, key, target, fold_type='stratified', fold=5, seed=605, categorical_feature=[], metric='auc', params={}, num_iterations=20000, learning_rate=0.02, early_stopping_rounds=150, model_type='lgb', oof_flg=True, ignore_list=[]):
 
+    train = data_check(logger, df=train, target=target)
+    test = data_check(logger, df=test, target=target, test=True)
+    y = train[target]
+
     list_score = []
     list_pred = []
 
     prediction = np.array([])
     cv_feim = pd.DataFrame([])
-
-    ' カラム名をソートし、カラム順による精度への影響をなくす '
-    train.sort_index(axis=1, inplace=True)
-    y = train[target]
-    test.sort_index(axis=1, inplace=True)
 
     ' KFold '
     if fold_type=='stratified':

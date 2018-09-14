@@ -508,3 +508,31 @@ def get_numeric_features(df, ignore):
     return num
 
 
+def round_size(value, max_val, min_val):
+    range_val = int(max_val - min_val)
+    origin_size = len(str(value))
+    dtype = str(type(value))
+    if dtype.count('float') or dtype.count('decimal'):
+        origin_num = str(value)
+        str_num = str(int(value))
+        int_size = len(str_num)
+        d_size = origin_size - int_size -1
+        if int_size>1:
+            if origin_num[-1]=='0':
+                if range_val>10:
+                    dec_size=0
+                else:
+                    dec_size=2
+            else:
+                dec_size = 1
+        else:
+            if d_size>3:
+                dec_size = 3
+            else:
+                dec_size = 2
+    elif dtype.count('int'):
+            dec_size = 0
+    else:
+        raise ValueError('date type is int or float or decimal.')
+
+    return dec_size
