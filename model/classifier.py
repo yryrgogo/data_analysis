@@ -17,8 +17,6 @@ import pickle
 from sklearn.ensemble.partial_dependence import partial_dependence
 
 
-start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
-
 def sc_metrics(test, pred, metric='auc'):
     if metric == 'logloss':
         return log_loss(test, pred)
