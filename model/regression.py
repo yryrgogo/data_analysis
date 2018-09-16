@@ -8,14 +8,14 @@ from tqdm import tqdm
 import sys
 from params_lgbm import train_params_0729
 sys.path.append('../../../github/module')
-from load_data import load_data, x_y_split
+from load_data import load_data
 from preprocessing import set_validation, split_dataset
 
 
 def sc_metrics(test, pred):
     if metric=='l2':
         return r2_score(test, pred)
-    elif metric=='rmse'
+    elif metric=='rmse':
         return np.sqrt(mean_squared_error(test, pred))
 
 

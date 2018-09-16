@@ -8,18 +8,14 @@ from select_feature import move_feature
 HOME = os.path.expanduser('~')
 
 sys.path.append(f'{HOME}/kaggle/github/model/')
-from classifier import prediction, cross_prediction
-from regression import time_prediction
+from Estimator import prediction, cross_prediction, TimeSeriesPrediction
 
 sys.path.append(f"{HOME}/kaggle/github/library/")
 import utils
 from preprocessing import factorize_categoricals, get_dummies
-from utils import get_categorical_features, get_numeric_features
-
-start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 
 
-def make_submission(logger, data, key, target, fold, fold_type, params, model_type, dummie=1, seed_num=1, ignore_list=[], pred_type=1, stack_name='', exclude_category=True):
+def make_submission(logger, data, key, target, fold=5, fold_type='stratified', params={}, model_type='lgb', dummie=1, seed_num=1, ignore_list=[], pred_type=2, stack_name='', val_label=''):
 
     #========================================================================
     # Make Train Test Dataset
@@ -72,7 +68,6 @@ def make_submission(logger, data, key, target, fold, fold_type, params, model_ty
                 train=train,
                 test=test,
                 target=target,
-                categorical_feature=categorical_feature,
                 params = params,
                 model_type=model_type
             )
@@ -90,7 +85,6 @@ def make_submission(logger, data, key, target, fold, fold_type, params, model_ty
                 target=target,
                 fold=fold,
                 fold_type=fold_type,
-                categorical_feature=categorical_feature,
                 params = params,
                 model_type=model_type,
                 ignore_list=ignore_list,
@@ -115,34 +109,35 @@ def make_submission(logger, data, key, target, fold, fold_type, params, model_ty
             score_avg = np.mean(score_list)
             logger.info(f'''
 #==============================================================================
-# CURRENT AUC AVERAGE: {score_avg}
+# CURRENT SCORE AVERAGE: {score_avg}
 #==============================================================================''')
 
         #========================================================================
-        # Time Series
+        # Time Series Prediction
         #========================================================================
         elif pred_type==2:
             ' 予測 '
-            y_pred, score, stack = time_prediction(
+            y_pred, score = TimeSeriesPrediction(
                 logger=logger,
                 train=train,
                 test=test,
                 key=key,
                 target=target,
-                fold=fold,
-                fold_type=fold_type,
-                categorical_feature=categorical_feature,
+                val_label=val_label,
                 params = params,
                 model_type=model_type,
-                ignore_list=ignore_list,
-                oof_flg=len(stack_name)
+                ignore_list=ignore_list
             )
 
-    result = tmp_result / len(seed_list)
+            logger.info(f'''
+#==============================================================================
+# CURRENT SCORE : {score}
+#==============================================================================''')
+
+    if pred_type==1:
+        result = tmp_result / len(seed_list)
 
     if len(result_stack)>0:
         result_stack[target] = result_stack[target].values / len(seed_list)
 
     return score_avg, result, result_stack
-
-

@@ -6,6 +6,7 @@ from sklearn.metrics import log_loss, roc_auc_score
 import datetime
 from tqdm import tqdm
 import sys
+from select_feature import move_feature
 sys.path.append('../library')
 from utils import get_categorical_features
 from preprocessing import factorize_categoricals
@@ -17,11 +18,15 @@ import pickle
 from sklearn.ensemble.partial_dependence import partial_dependence
 
 
-def sc_metrics(test, pred, metric='auc'):
+def sc_metrics(test, pred, metric='rmse'):
     if metric == 'logloss':
         return log_loss(test, pred)
     elif metric == 'auc':
         return roc_auc_score(test, pred)
+    elif metric=='l2':
+        return r2_score(test, pred)
+    elif metric=='rmse':
+        return np.sqrt(mean_squared_error(test, pred))
     else:
         print('score caliculation error!')
 
@@ -133,7 +138,7 @@ def cross_validation(logger, train, target, fold_type='stratified', fold=5, seed
         if n_fold==0:
             logger.info(f'\nTrainset Col Number: {len(use_cols)}')
 
-        clf, y_pred = classifier(x_train=x_train, y_train=y_train, x_val=x_val, y_val=y_val, params=params, categorical_feature=categorical_feature, num_iterations=num_iterations, early_stopping_rounds=early_stopping_rounds, learning_rate=learning_rate, model_type=model_type)
+        clf, y_pred = Estimator(x_train=x_train, y_train=y_train, x_val=x_val, y_val=y_val, params=params, categorical_feature=categorical_feature, num_iterations=num_iterations, early_stopping_rounds=early_stopping_rounds, learning_rate=learning_rate, model_type=model_type)
 
         ' 自作x-rayのテスト '
         #  result = x_ray(model=clf, valid=x_val)
@@ -191,7 +196,7 @@ def prediction(logger, train, test, target, categorical_feature=[], metric='auc'
     test = test[use_cols]
 
     ' 学習 '
-    clf, y_pred = classifier(x_train=x_train[use_cols], y_train=y_train, params=params, test=test, categorical_feature=categorical_feature, num_iterations=num_iterations, learning_rate=learning_rate, model_type=model_type)
+    clf, y_pred = Estimator(x_train=x_train[use_cols], y_train=y_train, params=params, test=test, categorical_feature=categorical_feature, num_iterations=num_iterations, learning_rate=learning_rate, model_type=model_type)
 
     return y_pred, len(use_cols)
 
@@ -238,7 +243,7 @@ def cross_prediction(logger, train, test, key, target, fold_type='stratified', f
             x_val.columns = use_cols
             test.columns = use_cols
 
-        clf, y_pred = classifier(x_train=x_train, y_train=y_train, x_val=x_val, y_val=y_val, params=params, categorical_feature=categorical_feature, num_iterations=num_iterations, early_stopping_rounds=early_stopping_rounds, learning_rate=learning_rate, model_type=model_type)
+        clf, y_pred = Estimator(x_train=x_train, y_train=y_train, x_val=x_val, y_val=y_val, params=params, categorical_feature=categorical_feature, num_iterations=num_iterations, early_stopping_rounds=early_stopping_rounds, learning_rate=learning_rate, model_type=model_type)
 
         sc_score = sc_metrics(y_val, y_pred)
 
@@ -309,7 +314,83 @@ def cross_prediction(logger, train, test, key, target, fold_type='stratified', f
     return prediction, cv_score, result_stack
 
 
-def classifier(x_train, y_train, x_val=[], y_val=[], test=[], params={}, categorical_feature=[], num_iterations=3500, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb'):
+' Regression '
+def TimeSeriesPrediction(logger, train, test, key, target, val_label, categorical_feature=[], metric='rmse', params={}, num_iterations=3000, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb', ignore_list=[]):
+    '''
+    Explain:
+    Args:
+    Return:
+    '''
+
+    ' Data Check '
+    train = data_check(logger, df=train, target=target)
+    test = data_check(logger, df=test, target=target, test=True)
+
+    ' Make Train Set & Validation Set  '
+    x_train = train.query("val_label==0")
+    x_val = train.query("val_label==1")
+    y_train = x_train[target]
+    y_val = x_val[target]
+    logger.info(f'''
+#========================================================================
+# X_Train Set : {x_train.shape}
+# X_Valid Set : {x_val.shape}
+#========================================================================''')
+
+    ' Logarithmic transformation '
+    y_train = np.log1p(y_train)
+    y_val = np.log1p(y_val)
+
+    use_cols = [f for f in train.columns if f not in ignore_list]
+    x_train = x_train[use_cols]
+    x_val = x_val[use_cols]
+
+    if model_type=='xgb':
+        " XGBはcolumn nameで'[]'と','と'<>'がNGなのでreplace "
+        if i==0:
+            test = test[use_cols]
+        use_cols = []
+        for col in x_train.columns:
+            use_cols.append(col.replace("[", "-q-").replace("]", "-p-").replace(",", "-o-"))
+        x_train.columns = use_cols
+        x_val.columns = use_cols
+        test.columns = use_cols
+
+    Model, y_pred = Estimator(
+        x_train=x_train,
+        y_train=y_train,
+        x_val=x_val,
+        y_val=y_val,
+        params=params,
+        categorical_feature=categorical_feature,
+        num_iterations=num_iterations,
+        early_stopping_rounds=early_stopping_rounds,
+        learning_rate=learning_rate,
+        model_type=model_type
+    )
+
+    ' 対数変換を元に戻す '
+    y_train = np.expm1(y_train)
+    y_pred = np.expm1(y_pred)
+    sc_score = sc_metrics(y_train, y_pred)
+
+    if model_type != 'xgb':
+        test_pred = Model.predict(test[use_cols])
+    elif model_type == 'xgb':
+        test_pred = Model.predict(xgb.DMatrix(test))
+
+    ' Feature Importance '
+    feim_name = f'importance'
+    feim = df_feature_importance(model=Model, model_type=model_type, use_cols=use_cols, feim_name=feim_name)
+    feim.sort_values(by=f'avg_importance', ascending=False, inplace=True)
+    feim['rank'] = np.arange(len(feim))+1
+
+    feim.to_csv(f'../output/feature{len(feim)}_importances_{metric}_{score}.csv', index=False)
+
+    return y_pred, feim
+
+
+def Estimator(x_train, y_train, x_val=[], y_val=[], test=[], params={}, categorical_feature=[], num_iterations=3900, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb'):
 
     ' LightGBM / XGBoost / ExtraTrees / LogisticRegression'
     if model_type=='lgb':
@@ -379,4 +460,3 @@ def classifier(x_train, y_train, x_val=[], y_val=[], test=[], params={}, categor
         logger.info(f'{model_type} is not supported.')
 
     return clf, y_pred
-
