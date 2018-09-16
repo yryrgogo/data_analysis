@@ -26,7 +26,6 @@ import multiprocessing
 from logging import StreamHandler, DEBUG, Formatter, FileHandler, getLogger
 
 
-
 # =============================================================================
 # global variables
 # =============================================================================
