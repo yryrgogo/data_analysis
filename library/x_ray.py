@@ -311,7 +311,26 @@ def xray_concat():
     func = load_data
     p_list = pararell_process(func, path_list)
     df = pd.concat(p_list, axis=0)
-    df.to_csv('../output/20180918_122_yanmar_xray_all.csv', index=False)
+
+    feature_list = df['feature'].values
+    type_list = []
+
+    ' Categoricalは別シートにするため、分けられるようにする '
+    for feature in feature_list:
+        if feature.count('担い手') or feature.count('カテゴリ'):
+            type_list.append('Category')
+        elif feature.count('経過'):
+            type_list.append('Elapsed_month')
+        else:
+            type_list.append('Numeric')
+    df['feature_type'] = type_list
+
+    ' Categoricalなfeature valueのカラムを分ける '
+    df_cat = df.query("feature_type=='Category'").rename(columns={'value':'value_category'})
+    df_num = df.query("feature_type!='Category'")
+    df = pd.concat([df_cat, df_num], axis=0)
+
+    df.to_csv('../output/{start_time[:12]}_yanmar_xray_all.csv', index=False)
     sys.exit()
 
 if __name__ == '__main__':
