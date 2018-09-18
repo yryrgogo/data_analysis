@@ -118,19 +118,23 @@ DUMMIE: {dummie}
 
 def cross_validation(logger, train, target, fold_type='stratified', fold=5, seed=1208, params={}, metric='auc', categorical_list=[], truncate_flg=0, num_iterations=3500, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb', ignore_list=[], x_ray=False):
 
-    ' カテゴリのラベルエンコーディングを元に戻す為の処理 '
-    categorical_list = get_categorical_features(df=train, ignore_list=ignore_list)
-    origin_cat = train[categorical_list]
-    for cat in categorical_list:
-        origin_cat = origin_cat.rename(columns={cat:f"origin_{cat}"})
+    #========================================================================
+    # For X-RAY READY
+    # カテゴリのラベルエンコーディングを元に戻す為の準備
+    #========================================================================
+    if x_ray:
+        if len(categorical_list)==0:
+            categorical_list = get_categorical_features(df=train, ignore_list=ignore_list)
+        origin_cat = train[categorical_list]
+        for cat in categorical_list:
+            origin_cat = origin_cat.rename(columns={cat:f"origin_{cat}"})
 
-    train, _ = data_check(logger, train, target, ignore_list=ignore_list)
+        train, _ = data_check(logger, train, target, ignore_list=ignore_list)
 
-    ' カテゴリのラベルエンコーディングを元に戻す為の処理 '
-    label_cat = train[categorical_list]
-    df_cat_decode = pd.concat([origin_cat, label_cat], axis=1).drop_duplicates()
-    del origin_cat, label_cat
-    gc.collect()
+        label_cat = train[categorical_list]
+        df_cat_decode = pd.concat([origin_cat, label_cat], axis=1).drop_duplicates()
+        del origin_cat, label_cat
+        gc.collect()
 
 
     list_score = []
