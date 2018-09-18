@@ -473,7 +473,8 @@ def pararell_process(func, arg_list):
     process = Pool(multiprocessing.cpu_count())
     #  p = Pool(len(arg_list))
     callback = process.map(func, arg_list)
-    process.close
+    process.close()
+    process.terminate()
     return callback
 
 
@@ -496,14 +497,14 @@ def row_number(df, level):
 
 
 #  カテゴリ変数を取得する関数
-def get_categorical_features(df, ignore):
-    obj = [col for col in list(df.columns) if (df[col].dtype == 'object') and col not in ignore]
+def get_categorical_features(df, ignore_list=[]):
+    obj = [col for col in list(df.columns) if (df[col].dtype == 'object') and col not in ignore_list]
     return obj
 
 
 #  連続値カラムを取得する関数
-def get_numeric_features(df, ignore):
-    num = [col for col in list(df.columns) if (str(df[col].dtype).count('int') or str(df[col].dtype).count('float')) and col not in ignore]
+def get_numeric_features(df, ignore_list=[]):
+    num = [col for col in list(df.columns) if (str(df[col].dtype).count('int') or str(df[col].dtype).count('float')) and col not in ignore_list]
     return num
 
 

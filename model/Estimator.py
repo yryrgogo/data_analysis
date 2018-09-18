@@ -1,16 +1,16 @@
+import gc
 import numpy as np
 import pandas as pd
 import lightgbm as lgb
 from sklearn.model_selection import ParameterGrid, StratifiedKFold, GroupKFold
-from sklearn.metrics import log_loss, roc_auc_score
+from sklearn.metrics import log_loss, roc_auc_score, mean_squared_error, r2_score
 import datetime
 from tqdm import tqdm
 import sys
-from select_feature import move_feature
 sys.path.append('../library')
+from select_feature import move_feature
 from utils import get_categorical_features
 from preprocessing import factorize_categoricals
-from preprocessing import set_validation, split_dataset
 import xgboost as xgb
 from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression, ridge
@@ -65,38 +65,45 @@ def data_check(logger, df, target, test=False, dummie=0, exclude_category=False,
 #==============================================================================
 # DATA CHECK START
 #==============================================================================''')
-    categorical_feature = get_categorical_features(df, ignore=ignore_list)
+    categorical_list = get_categorical_features(df, ignore_list=ignore_list)
     logger.info(f'''
-CATEGORICAL FEATURE: {categorical_feature}
-LENGTH: {len(categorical_feature)}
+CATEGORICAL FEATURE: {categorical_list}
+LENGTH: {len(categorical_list)}
 DUMMIE: {dummie}
                 ''')
 
+    ' 対象カラムのユニーク数が100より大きかったら、ラベルエンコーディングにする '
+    label_list = []
+    for cat in categorical_list:
+        if len(df[cat].drop_duplicates())>100:
+            label_list.append(cat)
+            categorical_list.remove(cat)
+        df = factorize_categoricals(df, label_list)
+
     if exclude_category:
-        for cat in categorical_feature:
+        for cat in categorical_list:
             df.drop(cat, axis=1, inplace=True)
             move_feature(feature_name=cat)
-        categorical_feature = []
-    elif dummie==0:
-        df = factorize_categoricals(df, categorical_feature)
-        categorical_feature=[]
+        categorical_list = []
     elif dummie==1:
-        df = get_dummies(df, categorical_feature)
-        categorical_feature=[]
+        df = get_dummies(df, categorical_list)
+        categorical_list=[]
+    elif dummie==0:
+        df = factorize_categoricals(df, categorical_list)
+        categorical_list=[]
 
     logger.info(f'df SHAPE: {df.shape}')
 
+    drop_list = []
     if test:
-        drop_list = []
         for col in df.columns:
             length = len(df[col].drop_duplicates())
-            if length <=1:
+            if length <=1 and col not in ignore_list:
                 logger.info(f'''
     ***********WARNING************* LENGTH {length} COLUMN: {col}''')
                 move_feature(feature_name=col)
                 if col!=target:
                     drop_list.append(col)
-        df.drop(drop_list, axis=1, inplace=True)
 
     ' カラム名をソートし、カラム順による学習への影響をなくす '
     df.sort_index(axis=1, inplace=True)
@@ -106,12 +113,25 @@ DUMMIE: {dummie}
 # DATA CHECK END
 #==============================================================================''')
 
-    return df
+    return df, drop_list
 
 
-def cross_validation(logger, train, target, fold_type='stratified', fold=5, seed=1208, params={}, metric='auc', categorical_feature=[], truncate_flg=0, num_iterations=3500, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb', ignore_list=[]):
+def cross_validation(logger, train, target, fold_type='stratified', fold=5, seed=1208, params={}, metric='auc', categorical_list=[], truncate_flg=0, num_iterations=3500, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb', ignore_list=[], x_ray=False):
 
-    train = data_check(logger, train, target)
+    ' カテゴリのラベルエンコーディングを元に戻す為の処理 '
+    categorical_list = get_categorical_features(df=train, ignore_list=ignore_list)
+    origin_cat = train[categorical_list]
+    for cat in categorical_list:
+        origin_cat = origin_cat.rename(columns={cat:f"origin_{cat}"})
+
+    train, _ = data_check(logger, train, target, ignore_list=ignore_list)
+
+    ' カテゴリのラベルエンコーディングを元に戻す為の処理 '
+    label_cat = train[categorical_list]
+    df_cat_decode = pd.concat([origin_cat, label_cat], axis=1).drop_duplicates()
+    del origin_cat, label_cat
+    gc.collect()
+
 
     list_score = []
     y = train[target]
@@ -126,9 +146,10 @@ def cross_validation(logger, train, target, fold_type='stratified', fold=5, seed
         kfold = folds.split(train,y)
     elif fold_type=='group':
         folds = GroupKFold(n_splits=fold)
-        kfold = folds.split(train,y, groups=train.index.values)
+        kfold = folds.split(train, y, groups=train.index.values)
 
     use_cols = [f for f in train.columns if f not in ignore_list]
+    model_list = []
 
     for n_fold, (trn_idx, val_idx) in enumerate(kfold):
 
@@ -138,16 +159,7 @@ def cross_validation(logger, train, target, fold_type='stratified', fold=5, seed
         if n_fold==0:
             logger.info(f'\nTrainset Col Number: {len(use_cols)}')
 
-        clf, y_pred = Estimator(x_train=x_train, y_train=y_train, x_val=x_val, y_val=y_val, params=params, categorical_feature=categorical_feature, num_iterations=num_iterations, early_stopping_rounds=early_stopping_rounds, learning_rate=learning_rate, model_type=model_type)
-
-        ' 自作x-rayのテスト '
-        #  result = x_ray(model=clf, valid=x_val)
-        #  return result
-        #  import pickle
-        #  sys.exit()
-        with open('../output/clf.pickle', 'wb') as f:
-            pickle.dump(obj=clf, file=f)
-        sys.exit()
+        clf, y_pred = Estimator(x_train=x_train, y_train=y_train, x_val=x_val, y_val=y_val, params=params, categorical_list=categorical_list, num_iterations=num_iterations, early_stopping_rounds=early_stopping_rounds, learning_rate=learning_rate, model_type=model_type)
 
         sc_score = sc_metrics(y_val, y_pred, metric)
         if n_fold==0:
@@ -160,13 +172,17 @@ def cross_validation(logger, train, target, fold_type='stratified', fold=5, seed
             re_value, judge = judgement(score=sum(list_score), iter_no=n_fold, re_value=first_score)
             if judge: return re_value, 0
 
-        feim_name = f'{n_fold}_importance'
+        feim_name = f'{n_fold+1}_importance'
         feim = df_feature_importance(model=clf, model_type=model_type, use_cols=use_cols, feim_name=feim_name)
 
-    if len(cv_feim)==0:
-        cv_feim = feim.copy()
-    else:
-        cv_feim = cv_feim.merge(feim, on='feature', how='inner')
+        ' 自作x-rayのテスト '
+        if x_ray:
+            model_list.append(clf)
+
+        if len(cv_feim)==0:
+            cv_feim = feim.copy()
+        else:
+            cv_feim = cv_feim.merge(feim, on='feature', how='inner')
 
     cv_score = np.mean(list_score)
     logger.info(f'train shape: {x_train.shape}')
@@ -175,20 +191,23 @@ def cross_validation(logger, train, target, fold_type='stratified', fold=5, seed
     cv_feim['cv_score'] = cv_score
 
     importance = []
-    for n_fold in range(n_fold+1):
+    for n_fold in range(n_fold):
         if len(importance)==0:
-            importance = cv_feim[f'{n_fold}_importance'].values.copy()
+            importance = cv_feim[f'{n_fold+1}_importance'].values.copy()
         else:
-            importance += cv_feim[f'{n_fold}_importance'].values
+            importance += cv_feim[f'{n_fold+1}_importance'].values
 
     cv_feim['avg_importance'] = importance / n_fold+1
     cv_feim.sort_values(by=f'avg_importance', ascending=False, inplace=True)
     cv_feim['rank'] = np.arange(len(cv_feim))+1
 
-    return cv_feim, len(use_cols)
+    if x_ray:
+        return cv_feim, len(use_cols), model_list, df_cat_decode
+    else:
+        return cv_feim, len(use_cols)
 
 
-def prediction(logger, train, test, target, categorical_feature=[], metric='auc', params={}, num_iterations=20000, learning_rate=0.02, model_type='lgb', oof_flg=False):
+def prediction(logger, train, test, target, categorical_list=[], metric='auc', params={}, num_iterations=20000, learning_rate=0.02, model_type='lgb', oof_flg=False):
 
     x_train, y_train = train, train[target]
     use_cols = x_train.columns.values
@@ -196,15 +215,18 @@ def prediction(logger, train, test, target, categorical_feature=[], metric='auc'
     test = test[use_cols]
 
     ' 学習 '
-    clf, y_pred = Estimator(x_train=x_train[use_cols], y_train=y_train, params=params, test=test, categorical_feature=categorical_feature, num_iterations=num_iterations, learning_rate=learning_rate, model_type=model_type)
+    clf, y_pred = Estimator(x_train=x_train[use_cols], y_train=y_train, params=params, test=test, categorical_list=categorical_list, num_iterations=num_iterations, learning_rate=learning_rate, model_type=model_type)
 
     return y_pred, len(use_cols)
 
 
-def cross_prediction(logger, train, test, key, target, fold_type='stratified', fold=5, seed=605, categorical_feature=[], metric='auc', params={}, num_iterations=20000, learning_rate=0.02, early_stopping_rounds=150, model_type='lgb', oof_flg=True, ignore_list=[]):
+def cross_prediction(logger, train, test, key, target, fold_type='stratified', fold=5, seed=605, categorical_list=[], metric='auc', params={}, num_iterations=20000, learning_rate=0.02, early_stopping_rounds=150, model_type='lgb', oof_flg=True, ignore_list=[]):
 
-    train = data_check(logger, df=train, target=target)
-    test = data_check(logger, df=test, target=target, test=True)
+    ' Data Check '
+    test, drop_list = data_check(logger, df=test, target=target, test=True, ignore_list=ignore_list)
+    test.drop(drop_list, axis=1, inplace=True)
+    train.drop(drop_list, axis=1, inplace=True)
+    train, _ = data_check(logger, df=train, target=target, ignore_list=ignore_list)
     y = train[target]
 
     list_score = []
@@ -243,7 +265,7 @@ def cross_prediction(logger, train, test, key, target, fold_type='stratified', f
             x_val.columns = use_cols
             test.columns = use_cols
 
-        clf, y_pred = Estimator(x_train=x_train, y_train=y_train, x_val=x_val, y_val=y_val, params=params, categorical_feature=categorical_feature, num_iterations=num_iterations, early_stopping_rounds=early_stopping_rounds, learning_rate=learning_rate, model_type=model_type)
+        clf, y_pred = Estimator(x_train=x_train, y_train=y_train, x_val=x_val, y_val=y_val, params=params, categorical_list=categorical_list, num_iterations=num_iterations, early_stopping_rounds=early_stopping_rounds, learning_rate=learning_rate, model_type=model_type)
 
         sc_score = sc_metrics(y_val, y_pred)
 
@@ -315,7 +337,7 @@ def cross_prediction(logger, train, test, key, target, fold_type='stratified', f
 
 
 ' Regression '
-def TimeSeriesPrediction(logger, train, test, key, target, val_label, categorical_feature=[], metric='rmse', params={}, num_iterations=3000, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb', ignore_list=[]):
+def TimeSeriesPrediction(logger, train, test, key, target, val_label, categorical_list=[], metric='rmse', params={}, num_iterations=3000, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb', ignore_list=[]):
     '''
     Explain:
     Args:
@@ -323,14 +345,16 @@ def TimeSeriesPrediction(logger, train, test, key, target, val_label, categorica
     '''
 
     ' Data Check '
-    train = data_check(logger, df=train, target=target)
-    test = data_check(logger, df=test, target=target, test=True)
+    test, drop_list = data_check(logger, df=test, target=target, test=True, ignore_list=ignore_list)
+    test.drop(drop_list, axis=1, inplace=True)
+    train.drop(drop_list, axis=1, inplace=True)
+    train, _ = data_check(logger, df=train, target=target, ignore_list=ignore_list)
 
     ' Make Train Set & Validation Set  '
     x_train = train.query("val_label==0")
     x_val = train.query("val_label==1")
-    y_train = x_train[target]
-    y_val = x_val[target]
+    y_train = x_train[target].values.astype('float64')
+    y_val = x_val[target].values.astype('float64')
     logger.info(f'''
 #========================================================================
 # X_Train Set : {x_train.shape}
@@ -362,7 +386,7 @@ def TimeSeriesPrediction(logger, train, test, key, target, val_label, categorica
         x_val=x_val,
         y_val=y_val,
         params=params,
-        categorical_feature=categorical_feature,
+        categorical_list=categorical_list,
         num_iterations=num_iterations,
         early_stopping_rounds=early_stopping_rounds,
         learning_rate=learning_rate,
@@ -370,9 +394,9 @@ def TimeSeriesPrediction(logger, train, test, key, target, val_label, categorica
     )
 
     ' 対数変換を元に戻す '
-    y_train = np.expm1(y_train)
+    sc_score = sc_metrics(y_val, y_pred)
+    y_train = np.expm1(y_val)
     y_pred = np.expm1(y_pred)
-    sc_score = sc_metrics(y_train, y_pred)
 
     if model_type != 'xgb':
         test_pred = Model.predict(test[use_cols])
@@ -382,15 +406,15 @@ def TimeSeriesPrediction(logger, train, test, key, target, val_label, categorica
     ' Feature Importance '
     feim_name = f'importance'
     feim = df_feature_importance(model=Model, model_type=model_type, use_cols=use_cols, feim_name=feim_name)
-    feim.sort_values(by=f'avg_importance', ascending=False, inplace=True)
+    feim.sort_values(by=f'importance', ascending=False, inplace=True)
     feim['rank'] = np.arange(len(feim))+1
 
-    feim.to_csv(f'../output/feature{len(feim)}_importances_{metric}_{score}.csv', index=False)
+    feim.to_csv(f'../output/feature{len(feim)}_importances_{metric}_{sc_score}.csv', index=False)
 
-    return y_pred, feim
+    return y_pred, sc_score
 
 
-def Estimator(x_train, y_train, x_val=[], y_val=[], test=[], params={}, categorical_feature=[], num_iterations=3900, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb'):
+def Estimator(x_train, y_train, x_val=[], y_val=[], test=[], params={}, categorical_list=[], num_iterations=3900, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb'):
 
     ' LightGBM / XGBoost / ExtraTrees / LogisticRegression'
     if model_type=='lgb':
@@ -403,13 +427,13 @@ def Estimator(x_train, y_train, x_val=[], y_val=[], test=[], params={}, categori
                             num_boost_round=num_iterations,
                             early_stopping_rounds=early_stopping_rounds,
                             verbose_eval=200,
-                            categorical_feature = categorical_feature
+                            categorical_feature = categorical_list
                             )
             y_pred = clf.predict(x_val)
         else:
             clf = lgb.train(params,
                             train_set=lgb_train,
-                            categorical_feature = categorical_feature
+                            categorical_feature = categorical_list
                             )
             y_pred = clf.predict(test)
 

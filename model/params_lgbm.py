@@ -1,28 +1,36 @@
-def train_params_dima():
+' 0729 opt '
+def params_GA():
+    train_params = {
+    'num_threads': 35,
+    'metric': 'rmse',
+    'objective': 'regression',
+    'bagging_freq': 1,
+    'colsample_bytree': 0.7,
+    #  'lambda_l1': 0.55,
+    #  'lambda_l2': 0.40,
+    'learning_rate': 0.1,
+    'max_bin': 100,
+    #  'max_depth': -1,
+    'max_depth': 7,
+    'min_child_samples': 30,
+    'min_child_weight': 96,
+    'min_data_in_bin': 21,
+    'min_split_gain': 0,
+    'num_leaves': 60,
+    'sigmoid': 0.9,
+    'subsample': 0.95,
+    'random_seed': 1208,
+    'bagging_seed':1208,
+    'feature_fraction_seed':1208,
+    'data_random_seed':1208
+    }
+
+    return train_params
+
+def params_home_credit():
 
     # 81354, 8040 AUC AVG 0.809672
     train_params = {'num_threads':35, 'bagging_freq': 1, 'bagging_seed': 1208, 'colsample_bytree': 0.01, 'data_random_seed': 1208, 'feature_fraction_seed': 1208, 'lambda_l1': 0.1, 'lambda_l2': 48.0, 'learning_rate': 0.02, 'max_bin': 400, 'max_depth': 5, 'metric': 'auc', 'min_child_samples': 44, 'min_child_weight': 12, 'min_data_in_bin': 72, 'min_split_gain': 0.01, 'num_leaves': 13, 'num_threads': 35, 'objective': 'binary', 'random_seed': 1208, 'subsample': 1.0} 
-
-    # CV 0.8093525
-    #  train_params = {'bagging_freq': 1, 'bagging_seed': 605, 'colsample_bytree': 0.01, 'data_random_seed': 605, 'feature_fraction_seed': 605, 'lambda_l1': 0.1, 'lambda_l2': 48.0, 'learning_rate': 0.02, 'max_bin': 300, 'max_depth': 5, 'metric': 'auc', 'min_child_samples': 20, 'min_child_weight': 12, 'min_data_in_bin': 80, 'min_split_gain': 0.01, 'num_leaves': 11, 'num_threads': 35, 'objective': 'binary', 'random_seed': 605, 'subsample': 0.9500000000000001} 
-    # dor dima
-    #  train_params = {'bagging_freq': 1, 'bagging_seed': 605, 'colsample_bytree': 0.01, 'data_random_seed': 605, 'feature_fraction_seed': 605, 'lambda_l1': 0.1, 'lambda_l2': 50.0, 'learning_rate': 0.02, 'max_bin': 400, 'max_depth': 5, 'metric': 'auc', 'min_child_samples': 48, 'min_child_weight': 16, 'min_data_in_bin': 40, 'min_split_gain': 0.01, 'num_leaves': 9, 'num_threads': 35, 'objective': 'binary', 'random_seed': 605, 'subsample': 0.9500000000000001} 
-
-    # CV 0.80933917
-    #  train_params = {'bagging_freq': 1, 'bagging_seed': 605, 'colsample_bytree': 0.01, 'data_random_seed': 605, 'feature_fraction_seed': 605, 'lambda_l1': 0.1, 'lambda_l2': 36.0, 'learning_rate': 0.02, 'max_bin': 300, 'max_depth': 5, 'metric': 'auc', 'min_child_samples': 96, 'min_child_weight': 72, 'min_data_in_bin': 84, 'min_split_gain': 0.01, 'num_leaves': 10, 'num_threads': 35, 'objective': 'binary', 'random_seed': 605, 'subsample': 0.9500000000000001} 
-
-    # CV 0.809219
-    #  train_params = {'bagging_freq': 1, 'bagging_seed': 1208, 'colsample_bytree': 0.01, 'data_random_seed': 1208, 'feature_fraction_seed': 1208, 'lambda_l1': 0.1, 'lambda_l2': 60.0, 'learning_rate': 0.02, 'max_bin': 400, 'max_depth': 5, 'metric': 'auc', 'min_child_samples': 44, 'min_child_weight': 40, 'min_data_in_bin': 12, 'min_split_gain': 0.01, 'num_leaves': 13, 'num_threads': 35, 'objective': 'binary', 'random_seed': 1208, 'subsample': 1.0} 
-
-    # CV 0.8097
-    #  train_params = {'bagging_freq': 1, 'bagging_seed': 605, 'colsample_bytree': 0.01, 'data_random_seed': 605, 'feature_fraction_seed': 605, 'lambda_l1': 0.1, 'lambda_l2': 54.0, 'learning_rate': 0.02, 'max_bin': 400, 'max_depth': 5, 'metric': 'auc', 'min_child_samples': 48, 'min_child_weight': 16, 'min_data_in_bin': 40, 'min_split_gain': 0.01, 'num_leaves': 10, 'num_threads': 35, 'objective': 'binary', 'random_seed': 605, 'subsample': 0.9500000000000001} 
-
-    # AUC AVG CV 0.8092
-    train_params = {'bagging_freq': 1, 'bagging_seed': 1012, 'colsample_bytree': 0.01, 'data_random_seed': 1012, 'feature_fraction_seed': 1012, 'lambda_l1': 0.1, 'lambda_l2': 72.0, 'learning_rate': 0.02, 'max_bin': 250, 'max_depth': 5, 'metric': 'auc', 'min_child_samples': 96, 'min_child_weight': 36, 'min_data_in_bin': 96, 'min_split_gain': 0.01, 'num_leaves': 11, 'num_threads': 35, 'objective': 'binary', 'random_seed': 1012, 'subsample': 1.0} 
-
-    ' 8135, 8034, 8076, 8085, 8142 '
-    #  train_params = {'bagging_freq': 1, 'bagging_seed': 1012, 'colsample_bytree': 0.01, 'data_random_seed': 1012, 'feature_fraction_seed': 1012, 'lambda_l1': 0.1, 'lambda_l2': 72.0, 'learning_rate': 0.02, 'max_bin': 250, 'max_depth': 5, 'metric': 'auc', 'min_child_samples': 92, 'min_child_weight': 52, 'min_data_in_bin': 76, 'min_split_gain': 0.01, 'num_leaves': 11, 'num_threads': 35, 'objective': 'binary', 'random_seed': 1012, 'subsample': 1.0} 
-
 
     train_params = {
     #  'boosting':'dart',
@@ -52,41 +60,6 @@ def train_params_dima():
     'data_random_seed':1208
     }
     #  train_params = {'bagging_freq': 1, 'bagging_seed': 605, 'colsample_bytree': 0.01, 'data_random_seed': 605, 'feature_fraction_seed': 605, 'lambda_l1': 0.1, 'lambda_l2': 48.0, 'learning_rate': 0.02, 'max_bin': 400, 'max_depth': 5, 'metric': 'auc', 'min_child_samples': 100, 'min_child_weight': 76, 'min_data_in_bin': 76, 'min_split_gain': 0.01, 'num_leaves': 11, 'num_threads': 35, 'objective': 'binary', 'random_seed': 605, 'subsample': 1.0}
-    return train_params
-
-' 0729 opt '
-def train_params_0729():
-    train_params = {
-    'num_threads': 35,
-    'metric': 'auc',
-    'objective': 'binary',
-    'bagging_freq': 1,
-    'colsample_bytree': 0.2,
-    #  'colsample_bytree': 0.1,
-    'lambda_l1': 0.55,
-    'lambda_l2': 0.40,
-    'learning_rate': 0.04,
-    #'learning_rate': 0.1,
-    'max_bin': 700,
-    #  'max_depth': -1,
-    'max_depth': 4,
-    'min_child_samples': 30,
-    'min_child_weight': 96,
-    'min_data_in_bin': 21,
-    'min_split_gain': 0,
-    'num_leaves': 8,
-    'sigmoid': 0.9,
-    'subsample': 0.90,
-    #  'random_seed': 328,
-    #  'bagging_seed':328,
-    #  'feature_fraction_seed':328,
-    #  'data_random_seed':328
-    'random_seed': 1208,
-    'bagging_seed':1208,
-    'feature_fraction_seed':1208,
-    'data_random_seed':1208
-    }
-
     return train_params
 
 

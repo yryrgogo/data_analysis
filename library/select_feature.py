@@ -129,15 +129,12 @@ def move_diff_file(path_1, path_2, move_path):
             shutil.move(p_1, move_path)
 
 
-def move_select_feature(select, input_path, move_path):
-    '''
-    input_pathにあるselectの文字を含むデータをmove_pathへ移す
-    '''
+def move_feature(feature_name, feature_path='../features/4_winner/*.fp', move_path='../features/9_delete'):
 
-    path_list = glob.glob(input_path)
+    path_list = glob.glob(feature_path)
 
     for path in path_list:
-        if path.count(select):
+        if path.count(feature_name):
             shutil.move(path, move_path)
 
 
