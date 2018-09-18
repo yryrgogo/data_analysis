@@ -160,40 +160,33 @@ def xray_main(df, suffix):
     df.set_index(key, inplace=True)
 
     feature_cols = [col for col in df.columns if col.count('__') or col.count('担い手') or col.count('経過')]
-    #  feature_cols = [col for col in df.columns if col.count('__') and col not in ignore_list]
     train = df[feature_cols]
-    categorical_list = get_categorical_features(df=train, ignore_list=ignore_list) # For categorical decode
 
-    cv_feim, col_length, model_list, df_cat_decode = cross_validation(
-        logger=logger,
-        train=train,
-        target=target,
-        params=params,
-        metric=metric,
-        fold_type=fold_type,
-        num_iterations=num_iterations,
-        learning_rate=learning_rate,
-        early_stopping_rounds=early_stopping_rounds,
-        model_type=model_type,
-        ignore_list=ignore_list,
-        x_ray=True
-    )
+    #  cv_feim, col_length, model_list, df_cat_decode = cross_validation(
+    #      logger=logger,
+    #      train=train,
+    #      target=target,
+    #      params=params,
+    #      metric=metric,
+    #      fold_type=fold_type,
+    #      num_iterations=num_iterations,
+    #      learning_rate=learning_rate,
+    #      early_stopping_rounds=early_stopping_rounds,
+    #      model_type=model_type,
+    #      ignore_list=ignore_list,
+    #      x_ray=True
+    #  )
 
-    # 念のためモデルとカテゴリのdecode_mapを保存しておく
-    for i, model in enumerate(model_list):
-        with open(f'../output/model_{i}@{suffix}.pickle', 'wb') as f:
-            pickle.dump(obj=model, file=f)
-    df_cat_decode.to_csv(f'../output/df_cat_decode@{suffix}.csv', index=False)
-    cv_feim.to_csv(f'../output/feature_importance@{suffix}.csv', index=False)
-    return
+    #  # 念のためモデルとカテゴリのdecode_mapを保存しておく
+    #  for i, model in enumerate(model_list):
+    #      with open(f'../output/model_{i}@{suffix}.pickle', 'wb') as f:
+    #          pickle.dump(obj=model, file=f)
+    #  df_cat_decode.to_csv(f'../output/df_cat_decode@{suffix}.csv', index=False)
+    #  cv_feim.to_csv(f'../output/feature_importance@{suffix}.csv', index=False)
+    #  return
 
     ' xray params '
-    model_list = []
     max_sample = 50
-    for i in range(fold):
-        with open(f'../output/model_{i}.pickle', 'rb') as f:
-            model = pickle.load(f)
-            model_list.append(model)
 
     train, _ = data_check(logger, df=train, target=target)
 
@@ -214,9 +207,10 @@ def xray_main(df, suffix):
 #========================================================================
 # CURRENT RESULT SHAPE {i+1}/{len(model_list)}  : {result.shape}
 #========================================================================''')
-        break
 
-    #  df_cat_decode = pd.read_csv('../output/20180918_0747_df_cat_decode.csv')
+    #========================================================================
+    # CATEGORICAL DECODE
+    #========================================================================
     for cat in categorical_list:
         cat_cols = [col for col in df_cat_decode.columns if col.count(cat)]
         decode_dict = df_cat_decode[cat_cols].drop_duplicates().set_index(f'{cat}').to_dict()[f"origin_{cat}"]
@@ -229,7 +223,9 @@ def xray_main(df, suffix):
         tmp_result = result.query(f"feature!='{cat}'")
         result = pd.concat([tmp, tmp_result], axis=0)
 
-    result.to_csv(f"../output/{start_time[:12]}_xray_test1000_{suffix}.csv", index=False)
+    result['data_div'] = suffix[:5]
+    result['model_type'] = suffix
+    result.to_csv(f"../output/{start_time[:12]}_yanmar_xray_{suffix}.csv", index=False)
 
 
 if __name__ == '__main__':
@@ -252,14 +248,15 @@ if __name__ == '__main__':
     sales_cols = [col for col in df.columns if col.count('__co') or col.count('__sf') or col.count('担い手') or col.count('経過')]
     diary_cols += [key, target]
     sales_cols += [key, target]
-    feature_set_list = [diary_cols, sales_cols]
+    feature_set_list = {'diary':diary_cols, 'sales':sales_cols}
+    categorical_list = get_categorical_features(df=df, ignore_list=ignore_list) # For categorical decode
 
     for mc in tqdm(model_code_list):
         tmp_tmp_df = df.query(f"{model_code}=='{mc}'")
         #  xray_main(tmp_tmp_df, suffix='')
         #  sys.exit()
         for ec in eno_code_list:
-            for feature_set in feature_set_list:
+            for mtype, feature_set in feature_set_list.items():
                 tmp_df = tmp_tmp_df.query(f"{eno_code}=='{ec}'")[feature_set]
                 if len(tmp_df[target].drop_duplicates())==1:
                     continue
@@ -278,6 +275,19 @@ if __name__ == '__main__':
                 #  print(suffix)
                 #  for col in tmp_df.columns:
                 #      print(col)
+
+                model_list = []
+                model_path = glob.glob('../output/20180918_yanmar/*.pickle')
+                for path in model_path:
+                    if path.count(f'div{mc}') and path.count(ec) and path.count(mtype):
+                        with open(path, 'rb') as f:
+                            model = pickle.load(f)
+                            model_list.append(model)
+                cat_decode_path = glob.glob('../output/20180918_yanmar/df_cat_decode*.csv')
+                for path in cat_decode_path:
+                    if path.count(f'div{mc}') and path.count(ec) and path.count(mtype):
+                        df_cat_decode = pd.read_csv(path)
+
                 xray_main(tmp_df, suffix=suffix)
                 del tmp_df
                 gc.collect()
