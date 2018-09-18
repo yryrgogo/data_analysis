@@ -35,6 +35,7 @@ model_code = 'div_ターゲット'
 Train = False
 Pararell = True
 
+
 def read_model(model_path, model_num):
     for path in model_path:
         if path.count(f'div{mc}') and path.count(ec) and path.count(mtype) and path.count(f'model_{model_num}'):
@@ -61,8 +62,10 @@ def x_ray_caliculation(col, val, model_num):
 
     return col, val, p_avg
 
+
 def x_ray_wrapper(args):
     return x_ray_caliculation(*args)
+
 
 def x_ray(logger, model_num, train, columns=False, max_sample=30):
     '''
@@ -95,7 +98,7 @@ def x_ray(logger, model_num, train, columns=False, max_sample=30):
         if len(val_cnt)>max_sample:
             length = max_sample-10
             val_array = val_cnt.head(length).index.values
-            percentiles = np.linspace(0.05,0.95,num=10)
+            percentiles = np.linspace(0.05, 0.95, num=10)
             val_percentiles = mquantiles(val_cnt.index.values, prob=percentiles, axis=0)
             max_val = train[col].max()
             min_val = train[col].min()
@@ -109,6 +112,7 @@ def x_ray(logger, model_num, train, columns=False, max_sample=30):
 
         logger.info(f'''
 #========================================================================
+# MODEL DIVISION                 : {suffix}
 # X-RAY CALICURATION START       : {col}
 # X-RAY CALICURATION VALUE COUNT : {len(val_array)}
 # MULTI PROCESSING               : {Pararell}
@@ -155,13 +159,13 @@ def x_ray(logger, model_num, train, columns=False, max_sample=30):
             result = pd.concat([result, tmp_result], axis=0)
             logger.info(f'''
 #========================================================================
-# {i+1}/len(columns) FEATURE. CURRENT RESULT SHAPE : {result.shape}
+# {i+1}/{len(columns)} FEATURE. CURRENT RESULT SHAPE : {result.shape}
 #========================================================================''')
         else:
             result = tmp_result.copy()
             logger.info(f'''
 #========================================================================
-# {i+1}/len(columns) FEATURE. CURRENT RESULT SHAPE : {result.shape}
+# {i+1}/{len(columns)} FEATURE. CURRENT RESULT SHAPE : {result.shape}
 #========================================================================''')
 
     return result
@@ -307,8 +311,6 @@ def xray_concat():
     func = load_data
     p_list = pararell_process(func, path_list)
     df = pd.concat(p_list, axis=0)
-    #  df['eino_type'] = df['model_type'].map(lambda x:x[-2:])
-    #  df['model_div'] = df['model_type'].map(lambda x:x[6:10])
     df.to_csv('../output/20180918_122_yanmar_xray_all.csv', index=False)
     sys.exit()
 
@@ -367,7 +369,7 @@ if __name__ == '__main__':
                         logger.info(f'''
 # DROP COLUMN : {col}''')
 
-                if len(tmp_df)>300000:
+                if len(tmp_df)>250000:
                     tmp_df = tmp_df.sample(250000)
 
                 xray_main(tmp_df, suffix=suffix)
