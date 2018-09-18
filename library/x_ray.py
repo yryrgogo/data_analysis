@@ -132,7 +132,26 @@ def xray_main(df, suffix):
     fold_type = 'group'
     fold = 5
 
-    params = {'bagging_freq': 1, 'bagging_seed': 1012, 'colsample_bytree': 1.0, 'data_random_seed': 1012, 'feature_fraction_seed': 1012, 'lambda_l1': 0.1, 'lambda_l2': 0.5, 'learning_rate': 0.02, 'max_bin': 250, 'max_depth': 5, 'metric': 'auc', 'min_child_samples': 96, 'min_child_weight': 36, 'min_data_in_bin': 96, 'min_split_gain': 0.01, 'num_leaves': 11, 'num_threads': 35, 'objective': 'binary', 'random_seed': 1012, 'subsample': 1.0}
+    params = {'bagging_freq': 1,
+              'bagging_seed': 1012,
+              'feature_fraction_seed': 1012,
+              'data_random_seed': 1012,
+              'random_seed': 1012,
+              'colsample_bytree': 1.0,
+              'lambda_l1': 0.1,
+              'lambda_l2': 0.5,
+              'learning_rate': 0.02,
+              'max_bin': 255,
+              'max_depth': 4,
+              'metric': 'auc',
+              #  'min_child_samples': 96,
+              #  'min_child_weight': 36,
+              #  'min_data_in_bin': 96,
+              'min_split_gain': 0.01,
+              'num_leaves': 8,
+              'num_threads': 35,
+              'objective': 'binary',
+              'subsample': 1.0}
 
     ' TEST用 '
     #  nrows = 1000
@@ -145,7 +164,7 @@ def xray_main(df, suffix):
     train = df[feature_cols]
     categorical_list = get_categorical_features(df=train, ignore_list=ignore_list) # For categorical decode
 
-    result, col_length, model_list, df_cat_decode = cross_validation(
+    cv_feim, col_length, model_list, df_cat_decode = cross_validation(
         logger=logger,
         train=train,
         target=target,
@@ -165,6 +184,7 @@ def xray_main(df, suffix):
         with open(f'../output/model_{i}@{suffix}.pickle', 'wb') as f:
             pickle.dump(obj=model, file=f)
     df_cat_decode.to_csv(f'../output/df_cat_decode@{suffix}.csv', index=False)
+    cv_feim.to_csv(f'../output/feature_importance@{suffix}.csv', index=False)
     return
 
     ' xray params '
@@ -214,25 +234,34 @@ def xray_main(df, suffix):
 
 if __name__ == '__main__':
 
-    #  df = pd.read_csv('../input/20180914_yanmar_drset_10model.csv', nrows=100)
+    logger.info('''
+# DATA LOADING...''')
+    #  df = pd.read_csv('../input/20180918_yanmar_dr_16model_add_eino.csv', nrows=2600000)
     df = pd.read_csv('../input/20180918_yanmar_dr_16model_add_eino.csv')
+    logger.info(f'''
+#========================================================================
+# DATA SHAPE : {df.shape}
+#========================================================================''')
     model_code_list = df[model_code].drop_duplicates().values
-    eno_code_list = df[eno_code].drop_duplicates().values
+    logger.info(f'# MODEL_CODE_LIST : {model_code_list}')
+    #  eno_code_list = df[eno_code].drop_duplicates().values
+    eno_code_list = ['稲作', '畑作']
+    logger.info(f'# ENO_CODE_LIST : {eno_code_list}')
     base_cols = [col for col in df.columns if not(col.count('__')) or col.count('担い手') or col.count('経過')]
-    diary_cols = [col for col in df.columns if col.count('__d') or col.count('担い手') or col.count('経過')]
-    sales_cols = [col for col in df.columns if col.count('__sf') or col.count('担い手') or col.count('経過')]
+    diary_cols = [col for col in df.columns if col.count('__co') or col.count('__d') or col.count('担い手') or col.count('経過')]
+    sales_cols = [col for col in df.columns if col.count('__co') or col.count('__sf') or col.count('担い手') or col.count('経過')]
     diary_cols += [key, target]
     sales_cols += [key, target]
     feature_set_list = [diary_cols, sales_cols]
 
-    for mc in model_code_list:
+    for mc in tqdm(model_code_list):
         tmp_tmp_df = df.query(f"{model_code}=='{mc}'")
         #  xray_main(tmp_tmp_df, suffix='')
         #  sys.exit()
         for ec in eno_code_list:
             for feature_set in feature_set_list:
                 tmp_df = tmp_tmp_df.query(f"{eno_code}=='{ec}'")[feature_set]
-                if len(tmp_df[target].drop_duplicates())==0:
+                if len(tmp_df[target].drop_duplicates())==1:
                     continue
                 for col in feature_set:
                     if col.count('__d'):
@@ -241,11 +270,15 @@ if __name__ == '__main__':
                         suffix = f'sales_div{mc}_{ec}'
 
                 for col in tmp_df.columns:
-                    if col.count('経過') and not(col.count(str(mc))):
+                    if col.count('__co') and not(col.count(str(mc))):
                         tmp_df.drop(col, axis=1, inplace=True)
+                        logger.info(f'''
+# DROP COLUMN : {col}''')
 
-                print(suffix)
-                for col in tmp_df.columns:
-                    print(col)
-                #  xray_main(tmp_df, suffix=suffix)
+                #  print(suffix)
+                #  for col in tmp_df.columns:
+                #      print(col)
+                xray_main(tmp_df, suffix=suffix)
+                del tmp_df
+                gc.collect()
 
