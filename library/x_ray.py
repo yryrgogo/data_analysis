@@ -40,16 +40,11 @@ ignore_list = [ 'c_取引先集約コード', 't_年月', target]
 key_cols = [ 'c_取引先集約コード' ,'t_年月' ]
 eno_code = 'cp_営農タイプ'
 model_code = 'div_ターゲット'
+pararell = True
 
 
-def x_ray_caliculation(col, val, model_num):
+def x_ray_caliculation(col, val, model):
     train[col] = val
-    model_path = glob.glob('../output/20180918_yanmar/*.pickle')
-    for path in model_path:
-        if path.count(f'div{mc}') and path.count(ec) and path.count(mtype) and path.count(f'model_{model_num}'):
-            with open(path, 'rb') as f:
-                model = pickle.load(f)
-                break
     pred = model.predict(train)
     p_avg = np.mean(pred)
 
@@ -96,21 +91,42 @@ def x_ray(logger, model_num, train, columns=False, max_sample=50):
             val_array = val_cnt.head(length).index.values
         val_array = np.sort(val_array)
 
-        #========================================================================
-        # PARARELL PROCESSING READY & START
-        #========================================================================
-        arg_list = []
-        for val in val_array:
-            #  arg_list.append([col, val, model])
-            arg_list.append([col, val, model_num])
-
         logger.info(f'''
 #========================================================================
 # X-RAY CALICURATION START : {col}
+# MULTI PROCESSING         : {pararell}
 #========================================================================''')
+        if pararell:
+            #========================================================================
+            # PARARELL PROCESSING READY & START
+            #========================================================================
+            model_path = glob.glob('../output/20180918_yanmar/*.pickle')
+            for path in model_path:
+                if path.count(f'div{mc}') and path.count(ec) and path.count(mtype) and path.count(f'model_{model_num}'):
+                    with open(path, 'rb') as f:
+                        model = pickle.load(f)
+                        break
+            arg_list = []
 
-        #  xray_values = pararell_process(p_test, arg_list)
-        xray_values = pararell_process(x_ray_wrapper, arg_list)
+            for val in val_array:
+                arg_list.append([col, val, model])
+                #  arg_list.append([col, val, model_num])
+
+
+            xray_values = pararell_process(x_ray_wrapper, arg_list)
+
+        else:
+            #========================================================================
+            # 直列ver 
+            #========================================================================
+            xray_values = []
+            for val in val_array:
+                tmp_val = x_ray_caliculation(col=col, val=val, model=model)
+                xray_values.append(tmp_val)
+
+        del model
+        gc.collect()
+
 
         feature_list = []
         value_list = []
@@ -210,7 +226,7 @@ def xray_main(df, suffix):
     #  return
 
     ' xray params '
-    max_sample = 50
+    max_sample = 30
 
     train, _ = data_check(logger, df=train, target=target)
 
