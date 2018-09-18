@@ -32,8 +32,11 @@ ignore_list = [ 'c_取引先集約コード', 't_年月', target]
 key_cols = [ 'c_取引先集約コード' ,'t_年月' ]
 eno_code = 'cp_営農タイプ'
 model_code = 'div_ターゲット'
-Train = False
-Pararell = True
+Train = [True, False][1]
+Pararell = [True, False][0]
+do_type = ['xray', 'pred_concat'][0]
+eno_code_list = ['稲作', '畑作']
+eno_code_list = ['None']
 
 
 def read_model(model_path, model_num):
@@ -47,8 +50,7 @@ def read_model(model_path, model_num):
 
 def x_ray_caliculation(col, val, model_num):
     train[col] = val
-    model_path = glob.glob('../output/botu_20180918_yanmar/*.pickle')
-    #  model_path = glob.glob('../output/*.pickle')
+    model_path = glob.glob('../output/20180918_yanmar_10model/*.pickle')
     model = read_model(model_path, model_num)
     pred = model.predict(train)
     del model
@@ -119,19 +121,19 @@ def x_ray(logger, model_num, train, columns=False, max_sample=30):
 #========================================================================''')
         if Pararell:
             #========================================================================
-            # PARARELL PROCESSING READY & START
+            # MULTI PROCESSING READY & START
             #========================================================================
             arg_list = []
 
             for val in val_array:
-                #  arg_list.append([col, val, model])
+                #  arg_list.append([col, val, model]) # 重すぎ
                 arg_list.append([col, val, model_num])
 
             xray_values = pararell_process(x_ray_wrapper, arg_list)
 
         else:
             #========================================================================
-            # 直列ver 
+            # SINGLE PROCESSING 
             #========================================================================
             xray_values = []
             for val in val_array:
@@ -242,18 +244,34 @@ def xray_main(df, suffix):
 
     result = pd.DataFrame([])
     for i in range(fold):
-        tmp_result = x_ray(logger, i, train)
-        tmp_result.rename(columns = {'xray': f'x_ray_{i+1}'}, inplace=True)
 
-        if len(result):
-            result = result.merge(tmp_result, on=['feature', 'value'], how='inner')
+        if do_type=='pred_concat':
             logger.info(f'''
+#========================================================================
+# PREDICTION CONCAT START
+#========================================================================''')
+            pred_result = prediciont_concat(i)
+            return pred_result
+
+
+        elif do_type=='xray':
+            logger.info(f'''
+#========================================================================
+# X-RAY START
+#========================================================================''')
+
+            tmp_result = x_ray(logger, i, train)
+            tmp_result.rename(columns = {'xray': f'x_ray_{i+1}'}, inplace=True)
+
+            if len(result):
+                result = result.merge(tmp_result, on=['feature', 'value'], how='inner')
+                logger.info(f'''
 #========================================================================
 # CURRENT RESULT SHAPE {i+1}/{fold}  : {result.shape}
 #========================================================================''')
-        else:
-            result = tmp_result.copy()
-        logger.info(f'''
+            else:
+                result = tmp_result.copy()
+            logger.info(f'''
 #========================================================================
 # CURRENT RESULT SHAPE {i+1}/{fold}  : {result.shape}
 #========================================================================''')
@@ -261,7 +279,7 @@ def xray_main(df, suffix):
     #========================================================================
     # CATEGORICAL DECODE
     #========================================================================
-    cat_decode_path = glob.glob('../output/botu_20180918_yanmar/df_cat_decode*.csv')
+    cat_decode_path = glob.glob('../output/20180918_yanmar_10model/df_cat_decode*.csv')
     #  cat_decode_path = glob.glob('../output/df_cat_decode*.csv')
     for path in cat_decode_path:
         if path.count(f'div{mc}') and path.count(ec) and path.count(mtype):
@@ -286,10 +304,19 @@ def xray_main(df, suffix):
     result['model_type'] = suffix
     result['eino_type'] = suffix[-2:]
     result['model_div'] = f'div_{mc}'
+
+    #========================================================================
+    # X-RAYの算出に失敗していたら中止する
+    #========================================================================
     if len(result[result['x_ray_avg'].isnull()])>0:
         print(result)
         sys.exit()
+
+    #========================================================================
+    # RESULT SAVE
+    #========================================================================
     result.to_csv(f"../output/{start_time[:12]}_yanmar_xray_{suffix}.csv", index=False)
+
 
 def load_data(path):
     return pd.read_csv(path)
@@ -330,33 +357,43 @@ def xray_concat():
     df_num = df.query("feature_type!='Category'")
     df = pd.concat([df_cat, df_num], axis=0)
 
-    df.to_csv('../output/{start_time[:12]}_yanmar_xray_all.csv', index=False)
-    sys.exit()
+    df.to_csv(f'../output/{start_time[:12]}_yanmar_xray_all.csv', index=False)
+
+
+def prediciont_concat(model_num):
+    model_path = glob.glob('../output/botu_20180918_yanmar/*.pickle')
+    model = read_model(model_path, model_num)
+    pred = model.predict(train)
+    del model
+    gc.collect()
+    return pred
+
 
 if __name__ == '__main__':
+
     #  xray_concat()
     #  sys.exit()
 
     logger.info('''
 # DATA LOADING...''')
-    #  df = pd.read_csv('../input/20180918_yanmar_dr_16model_add_eino.csv', nrows=500000)
-    df = pd.read_csv('../input/20180918_yanmar_dr_16model_add_eino.csv')
+    #  df = pd.read_csv('../input/20180918_yanmar_dr_16model_add_eino.csv', nrows=10000)
+    #  df = pd.read_csv('../input/20180918_yanmar_dr_16model_add_eino.csv')
+    df = pd.read_csv('../input/20180918_yanmar_drset_10_model.csv')
     logger.info(f'''
 #========================================================================
 # DATA SHAPE : {df.shape}
 #========================================================================''')
     model_code_list = df[model_code].drop_duplicates().values
-    logger.info(f'# MODEL_CODE_LIST : {model_code_list}')
-    #  eno_code_list = df[eno_code].drop_duplicates().values
-    eno_code_list = ['稲作', '畑作']
-    logger.info(f'# ENO_CODE_LIST : {eno_code_list}')
+
     base_cols = [col for col in df.columns if not(col.count('__')) or col.count('担い手') or col.count('経過')]
     diary_cols = [col for col in df.columns if col.count('__co') or col.count('__d') or col.count('担い手') or col.count('経過')]
     sales_cols = [col for col in df.columns if col.count('__co') or col.count('__sf') or col.count('担い手') or col.count('経過')]
+
     diary_cols += [key, target]
     sales_cols += [key, target]
     feature_set_list = {'diary':diary_cols, 'sales':sales_cols}
 
+    mc_df = pd.DataFrame([])
     for mc in tqdm(model_code_list):
         #========================================================================
         # FOR TEST
@@ -365,6 +402,7 @@ if __name__ == '__main__':
 
         tmp_tmp_df = df.query(f"{model_code}=='{mc}'")
 
+        ec_df = pd.DataFrame([])
         for ec in eno_code_list:
 
             #========================================================================
@@ -372,10 +410,19 @@ if __name__ == '__main__':
             #  if ec!='稲作':continue
             #========================================================================
 
+            mtype_df = pd.DataFrame([])
             for mtype, feature_set in feature_set_list.items():
-                tmp_df = tmp_tmp_df.query(f"{eno_code}=='{ec}'")[feature_set]
-                if len(tmp_df[target].drop_duplicates())==1:
-                    continue
+                if len(eno_code_list)>=2:
+                    tmp_df = tmp_tmp_df.query(f"{eno_code}=='{ec}'")
+                else:
+                    tmp_df = tmp_tmp_df
+
+                ' For Predicion Concat RawTable '
+                if do_type=='pred_concat':
+                    base_df = tmp_df.copy()
+
+                tmp_df = tmp_df[feature_set]
+
                 for col in feature_set:
                     if col.count('__d'):
                         suffix = f'diary_div{mc}_{ec}'
@@ -388,10 +435,39 @@ if __name__ == '__main__':
                         logger.info(f'''
 # DROP COLUMN : {col}''')
 
+                #========================================================================
+                # X-RAY SAMPLING ABOUT MAX300000~500000 (1000000 is too much)
                 if len(tmp_df)>250000:
                     tmp_df = tmp_df.sample(250000)
+                #========================================================================
 
-                xray_main(tmp_df, suffix=suffix)
+                result_pred = xray_main(tmp_df, suffix=suffix)
+
+                if do_type=='pred_concat':
+                    if len(mtype_df):
+                        mtype_df[f'Pred_{mtype}'] = result_pred
+                    else:
+                        mtype_df = base_df.copy()
+                        mtype_df[f'Pred_{mtype}'] = result_pred
+                    del base_df
+
                 del tmp_df
                 gc.collect()
+            if do_type=='pred_concat':
+                if len(ec_df):
+                    ec_df = pd.concat([ec_df, mtype_df], axis=0)
+                else:
+                    ec_df = mtype_df.copy()
+                del mtype_df
+                gc.collect()
 
+        if do_type=='pred_concat':
+            if len(mc_df):
+                mc_df = pd.concat([mc_df, ec_df], axis=0)
+            else:
+                mc_df = ec_df.copy()
+            del ec_df
+            gc.collect()
+
+    if do_type=='pred_concat':
+        mc_df.to_csv(f'../output/{start_time[:12]}_pred_concat_table.csv', index=False)
