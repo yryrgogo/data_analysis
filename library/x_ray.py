@@ -361,7 +361,7 @@ def xray_concat():
 
 
 def prediciont_concat(model_num):
-    model_path = glob.glob('../output/botu_20180918_yanmar/*.pickle')
+    model_path = glob.glob('../output/20180918_yanmar_10model/*.pickle')
     model = read_model(model_path, model_num)
     pred = model.predict(train)
     del model
@@ -369,7 +369,28 @@ def prediciont_concat(model_num):
     return pred
 
 
+def importance_concat():
+    path_list = glob.glob('../output/20180918_yanmar_10model/*importance*.csv')
+    feim = pd.DataFrame([])
+    for path in path_list:
+        tmp = pd.read_csv(path)
+        use_cols = [col for col in tmp.columns if col.count('avg') or not(col.count('importance'))]
+        tmp = tmp[use_cols]
+        filename = re.search(r'@([^/.]*).csv', path).group(1)[:-5]
+        tmp['model_div'] = filename[-4:]
+        tmp['data_div'] = filename[:5]
+        tmp['filename'] = filename
+        if len(feim):
+            feim = pd.concat([feim, tmp], axis=0)
+        else:
+            feim = tmp.copy()
+    feim.to_csv(f'../output/{start_time[:12]}_yanmar_feature_importance_score.csv', index=False)
+
+
 if __name__ == '__main__':
+
+    #  importance_concat()
+    #  sys.exit()
 
     #  xray_concat()
     #  sys.exit()
