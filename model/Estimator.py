@@ -1,8 +1,3 @@
-for col in tmp_df.columns:
-    if col.count('経過') and col.count(f"{model_code}"):
-
-
-
 import gc
 import numpy as np
 import pandas as pd
