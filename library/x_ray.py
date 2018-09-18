@@ -42,10 +42,22 @@ eno_code = 'cp_営農タイプ'
 model_code = 'div_ターゲット'
 pararell = True
 
+def read_model(model_path, model_num):
+    for path in model_path:
+        if path.count(f'div{mc}') and path.count(ec) and path.count(mtype) and path.count(f'model_{model_num}'):
+            with open(path, 'rb') as f:
+                model = pickle.load(f)
+                break
+    return model
 
-def x_ray_caliculation(col, val, model):
+
+def x_ray_caliculation(col, val, model_num):
     train[col] = val
+    model_path = glob.glob('../output/20180918_yanmar/*.pickle')
+    model = read_model(model_path, model_num)
     pred = model.predict(train)
+    del model
+    gc.collect()
     p_avg = np.mean(pred)
 
     logger.info(f'''
@@ -70,6 +82,8 @@ def x_ray(logger, model_num, train, columns=False, max_sample=30):
     if not(columns):
         columns = train.columns
     for i, col in enumerate(columns):
+        if col in ignore_list:
+            continue
         xray_list = []
 
         #========================================================================
@@ -96,24 +110,19 @@ def x_ray(logger, model_num, train, columns=False, max_sample=30):
 
         logger.info(f'''
 #========================================================================
-# X-RAY CALICURATION START : {col}
-# MULTI PROCESSING         : {pararell}
+# X-RAY CALICURATION START       : {col}
+# X-RAY CALICURATION VALUE COUNT : {len(val_array)}
+# MULTI PROCESSING               : {pararell}
 #========================================================================''')
         if pararell:
             #========================================================================
             # PARARELL PROCESSING READY & START
             #========================================================================
-            model_path = glob.glob('../output/20180918_yanmar/*.pickle')
-            for path in model_path:
-                if path.count(f'div{mc}') and path.count(ec) and path.count(mtype) and path.count(f'model_{model_num}'):
-                    with open(path, 'rb') as f:
-                        model = pickle.load(f)
-                        break
             arg_list = []
 
             for val in val_array:
-                arg_list.append([col, val, model])
-                #  arg_list.append([col, val, model_num])
+                #  arg_list.append([col, val, model])
+                arg_list.append([col, val, model_num])
 
 
             xray_values = pararell_process(x_ray_wrapper, arg_list)
@@ -126,10 +135,6 @@ def x_ray(logger, model_num, train, columns=False, max_sample=30):
             for val in val_array:
                 tmp_val = x_ray_caliculation(col=col, val=val, model=model)
                 xray_values.append(tmp_val)
-
-        del model
-        gc.collect()
-
 
         feature_list = []
         value_list = []
@@ -204,6 +209,7 @@ def xray_main(df, suffix):
 
     feature_cols = [col for col in df.columns if col.count('__') or col.count('担い手') or col.count('経過')]
     train = df[feature_cols]
+    categorical_list = get_categorical_features(df=df, ignore_list=ignore_list) # For categorical decode
 
     #  cv_feim, col_length, model_list, df_cat_decode = cross_validation(
     #      logger=logger,
@@ -266,6 +272,8 @@ def xray_main(df, suffix):
         tmp_result = result.query(f"feature!='{cat}'")
         result = pd.concat([tmp, tmp_result], axis=0)
 
+    xray_cols = [col for col in result.columns if col.count('x_ray_')]
+    result['x_ray_avg'] = result[xray_cols].mean(axis=1)
     result['data_div'] = suffix[:5]
     result['model_type'] = suffix
     result.to_csv(f"../output/{start_time[:12]}_yanmar_xray_{suffix}.csv", index=False)
@@ -275,7 +283,7 @@ if __name__ == '__main__':
 
     logger.info('''
 # DATA LOADING...''')
-    df = pd.read_csv('../input/20180918_yanmar_dr_16model_add_eino.csv', nrows=20000)
+    df = pd.read_csv('../input/20180918_yanmar_dr_16model_add_eino.csv', nrows=800000)
     #  df = pd.read_csv('../input/20180918_yanmar_dr_16model_add_eino.csv')
     logger.info(f'''
 #========================================================================
@@ -292,7 +300,6 @@ if __name__ == '__main__':
     diary_cols += [key, target]
     sales_cols += [key, target]
     feature_set_list = {'diary':diary_cols, 'sales':sales_cols}
-    categorical_list = get_categorical_features(df=df, ignore_list=ignore_list) # For categorical decode
 
     for mc in tqdm(model_code_list):
         tmp_tmp_df = df.query(f"{model_code}=='{mc}'")
@@ -314,10 +321,6 @@ if __name__ == '__main__':
                         tmp_df.drop(col, axis=1, inplace=True)
                         logger.info(f'''
 # DROP COLUMN : {col}''')
-
-                #  print(suffix)
-                #  for col in tmp_df.columns:
-                #      print(col)
 
                 cat_decode_path = glob.glob('../output/20180918_yanmar/df_cat_decode*.csv')
                 for path in cat_decode_path:
