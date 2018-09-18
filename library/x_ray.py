@@ -22,14 +22,6 @@ pd.set_option('max_rows', 200)
 start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 
 
-#  arg_list = [1,2,3,4,5,6,7,8,9,10]
-def p_test(c):
-    print(c)
-def test_wrapper(args):
-    return p_test(*args)
-#  pararell_process(p_test, arg_list)
-#  sys.exit()
-
 #========================================================================
 # Global Variables 
 #========================================================================
@@ -40,7 +32,8 @@ ignore_list = [ 'c_取引先集約コード', 't_年月', target]
 key_cols = [ 'c_取引先集約コード' ,'t_年月' ]
 eno_code = 'cp_営農タイプ'
 model_code = 'div_ターゲット'
-pararell = True
+Train = False
+Pararell = True
 
 def read_model(model_path, model_num):
     for path in model_path:
@@ -53,7 +46,8 @@ def read_model(model_path, model_num):
 
 def x_ray_caliculation(col, val, model_num):
     train[col] = val
-    model_path = glob.glob('../output/20180918_yanmar/*.pickle')
+    model_path = glob.glob('../output/botu_20180918_yanmar/*.pickle')
+    #  model_path = glob.glob('../output/*.pickle')
     model = read_model(model_path, model_num)
     pred = model.predict(train)
     del model
@@ -89,10 +83,15 @@ def x_ray(logger, model_num, train, columns=False, max_sample=30):
         #========================================================================
         # MAKE X-RAY GET POINT
         #========================================================================
-        threshold = 0.005
         val_cnt = train[col].value_counts().reset_index().rename(columns={'index':col, col:'cnt'})
         val_cnt['ratio'] = val_cnt['cnt']/len(train)
+
+        if col.count('経過') or len(val_cnt)<=15:
+            threshold = 0
+        else:
+            threshold = 0.005
         val_cnt = val_cnt.query(f"ratio>={threshold}") # サンプル数の0.5%未満しか存在しない値は除く
+
         if len(val_cnt)>max_sample:
             length = max_sample-10
             val_array = val_cnt.head(length).index.values
@@ -112,9 +111,9 @@ def x_ray(logger, model_num, train, columns=False, max_sample=30):
 #========================================================================
 # X-RAY CALICURATION START       : {col}
 # X-RAY CALICURATION VALUE COUNT : {len(val_array)}
-# MULTI PROCESSING               : {pararell}
+# MULTI PROCESSING               : {Pararell}
 #========================================================================''')
-        if pararell:
+        if Pararell:
             #========================================================================
             # PARARELL PROCESSING READY & START
             #========================================================================
@@ -123,7 +122,6 @@ def x_ray(logger, model_num, train, columns=False, max_sample=30):
             for val in val_array:
                 #  arg_list.append([col, val, model])
                 arg_list.append([col, val, model_num])
-
 
             xray_values = pararell_process(x_ray_wrapper, arg_list)
 
@@ -201,38 +199,37 @@ def xray_main(df, suffix):
               'objective': 'binary',
               'subsample': 1.0}
 
-    ' TEST用 '
-    #  nrows = 1000
-    #  df = pd.read_csv('../input/20180914_yanmar_drset_10model.csv', nrows=nrows)
 
     df.set_index(key, inplace=True)
-
     feature_cols = [col for col in df.columns if col.count('__') or col.count('担い手') or col.count('経過')]
     train = df[feature_cols]
     categorical_list = get_categorical_features(df=df, ignore_list=ignore_list) # For categorical decode
 
-    #  cv_feim, col_length, model_list, df_cat_decode = cross_validation(
-    #      logger=logger,
-    #      train=train,
-    #      target=target,
-    #      params=params,
-    #      metric=metric,
-    #      fold_type=fold_type,
-    #      num_iterations=num_iterations,
-    #      learning_rate=learning_rate,
-    #      early_stopping_rounds=early_stopping_rounds,
-    #      model_type=model_type,
-    #      ignore_list=ignore_list,
-    #      x_ray=True
-    #  )
+    if Train:
 
-    #  # 念のためモデルとカテゴリのdecode_mapを保存しておく
-    #  for i, model in enumerate(model_list):
-    #      with open(f'../output/model_{i}@{suffix}.pickle', 'wb') as f:
-    #          pickle.dump(obj=model, file=f)
-    #  df_cat_decode.to_csv(f'../output/df_cat_decode@{suffix}.csv', index=False)
-    #  cv_feim.to_csv(f'../output/feature_importance@{suffix}.csv', index=False)
-    #  return
+        cv_feim, col_length, model_list, df_cat_decode = cross_validation(
+            logger=logger,
+            train=train,
+            target=target,
+            params=params,
+            metric=metric,
+            fold_type=fold_type,
+            num_iterations=num_iterations,
+            learning_rate=learning_rate,
+            early_stopping_rounds=early_stopping_rounds,
+            model_type=model_type,
+            ignore_list=ignore_list,
+            x_ray=True
+        )
+
+        # 念のためモデルとカテゴリのdecode_mapを保存しておく
+        for i, model in enumerate(model_list):
+            with open(f'../output/model_{i}@{suffix}.pickle', 'wb') as f:
+                pickle.dump(obj=model, file=f)
+        df_cat_decode.to_csv(f'../output/df_cat_decode@{suffix}.csv', index=False)
+        cv_feim.to_csv(f'../output/feature_importance@{suffix}.csv', index=False)
+
+        return
 
     ' xray params '
     max_sample = 30
@@ -260,6 +257,13 @@ def xray_main(df, suffix):
     #========================================================================
     # CATEGORICAL DECODE
     #========================================================================
+    cat_decode_path = glob.glob('../output/botu_20180918_yanmar/df_cat_decode*.csv')
+    #  cat_decode_path = glob.glob('../output/df_cat_decode*.csv')
+    for path in cat_decode_path:
+        if path.count(f'div{mc}') and path.count(ec) and path.count(mtype):
+            df_cat_decode = pd.read_csv(path)
+            break
+
     for cat in categorical_list:
         cat_cols = [col for col in df_cat_decode.columns if col.count(cat)]
         decode_dict = df_cat_decode[cat_cols].drop_duplicates().set_index(f'{cat}').to_dict()[f"origin_{cat}"]
@@ -276,15 +280,46 @@ def xray_main(df, suffix):
     result['x_ray_avg'] = result[xray_cols].mean(axis=1)
     result['data_div'] = suffix[:5]
     result['model_type'] = suffix
+    result['eino_type'] = suffix[-2:]
+    result['model_div'] = f'div_{mc}'
+    if len(result[result['x_ray_avg'].isnull()])>0:
+        print(result)
+        sys.exit()
     result.to_csv(f"../output/{start_time[:12]}_yanmar_xray_{suffix}.csv", index=False)
 
+def load_data(path):
+    return pd.read_csv(path)
+
+def xray_concat():
+    path_key = '../output/*xray*.csv'
+    path_list = glob.glob(path_key)
+
+    #========================================================================
+    # 中身チェック
+    #  for path in path_list:
+        #  if not(path.count('div2')):continue
+        #  df = pd.read_csv(path)
+        #  df.set_index('feature', inplace=True)
+        #  index = [col for col in df.index if col.count('経過')]
+        #  df = df.loc[index, :]
+    #========================================================================
+
+    func = load_data
+    p_list = pararell_process(func, path_list)
+    df = pd.concat(p_list, axis=0)
+    #  df['eino_type'] = df['model_type'].map(lambda x:x[-2:])
+    #  df['model_div'] = df['model_type'].map(lambda x:x[6:10])
+    df.to_csv('../output/20180918_122_yanmar_xray_all.csv', index=False)
+    sys.exit()
 
 if __name__ == '__main__':
+    #  xray_concat()
+    #  sys.exit()
 
     logger.info('''
 # DATA LOADING...''')
-    df = pd.read_csv('../input/20180918_yanmar_dr_16model_add_eino.csv', nrows=800000)
-    #  df = pd.read_csv('../input/20180918_yanmar_dr_16model_add_eino.csv')
+    #  df = pd.read_csv('../input/20180918_yanmar_dr_16model_add_eino.csv', nrows=500000)
+    df = pd.read_csv('../input/20180918_yanmar_dr_16model_add_eino.csv')
     logger.info(f'''
 #========================================================================
 # DATA SHAPE : {df.shape}
@@ -302,10 +337,20 @@ if __name__ == '__main__':
     feature_set_list = {'diary':diary_cols, 'sales':sales_cols}
 
     for mc in tqdm(model_code_list):
+        #========================================================================
+        # FOR TEST
+        #  if mc!=2:continue
+        #========================================================================
+
         tmp_tmp_df = df.query(f"{model_code}=='{mc}'")
-        #  xray_main(tmp_tmp_df, suffix='')
-        #  sys.exit()
+
         for ec in eno_code_list:
+
+            #========================================================================
+            # FOR TEST
+            #  if ec!='稲作':continue
+            #========================================================================
+
             for mtype, feature_set in feature_set_list.items():
                 tmp_df = tmp_tmp_df.query(f"{eno_code}=='{ec}'")[feature_set]
                 if len(tmp_df[target].drop_duplicates())==1:
@@ -322,10 +367,8 @@ if __name__ == '__main__':
                         logger.info(f'''
 # DROP COLUMN : {col}''')
 
-                cat_decode_path = glob.glob('../output/20180918_yanmar/df_cat_decode*.csv')
-                for path in cat_decode_path:
-                    if path.count(f'div{mc}') and path.count(ec) and path.count(mtype):
-                        df_cat_decode = pd.read_csv(path)
+                if len(tmp_df)>300000:
+                    tmp_df = tmp_df.sample(250000)
 
                 xray_main(tmp_df, suffix=suffix)
                 del tmp_df
