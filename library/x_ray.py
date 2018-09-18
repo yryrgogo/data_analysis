@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats.mstats import mquantiles
 import datetime
+from time import sleep
 from tqdm import tqdm
 import sys
 import re
@@ -213,7 +214,7 @@ def xray_main(df, suffix):
 if __name__ == '__main__':
 
     #  df = pd.read_csv('../input/20180914_yanmar_drset_10model.csv', nrows=100)
-    df = pd.read_csv('../input/20180918_yanmar_dr_16model_add_eino.csv', nrows=10000)
+    df = pd.read_csv('../input/20180918_yanmar_dr_16model_add_eino.csv', nrows=1000)
     model_code_list = df[model_code].drop_duplicates().values
     eno_code_list = df[eno_code].drop_duplicates().values
     base_cols = [col for col in df.columns if not(col.count('__')) or col.count('担い手') or col.count('経過')]
@@ -239,7 +240,6 @@ if __name__ == '__main__':
                         suffix = f'_sales_div{mc}_{ec}'
 
                 #  for col in tmp_df.columns:
-
 
                 xray_main(tmp_df, suffix=suffix)
 
