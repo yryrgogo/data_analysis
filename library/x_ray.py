@@ -34,7 +34,7 @@ eno_code = 'cp_営農タイプ'
 model_code = 'div_ターゲット'
 Train = [True, False][1]
 Pararell = [True, False][0]
-do_type = ['xray', 'pred_concat'][0]
+do_type = ['xray', 'pred_concat'][1]
 eno_code_list = ['稲作', '畑作']
 eno_code_list = ['None']
 
@@ -357,7 +357,7 @@ def xray_concat():
     df_num = df.query("feature_type!='Category'")
     df = pd.concat([df_cat, df_num], axis=0)
 
-    df.to_csv(f'../output/{start_time[:12]}_yanmar_xray_all.csv', index=False)
+    df.to_csv(f'../output/{start_time[:12]}_yanmar_xray_10model.csv', index=False)
 
 
 def prediciont_concat(model_num):
@@ -370,7 +370,8 @@ def prediciont_concat(model_num):
 
 
 def importance_concat():
-    path_list = glob.glob('../output/20180918_yanmar_10model/*importance*.csv')
+    #  path_list = glob.glob('../output/20180918_yanmar_10model/*importance*.csv')
+    path_list = glob.glob('../output/20180918_yanmar_16model/*importance*.csv')
     feim = pd.DataFrame([])
     for path in path_list:
         tmp = pd.read_csv(path)
@@ -380,11 +381,12 @@ def importance_concat():
         tmp['model_div'] = filename[-4:]
         tmp['data_div'] = filename[:5]
         tmp['filename'] = filename
+        tmp['avg_importance'] = tmp['avg_importance'] / tmp['avg_importance'].max()
         if len(feim):
             feim = pd.concat([feim, tmp], axis=0)
         else:
             feim = tmp.copy()
-    feim.to_csv(f'../output/{start_time[:12]}_yanmar_feature_importance_score.csv', index=False)
+    feim.to_csv(f'../output/{start_time[:12]}_yanmar_feature_importance_score_16model.csv', index=False)
 
 
 if __name__ == '__main__':
@@ -458,8 +460,9 @@ if __name__ == '__main__':
 
                 #========================================================================
                 # X-RAY SAMPLING ABOUT MAX300000~500000 (1000000 is too much)
-                if len(tmp_df)>250000:
-                    tmp_df = tmp_df.sample(250000)
+                if do_type=='xray':
+                    if len(tmp_df)>250000:
+                        tmp_df = tmp_df.sample(250000)
                 #========================================================================
 
                 result_pred = xray_main(tmp_df, suffix=suffix)
