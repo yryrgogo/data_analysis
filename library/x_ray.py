@@ -1,6 +1,10 @@
 #========================================================================
 # Global Variables 
 #========================================================================
+input_path = '../input/20180918_yanmar_dr_16model_add_eino.csv'
+model_dir = '../output/20180918_yanmar_10model'
+model_dir = '../output/20180918_yanmar_16model'
+train_word = '_16model'
 global train # For Pararell Processing
 key = 'c_取引先集約コード'
 target = '翌年トラコンタ購買フラグ__t'
@@ -38,8 +42,8 @@ pd.set_option('max_rows', 200)
 start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 
 
-def read_model(model_path, model_num):
-    for path in model_path:
+def read_model(model_path_list, model_num):
+    for path in model_path_list:
         if path.count(f'div{mc}') and path.count(ec) and path.count(mtype) and path.count(f'model_{model_num}'):
             with open(path, 'rb') as f:
                 model = pickle.load(f)
@@ -48,8 +52,8 @@ def read_model(model_path, model_num):
 
 
 def x_ray_caliculation(col, val, model_num):
-    model_path = glob.glob('../output/20180918_yanmar_10model/*.pickle')
-    model = read_model(model_path, model_num)
+    model_path_list = glob.glob(f'{model_dir}/*.pickle')
+    model = read_model(model_path_list, model_num)
     df_xray = train.copy()
     df_xray[col] = val
     pred = model.predict(df_xray)
@@ -279,7 +283,7 @@ def xray_main(df, suffix):
     #========================================================================
     # CATEGORICAL DECODE
     #========================================================================
-    cat_decode_path = glob.glob('../output/20180918_yanmar_10model/df_cat_decode*.csv')
+    cat_decode_path = glob.glob('{model_dir}/df_cat_decode*.csv')
     #  cat_decode_path = glob.glob('../output/df_cat_decode*.csv')
     for path in cat_decode_path:
         if path.count(f'div{mc}') and path.count(ec) and path.count(mtype):
@@ -357,11 +361,11 @@ def xray_concat():
     df_num = df.query("feature_type!='Category'")
     df = pd.concat([df_cat, df_num], axis=0)
 
-    df.to_csv(f'../output/{start_time[:12]}_yanmar_xray_10model.csv', index=False)
+    df.to_csv(f'../output/{start_time[:12]}_yanmar_xray{train_word}.csv', index=False)
 
 
 def prediciont_concat(model_num):
-    model_path = glob.glob('../output/20180918_yanmar_10model/*.pickle')
+    model_path = glob.glob(f'{model_dir}/*.pickle')
     model = read_model(model_path, model_num)
     pred = model.predict(train)
     del model
@@ -370,8 +374,8 @@ def prediciont_concat(model_num):
 
 
 def importance_concat():
-    #  path_list = glob.glob('../output/20180918_yanmar_10model/*importance*.csv')
-    path_list = glob.glob('../output/20180918_yanmar_16model/*importance*.csv')
+    #  path_list = glob.glob('{model_dir}/*importance*.csv')
+    path_list = glob.glob(f'{model_dir}/*importance*.csv')
     feim = pd.DataFrame([])
     for path in path_list:
         tmp = pd.read_csv(path)
@@ -386,13 +390,13 @@ def importance_concat():
             feim = pd.concat([feim, tmp], axis=0)
         else:
             feim = tmp.copy()
-    feim.to_csv(f'../output/{start_time[:12]}_yanmar_feature_importance_score_16model.csv', index=False)
+    feim.to_csv(f'../output/{start_time[:12]}_yanmar_feature_importance_score{train_word}.csv', index=False)
 
 
 def Calicurate_Feature_Importance(col, model_num):
 
     # Model Load
-    model_path = glob.glob('../output/20180918_yanmar_10model/*.pickle')
+    model_path = glob.glob(f'{model_dir}/*.pickle')
     model = read_model(model_path, model_num)
 
     seed_list = [1212, 1111, 2222]
@@ -432,7 +436,7 @@ if __name__ == '__main__':
 # DATA LOADING...''')
     #  df = pd.read_csv('../input/20180918_yanmar_dr_16model_add_eino.csv', nrows=10000)
     #  df = pd.read_csv('../input/20180918_yanmar_dr_16model_add_eino.csv')
-    df = pd.read_csv('../input/20180918_yanmar_drset_10_model.csv')
+    df = pd.read_csv(input_path)
     logger.info(f'''
 #========================================================================
 # DATA SHAPE : {df.shape}
@@ -479,9 +483,9 @@ if __name__ == '__main__':
 
                 for col in feature_set:
                     if col.count('__d'):
-                        suffix = f'diary_div{mc}_{ec}'
+                        suffix = f'diary_div{mc}_{ec}{train_word}'
                     elif col.count('__sf'):
-                        suffix = f'sales_div{mc}_{ec}'
+                        suffix = f'sales_div{mc}_{ec}{train_word}'
 
                 for col in tmp_df.columns:
                     if col.count('__co') and not(col.count(str(mc))):
