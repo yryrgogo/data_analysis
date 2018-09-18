@@ -1,3 +1,19 @@
+#========================================================================
+# Global Variables 
+#========================================================================
+global train # For Pararell Processing
+key = 'c_取引先集約コード'
+target = '翌年トラコンタ購買フラグ__t'
+ignore_list = [ 'c_取引先集約コード', 't_年月', target]
+key_cols = [ 'c_取引先集約コード' ,'t_年月' ]
+eno_code = 'cp_営農タイプ'
+model_code = 'div_ターゲット'
+Train = [True, False][1]
+Pararell = [True, False][0]
+do_type = ['xray', 'pred_concat'][0]
+eno_code_list = ['稲作', '畑作']
+#  eno_code_list = ['None']
+
 import numpy as np
 import pandas as pd
 from scipy.stats.mstats import mquantiles
@@ -22,23 +38,6 @@ pd.set_option('max_rows', 200)
 start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 
 
-#========================================================================
-# Global Variables 
-#========================================================================
-global train # For Pararell Processing
-key = 'c_取引先集約コード'
-target = '翌年トラコンタ購買フラグ__t'
-ignore_list = [ 'c_取引先集約コード', 't_年月', target]
-key_cols = [ 'c_取引先集約コード' ,'t_年月' ]
-eno_code = 'cp_営農タイプ'
-model_code = 'div_ターゲット'
-Train = [True, False][1]
-Pararell = [True, False][0]
-do_type = ['xray', 'pred_concat'][1]
-eno_code_list = ['稲作', '畑作']
-eno_code_list = ['None']
-
-
 def read_model(model_path, model_num):
     for path in model_path:
         if path.count(f'div{mc}') and path.count(ec) and path.count(mtype) and path.count(f'model_{model_num}'):
@@ -49,11 +48,12 @@ def read_model(model_path, model_num):
 
 
 def x_ray_caliculation(col, val, model_num):
-    train[col] = val
     model_path = glob.glob('../output/20180918_yanmar_10model/*.pickle')
     model = read_model(model_path, model_num)
-    pred = model.predict(train)
-    del model
+    df_xray = train.copy()
+    df_xray[col] = val
+    pred = model.predict(df_xray)
+    del model, df_xray
     gc.collect()
     p_avg = np.mean(pred)
 
@@ -387,6 +387,37 @@ def importance_concat():
         else:
             feim = tmp.copy()
     feim.to_csv(f'../output/{start_time[:12]}_yanmar_feature_importance_score_16model.csv', index=False)
+
+
+def Calicurate_Feature_Importance(col, model_num):
+
+    # Model Load
+    model_path = glob.glob('../output/20180918_yanmar_10model/*.pickle')
+    model = read_model(model_path, model_num)
+
+    seed_list = [1212, 1111, 2222]
+    value_list = train[col].values
+    for seed in seed_list:
+        np.random.seed(seed)
+        tmp_values = np.random.shuffle(value_list)
+
+        pred = model.predict(train)
+        del model
+        gc.collect()
+        p_avg = np.mean(pred)
+
+    logger.info(f'''
+#========================================================================
+# CALICULATION PROGRESS... COLUMN: {col} | VALUE: {val} | X-RAY: {p_avg}
+#========================================================================''')
+
+    return col, val, p_avg
+
+
+def x_ray_wrapper(args):
+    return x_ray_caliculation(*args)
+
+
 
 
 if __name__ == '__main__':
