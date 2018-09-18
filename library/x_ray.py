@@ -21,6 +21,15 @@ pd.set_option('max_columns', 200)
 pd.set_option('max_rows', 200)
 start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 
+
+#  arg_list = [1,2,3,4,5,6,7,8,9,10]
+def p_test(c):
+    print(c)
+def test_wrapper(args):
+    return p_test(*args)
+#  pararell_process(p_test, arg_list)
+#  sys.exit()
+
 #========================================================================
 # Global Variables 
 #========================================================================
@@ -33,16 +42,28 @@ eno_code = 'cp_営農タイプ'
 model_code = 'div_ターゲット'
 
 
-def x_ray_caliculation(col, val, model):
+def x_ray_caliculation(col, val, model_num):
     train[col] = val
+    model_path = glob.glob('../output/20180918_yanmar/*.pickle')
+    for path in model_path:
+        if path.count(f'div{mc}') and path.count(ec) and path.count(mtype) and path.count(f'model_{model_num}'):
+            with open(path, 'rb') as f:
+                model = pickle.load(f)
+                break
     pred = model.predict(train)
     p_avg = np.mean(pred)
+
+    logger.info(f'''
+#========================================================================
+# CALICULATION PROGRESS... COLUMN: {col} | VALUE: {val} | X-RAY: {p_avg}
+#========================================================================''')
+
     return col, val, p_avg
 
 def x_ray_wrapper(args):
     return x_ray_caliculation(*args)
 
-def x_ray(logger, model, train, columns=False, max_sample=50):
+def x_ray(logger, model_num, train, columns=False, max_sample=50):
     '''
     Explain:
     Args:
@@ -80,14 +101,17 @@ def x_ray(logger, model, train, columns=False, max_sample=50):
         #========================================================================
         arg_list = []
         for val in val_array:
-            arg_list.append([col, val, model])
+            #  arg_list.append([col, val, model])
+            arg_list.append([col, val, model_num])
 
         logger.info(f'''
 #========================================================================
 # X-RAY CALICURATION START : {col}
 #========================================================================''')
 
+        #  xray_values = pararell_process(p_test, arg_list)
         xray_values = pararell_process(x_ray_wrapper, arg_list)
+
         feature_list = []
         value_list = []
         xray_list = []
@@ -191,21 +215,21 @@ def xray_main(df, suffix):
     train, _ = data_check(logger, df=train, target=target)
 
     result = pd.DataFrame([])
-    for i, model in enumerate(model_list):
-        tmp_result = x_ray(logger, model, train)
+    for i in range(fold):
+        tmp_result = x_ray(logger, i, train)
         tmp_result.rename(columns = {'xray': f'x_ray_{i+1}'}, inplace=True)
 
         if len(result):
             result = result.merge(tmp_result, on=['feature', 'value'], how='inner')
             logger.info(f'''
 #========================================================================
-# CURRENT RESULT SHAPE {i+1}/{len(model_list)}  : {result.shape}
+# CURRENT RESULT SHAPE {i+1}/{fold}  : {result.shape}
 #========================================================================''')
         else:
             result = tmp_result.copy()
         logger.info(f'''
 #========================================================================
-# CURRENT RESULT SHAPE {i+1}/{len(model_list)}  : {result.shape}
+# CURRENT RESULT SHAPE {i+1}/{fold}  : {result.shape}
 #========================================================================''')
 
     #========================================================================
@@ -232,7 +256,7 @@ if __name__ == '__main__':
 
     logger.info('''
 # DATA LOADING...''')
-    #  df = pd.read_csv('../input/20180918_yanmar_dr_16model_add_eino.csv', nrows=2600000)
+    #  df = pd.read_csv('../input/20180918_yanmar_dr_16model_add_eino.csv', nrows=200000)
     df = pd.read_csv('../input/20180918_yanmar_dr_16model_add_eino.csv')
     logger.info(f'''
 #========================================================================
@@ -276,13 +300,6 @@ if __name__ == '__main__':
                 #  for col in tmp_df.columns:
                 #      print(col)
 
-                model_list = []
-                model_path = glob.glob('../output/20180918_yanmar/*.pickle')
-                for path in model_path:
-                    if path.count(f'div{mc}') and path.count(ec) and path.count(mtype):
-                        with open(path, 'rb') as f:
-                            model = pickle.load(f)
-                            model_list.append(model)
                 cat_decode_path = glob.glob('../output/20180918_yanmar/df_cat_decode*.csv')
                 for path in cat_decode_path:
                     if path.count(f'div{mc}') and path.count(ec) and path.count(mtype):
