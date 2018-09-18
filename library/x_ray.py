@@ -58,7 +58,7 @@ def x_ray_caliculation(col, val, model):
 def x_ray_wrapper(args):
     return x_ray_caliculation(*args)
 
-def x_ray(logger, model_num, train, columns=False, max_sample=50):
+def x_ray(logger, model_num, train, columns=False, max_sample=30):
     '''
     Explain:
     Args:
@@ -75,7 +75,10 @@ def x_ray(logger, model_num, train, columns=False, max_sample=50):
         #========================================================================
         # MAKE X-RAY GET POINT
         #========================================================================
-        val_cnt = train[col].value_counts()
+        threshold = 0.005
+        val_cnt = train[col].value_counts().reset_index().rename(columns={'index':col, col:'cnt'})
+        val_cnt['ratio'] = val_cnt['cnt']/len(train)
+        val_cnt = val_cnt.query(f"ratio>={threshold}") # サンプル数の0.5%未満しか存在しない値は除く
         if len(val_cnt)>max_sample:
             length = max_sample-10
             val_array = val_cnt.head(length).index.values
@@ -272,8 +275,8 @@ if __name__ == '__main__':
 
     logger.info('''
 # DATA LOADING...''')
-    #  df = pd.read_csv('../input/20180918_yanmar_dr_16model_add_eino.csv', nrows=200000)
-    df = pd.read_csv('../input/20180918_yanmar_dr_16model_add_eino.csv')
+    df = pd.read_csv('../input/20180918_yanmar_dr_16model_add_eino.csv', nrows=20000)
+    #  df = pd.read_csv('../input/20180918_yanmar_dr_16model_add_eino.csv')
     logger.info(f'''
 #========================================================================
 # DATA SHAPE : {df.shape}
