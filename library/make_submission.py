@@ -77,7 +77,7 @@ def make_submission(logger, data, key, target, fold=5, fold_type='stratified', p
         #========================================================================
         elif pred_type==1:
             ' 予測 '
-            y_pred, score, stack = cross_prediction(
+            y_pred, tmp_score, stack = cross_prediction(
                 logger=logger,
                 train=train,
                 test=test,
@@ -105,11 +105,11 @@ def make_submission(logger, data, key, target, fold=5, fold_type='stratified', p
                 gc.collect()
 
             tmp_result += y_pred
-            score_list.append(score)
-            score_avg = np.mean(score_list)
+            score_list.append(tmp_score)
+            score = np.mean(score_list)
             logger.info(f'''
 #==============================================================================
-# CURRENT SCORE AVERAGE: {score_avg}
+# CURRENT SCORE AVERAGE: {score}
 #==============================================================================''')
 
         #========================================================================
@@ -128,6 +128,7 @@ def make_submission(logger, data, key, target, fold=5, fold_type='stratified', p
                 model_type=model_type,
                 ignore_list=ignore_list
             )
+            result = y_pred
 
             logger.info(f'''
 #==============================================================================
@@ -140,4 +141,4 @@ def make_submission(logger, data, key, target, fold=5, fold_type='stratified', p
     if len(result_stack)>0:
         result_stack[target] = result_stack[target].values / len(seed_list)
 
-    return score_avg, result, result_stack
+    return result, score, result_stack
