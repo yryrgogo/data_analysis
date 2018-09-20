@@ -5,7 +5,6 @@ import re
 import gc
 import glob
 import datetime
-from R_Competition import R_Competition_col
 from google_api_time_zone import geometry_lat_lng, timezone
 
 import os
@@ -15,9 +14,6 @@ import utils
 from utils import logger_func, get_categorical_features, get_numeric_features, pararell_process
 from dateutil.parser import parse
 from datetime import date, timedelta
-
-pd.set_option('max_columns', 200)
-pd.set_option('max_rows', 400)
 
 
 def diff_of_days(day1, day2):
