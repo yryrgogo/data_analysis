@@ -5,7 +5,6 @@ import re
 import gc
 import glob
 import datetime
-from R_Competition import R_Competition_col
 from google_api_time_zone import geometry_lat_lng, timezone
 
 import os

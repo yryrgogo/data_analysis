@@ -7,6 +7,7 @@ warnings.filterwarnings("ignore")
 import pandas as pd
 import numpy as np
 from glob import glob
+import re
 import os
 import subprocess
 import sys
@@ -24,7 +25,6 @@ from multiprocessing import Pool
 import multiprocessing
 
 from logging import StreamHandler, DEBUG, Formatter, FileHandler, getLogger
-
 
 # =============================================================================
 # global variables
@@ -104,8 +104,8 @@ def to_pkl_gzip(obj, path):
     #  df.to_pickle(path)
     with open(path, 'wb') as f:
         pickle.dump(obj=obj, file=f)
-    os.system('gzip -f ' + path)
-    os.system('rm ' + path)
+    os.system('gzip -f ' + '''"'''+path+'''"''')
+    os.system('rm ' + '''"'''+path+'''"''')
     return
 
 
@@ -439,23 +439,40 @@ def x_y_split(data, target):
     y = data[target].values
     return x, y
 
-
-def load_file(path):
+def load_file(path, delimiter='fp'):
     if path.count('.csv'):
         return pd.read_csv(path)
-    elif path.count('.npy'):
-        filename = re.search(r'/([^/.]*).npy', path).group(1)
+    filename = get_filename(path=path, delimiter=delimiter)
+    if delimiter=='npy':
         tmp = pd.Series(np.load(path), name=filename)
-        return tmp
+    elif delimiter=='fp':
+        with gzip.open(path, mode='rb') as fp:
+            data = fp.read()
+            tmp = pd.Series(pickle.loads(data), name=filename)
+    return tmp
 
+def get_filename(path, delimiter='fp'):
+    filename = re.search(fr'/([^/.]*).{delimiter}', path).group(1)
+    return filename
 
-def pararell_load_data(path_list):
+def pararell_load_data(path_list, delimiter=False):
+    #  logger = logger_func()
     p = Pool(multiprocessing.cpu_count())
-    p_list = p.map(load_file, path_list)
+    if delimiter:
+        p_list = p.map(load_file, path_list)
+        #  arg_list = []
+        #  for i, path in enumerate(path_list):
+        #      arg_list.append([path, delimiter])
+        #  p_list = p.map(load_file_wrapper, arg_list)
+        #  logger.info(i)
+    else:
+        p_list = p.map(load_file, path_list)
     p.close
 
     return p_list
 
+def load_file_wrapper(args):
+    return load_file(*args)
 
 def path_info(path):
 
