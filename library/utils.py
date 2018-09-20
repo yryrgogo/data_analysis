@@ -501,6 +501,10 @@ def get_categorical_features(df, ignore_list=[]):
     obj = [col for col in list(df.columns) if (df[col].dtype == 'object') and col not in ignore_list]
     return obj
 
+#  カテゴリ変数を取得する関数
+def get_datetime_features(df, ignore_list=[]):
+    dt = [col for col in list(df.columns) if str(df[col].dtype).count('time') and col not in ignore_list]
+    return dt
 
 #  連続値カラムを取得する関数
 def get_numeric_features(df, ignore_list=[]):
