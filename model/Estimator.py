@@ -115,7 +115,7 @@ DUMMIE: {dummie}
     return df, drop_list
 
 
-def cross_validation(logger, train, target, fold_type='stratified', fold=5, group_col_name='', seed=1208, params={}, metric='auc', categorical_list=[], judge_flg=False, num_iterations=3500, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb', ignore_list=[], x_ray=False):
+def cross_validation(logger, train, target, metric, fold_type='stratified', fold=5, group_col_name='', val_label='val_label', seed=1208, params={}, categorical_list=[], judge_flg=False, model_type='lgb', ignore_list=[], x_ray=False):
 
     #========================================================================
     # For X-RAY READY
@@ -128,20 +128,19 @@ def cross_validation(logger, train, target, fold_type='stratified', fold=5, grou
         for cat in categorical_list:
             origin_cat = origin_cat.rename(columns={cat:f"origin_{cat}"})
 
-        train, _ = data_check(logger, train, target, ignore_list=ignore_list)
-
         label_cat = train[categorical_list]
         df_cat_decode = pd.concat([origin_cat, label_cat], axis=1).drop_duplicates()
         del origin_cat, label_cat
         gc.collect()
 
+    if params['objective']=='regression':
+        y = train[target].values.astype('float64')
+        y = np.log1p(y)
+    else:
+        y = train[target].values
 
     list_score = []
-    y = train[target]
     cv_feim = pd.DataFrame([])
-
-    ' カラム名をソートし、カラム順による影響をなくす '
-    train.sort_index(axis=1, inplace=True)
 
     ' KFold '
     if fold_type=='stratified':
@@ -186,6 +185,7 @@ def cross_validation(logger, train, target, fold_type='stratified', fold=5, grou
         list_score.append(sc_score)
         logger.info(f'Validation No: {n_fold} | {metric}: {sc_score}')
 
+        #========================================================================
         # 学習結果に閾値を設けて、それを超えなかったら中止する
         if judge_flg:
             logger.info(f'''
@@ -194,6 +194,7 @@ def cross_validation(logger, train, target, fold_type='stratified', fold=5, grou
 #========================================================================''')
             return_score, judge = judgement(score=sum(list_score), iter_no=n_fold, return_score=first_score)
             if judge: return return_score, 0
+        #========================================================================
 
         #========================================================================
         # Get Feature Importance
@@ -252,7 +253,7 @@ def prediction(logger, train, test, target, categorical_list=[], metric='auc', p
     return y_pred, len(use_cols)
 
 
-def cross_prediction(logger, train, test, key, target, fold_type='stratified', fold=5, seed=605, categorical_list=[], metric='auc', params={}, num_iterations=20000, learning_rate=0.02, early_stopping_rounds=150, model_type='lgb', oof_flg=True, ignore_list=[]):
+def cross_prediction(logger, train, test, key, target, metric, fold_type='stratified', fold=5, group_col_name='', val_label='val_label', seed=1208, categorical_list=[], params={}, model_type='lgb', oof_flg=True, ignore_list=[]):
 
     ' Data Check '
     test, drop_list = data_check(logger, df=test, target=target, test=True, ignore_list=ignore_list)
@@ -369,7 +370,7 @@ def cross_prediction(logger, train, test, key, target, fold_type='stratified', f
 
 
 ' Regression '
-def TimeSeriesPrediction(logger, train, test, key, target, val_label, categorical_list=[], metric='rmse', params={}, num_iterations=3000, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb', ignore_list=[]):
+def TimeSeriesPrediction(logger, train, test, key, target, val_label='val_label', categorical_list=[], metric='rmse', params={}, model_type='lgb', ignore_list=[]):
     '''
     Explain:
     Args:
@@ -393,7 +394,9 @@ def TimeSeriesPrediction(logger, train, test, key, target, val_label, categorica
 # X_Valid Set : {x_val.shape}
 #========================================================================''')
 
-    ' Logarithmic transformation '
+    #========================================================================
+    # 対数変換
+    #========================================================================
     y_train = np.log1p(y_train)
     y_val = np.log1p(y_val)
 

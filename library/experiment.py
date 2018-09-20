@@ -1,62 +1,14 @@
 import sys
-try:
-    model_type=sys.argv[2]
-except IndexError:
-    model_type='lgb'
-try:
-    learning_rate = float(sys.argv[3])
-except IndexError:
-    learning_rate = 0.1
-try:
-    early_stopping_rounds = int(sys.argv[5])
-except IndexError:
-    early_stopping_rounds = 150
-num_iterations = 10000
-try:
-    experience_code = int(sys.argv[1])
-except IndexError:
-    experience_code = 0
-try:
-    seed = int(sys.argv[4])
-except IndexError:
-    seed = 1208
-
-truncate_flg = False
-iter_no = 1000
-rank_list = [450, 350, 300, 250]
-
-import gc
 import numpy as np
 import pandas as pd
-import datetime
-from datetime import date, timedelta
-import glob
-
-import re
 import shutil
-from sklearn.metrics import log_loss, roc_auc_score
-from itertools import combinations
-from multiprocessing import Pool
-import multiprocessing
-import lightgbm as lgb
-import xgboost as xgb
 from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
 from tqdm import tqdm
-
-sys.path.append('../engineering')
 from select_feature import move_to_second_valid
 
 sys.path.append('../model')
-from lgbm_clf import validation, prediction, cross_validation
+from Estimator import prediction, cross_validation, data_check
 from params_lgbm import train_params
-
-sys.path.append('../../../github/module/')
-from preprocessing import set_validation, split_dataset, factorize_categoricals, get_dummies, data_regulize
-from load_data import pararell_load_data, x_y_split
-from utils import get_categorical_features, get_numeric_features
-from logger import logger_func
-from make_file import make_feature_set, make_npy
-from statistics_info import correlation
 
 
 def much_feature_validation(base, path, move_path, dummie=0, val_col='valid_no'):
@@ -78,20 +30,34 @@ def much_feature_validation(base, path, move_path, dummie=0, val_col='valid_no')
         move_to_second_valid(best_select=importance, rank=rank, key_list=key_list)
 
 
-def first_train(train, path, dummie=0, val_col='valid_no'):
+def first_train(
+        logger,
+        train,
+        target,
+        fold_type='stratified',
+        fold=5,
+        group_col_name='',
+        val_label='val_label',
+        params={},
+        metric='',
+        truncate_flg=False,
+        model_type='lgb',
+        dummie=0,
+        ignore_list=[]):
+
+    train, _ = data_check(logger, train, target, dummie=dummie, ignore_list=ignore_list)
 
     cv_feim, col_length = cross_validation(
         logger=logger,
-        dataset=train,
+        train=train,
         target=target,
-        val_col=val_col,
+        fold_type=fold_type,
+        fold=fold,
+        group_col_name=group_col_name,
+        val_labe=val_label,
         params=params,
         metric=metric,
-        truncate_flg=truncate_flg,
-        num_iterations=num_iterations,
-        learning_rate=learning_rate,
-        early_stopping_rounds=early_stopping_rounds,
-        model_type=model_type
+        truncate_flg=truncate_flg
     )
 
     ' 最初のスコア '
