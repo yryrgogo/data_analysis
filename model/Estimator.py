@@ -33,16 +33,15 @@ def sc_metrics(test, pred, metric='rmse'):
 def judgement(score, iter_no, return_score):
     ' 一定基準を満たさなかったら打ち止め '
     if iter_no==0 and score<0.813:
-        return [re_value], True
+        return [return_score], True
     elif iter_no==1 and score<1.6155:
-        return [re_value], True
+        return [return_score], True
     elif iter_no==2 and score<2.3:
-        return [re_value], True
+        return [return_score], True
     elif iter_no==3 and score<3.1:
-        return [re_value], True
+        return [return_score], True
     else:
-        return [re_value], False
-
+        return [return_score], False
 
 def df_feature_importance(model, model_type, use_cols, feim_name='importance'):
     ' Feature Importance '
@@ -116,7 +115,7 @@ DUMMIE: {dummie}
     return df, drop_list
 
 
-def cross_validation(logger, train, target, fold_type='stratified', fold=5, seed=1208, params={}, metric='auc', categorical_list=[], truncate_flg=0, num_iterations=3500, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb', ignore_list=[], x_ray=False):
+def cross_validation(logger, train, target, fold_type='stratified', fold=5, group_col_name='', seed=1208, params={}, metric='auc', categorical_list=[], judge_flg=False, num_iterations=3500, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb', ignore_list=[], x_ray=False):
 
     #========================================================================
     # For X-RAY READY
@@ -148,9 +147,13 @@ def cross_validation(logger, train, target, fold_type='stratified', fold=5, seed
     if fold_type=='stratified':
         folds = StratifiedKFold(n_splits=fold, shuffle=True, random_state=seed) #1
         kfold = folds.split(train,y)
+    #========================================================================
+    # Group指定用のvaluesはset_indexしておく
+    #========================================================================
     elif fold_type=='group':
+        if group_col_name=='':raise ValueError(f'Not exist group_col_name.')
         folds = GroupKFold(n_splits=fold)
-        kfold = folds.split(train, y, groups=train.index.values)
+        kfold = folds.split(train, y, groups=train[group_col_name].values)
 
     use_cols = [f for f in train.columns if f not in ignore_list]
     model_list = []
@@ -163,47 +166,72 @@ def cross_validation(logger, train, target, fold_type='stratified', fold=5, seed
         if n_fold==0:
             logger.info(f'\nTrainset Col Number: {len(use_cols)}')
 
-        clf, y_pred = Estimator(x_train=x_train, y_train=y_train, x_val=x_val, y_val=y_val, params=params, categorical_list=categorical_list, num_iterations=num_iterations, early_stopping_rounds=early_stopping_rounds, learning_rate=learning_rate, model_type=model_type)
+        clf, y_pred = Estimator(
+            x_train=x_train,
+            y_train=y_train,
+            x_val=x_val,
+            y_val=y_val,
+            params=params,
+            categorical_list=categorical_list,
+            num_iterations=num_iterations,
+            early_stopping_rounds=early_stopping_rounds,
+            learning_rate=learning_rate,
+            model_type=model_type
+        )
 
         sc_score = sc_metrics(y_val, y_pred, metric)
         if n_fold==0:
             first_score = sc_score
 
         list_score.append(sc_score)
-        logger.info(f'validation: {n_fold} | {metric}: {sc_score}')
+        logger.info(f'Validation No: {n_fold} | {metric}: {sc_score}')
 
-        if truncate_flg==1:
-            re_value, judge = judgement(score=sum(list_score), iter_no=n_fold, re_value=first_score)
-            if judge: return re_value, 0
+        # 学習結果に閾値を設けて、それを超えなかったら中止する
+        if judge_flg:
+            logger.info(f'''
+#========================================================================
+# Train Result Judgement Start.
+#========================================================================''')
+            return_score, judge = judgement(score=sum(list_score), iter_no=n_fold, return_score=first_score)
+            if judge: return return_score, 0
 
+        #========================================================================
+        # Get Feature Importance
         feim_name = f'{n_fold+1}_importance'
         feim = df_feature_importance(model=clf, model_type=model_type, use_cols=use_cols, feim_name=feim_name)
-
-        ' 自作x-rayのテスト '
-        if x_ray:
-            model_list.append(clf)
-
         if len(cv_feim)==0:
             cv_feim = feim.copy()
         else:
             cv_feim = cv_feim.merge(feim, on='feature', how='inner')
+        #========================================================================
+
+        # For X-RAY
+        if x_ray: model_list.append(clf)
 
     cv_score = np.mean(list_score)
-    logger.info(f'train shape: {x_train.shape}')
-    logger.info(f'\nCross Validation End\nCV score : {cv_score}')
+    [logger.info(f'''
+#========================================================================
+# Train End.
+# Validation No: {i} | {metric}: {score}''') for i, score in enumerate(list_score)]
+    logger.info(f'''
+# Cross Validation End. CV score : {cv_score}
+#======================================================================== ''')
 
     cv_feim['cv_score'] = cv_score
 
+    #========================================================================
+    # Make Feature Importance Summary
     importance = []
     for n_fold in range(n_fold):
         if len(importance)==0:
-            importance = cv_feim[f'{n_fold+1}_importance'].values.copy()
+            importance = cv_feim[f'{n_fold}_importance'].values.copy()
         else:
-            importance += cv_feim[f'{n_fold+1}_importance'].values
+            importance += cv_feim[f'{n_fold}_importance'].values
 
     cv_feim['avg_importance'] = importance / n_fold+1
     cv_feim.sort_values(by=f'avg_importance', ascending=False, inplace=True)
     cv_feim['rank'] = np.arange(len(cv_feim))+1
+    #========================================================================
 
     if x_ray:
         return cv_feim, len(use_cols), model_list, df_cat_decode
