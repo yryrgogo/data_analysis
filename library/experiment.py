@@ -62,10 +62,6 @@ def first_train(
         ignore_list=ignore_list,
         judge_flg=judge_flg
     )
-
-    cv_score = cv_feim['cv_score'].values[0]
-    ' 最初のスコア '
-    cv_feim.to_csv( f'../valid/{model_type}_feat{col_length}_{metric}{str(cv_score)[:7]}_lr{learning_rate}.csv', index=False)
     importance = cv_feim[['feature', 'avg_importance', 'rank']].sort_values(by='avg_importance')
 
-    return cv_score, train, importance
+    return cv_feim, train, importance
