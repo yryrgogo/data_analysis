@@ -9,7 +9,7 @@ from tqdm import tqdm
 import sys
 sys.path.append('../library')
 from select_feature import move_feature
-from utils import get_categorical_features
+from utils import get_categorical_features, get_datetime_features
 from preprocessing import factorize_categoricals
 import xgboost as xgb
 from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier
@@ -65,11 +65,29 @@ def data_check(logger, df, target, test=False, dummie=0, exclude_category=False,
 # DATA CHECK START
 #==============================================================================''')
     categorical_list = get_categorical_features(df, ignore_list=ignore_list)
+    dt_list = get_datetime_features(df, ignore_list=ignore_list)
     logger.info(f'''
-CATEGORICAL FEATURE: {categorical_list}
-LENGTH: {len(categorical_list)}
-DUMMIE: {dummie}
-                ''')
+#==============================================================================
+# CATEGORICAL FEATURE: {categorical_list}
+# LENGTH: {len(categorical_list)}
+# DUMMIE: {dummie}
+#==============================================================================
+    ''')
+
+    #========================================================================
+    # 連続値として扱うべきカラムがobjectになっていることがあるので
+    #========================================================================
+    for cat in categorical_list:
+        try:
+            df[cat] = df[cat].astype('int')
+            categorical_list.remove(cat)
+        except ValueError:
+            pass
+    #========================================================================
+    # datetime系のカラムはdrop
+    #========================================================================
+    for dt in dt_list:
+        df.drop(dt, axis=1, inplace=True)
 
     ' 対象カラムのユニーク数が100より大きかったら、ラベルエンコーディングにする '
     label_list = []
@@ -134,7 +152,7 @@ def cross_validation(logger, train, target, metric, fold_type='stratified', fold
         gc.collect()
 
     if params['objective']=='regression':
-        y = train[target].values.astype('float64')
+        y = train[target].astype('float64')
         y = np.log1p(y)
     else:
         y = train[target].values
@@ -172,9 +190,6 @@ def cross_validation(logger, train, target, metric, fold_type='stratified', fold
             y_val=y_val,
             params=params,
             categorical_list=categorical_list,
-            num_iterations=num_iterations,
-            early_stopping_rounds=early_stopping_rounds,
-            learning_rate=learning_rate,
             model_type=model_type
         )
 
@@ -198,7 +213,7 @@ def cross_validation(logger, train, target, metric, fold_type='stratified', fold
 
         #========================================================================
         # Get Feature Importance
-        feim_name = f'{n_fold+1}_importance'
+        feim_name = f'{n_fold}_importance'
         feim = df_feature_importance(model=clf, model_type=model_type, use_cols=use_cols, feim_name=feim_name)
         if len(cv_feim)==0:
             cv_feim = feim.copy()
@@ -229,7 +244,7 @@ def cross_validation(logger, train, target, metric, fold_type='stratified', fold
         else:
             importance += cv_feim[f'{n_fold}_importance'].values
 
-    cv_feim['avg_importance'] = importance / n_fold+1
+    cv_feim['avg_importance'] = importance / fold
     cv_feim.sort_values(by=f'avg_importance', ascending=False, inplace=True)
     cv_feim['rank'] = np.arange(len(cv_feim))+1
     #========================================================================
@@ -449,18 +464,17 @@ def TimeSeriesPrediction(logger, train, test, key, target, val_label='val_label'
     return y_pred, sc_score
 
 
-def Estimator(x_train, y_train, x_val=[], y_val=[], test=[], params={}, categorical_list=[], num_iterations=3900, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb'):
+def Estimator(x_train, y_train, x_val=[], y_val=[], test=[], params={}, categorical_list=[], num_iterations=3000, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb'):
 
     ' LightGBM / XGBoost / ExtraTrees / LogisticRegression'
     if model_type=='lgb':
         lgb_train = lgb.Dataset(data=x_train, label=y_train)
         if len(x_val)>0:
+            print(x_train.head())
             lgb_eval = lgb.Dataset(data=x_val, label=y_val)
             clf = lgb.train(params=params,
                             train_set=lgb_train,
                             valid_sets=lgb_eval,
-                            num_boost_round=num_iterations,
-                            early_stopping_rounds=early_stopping_rounds,
                             verbose_eval=200,
                             categorical_feature = categorical_list
                             )

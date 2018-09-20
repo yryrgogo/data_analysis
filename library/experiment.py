@@ -40,10 +40,11 @@ def first_train(
         val_label='val_label',
         params={},
         metric='',
-        truncate_flg=False,
         model_type='lgb',
         dummie=0,
-        ignore_list=[]):
+        ignore_list=[],
+        judge_flg=False,
+):
 
     train, _ = data_check(logger, train, target, dummie=dummie, ignore_list=ignore_list)
 
@@ -54,14 +55,17 @@ def first_train(
         fold_type=fold_type,
         fold=fold,
         group_col_name=group_col_name,
-        val_labe=val_label,
+        val_label=val_label,
         params=params,
         metric=metric,
-        truncate_flg=truncate_flg
+        model_type=model_type,
+        ignore_list=ignore_list,
+        judge_flg=judge_flg
     )
 
+    cv_score = cv_feim['cv_score'].values[0]
     ' 最初のスコア '
-    cv_feim.to_csv( f'../valid/{model_type}_feat{col_length}_{metric}{str(first_score)[:7]}_lr{learning_rate}.csv', index=False)
-    importance = first[['feature', 'avg_importance', 'rank']].sort_values(by='avg_importance')
+    cv_feim.to_csv( f'../valid/{model_type}_feat{col_length}_{metric}{str(cv_score)[:7]}_lr{learning_rate}.csv', index=False)
+    importance = cv_feim[['feature', 'avg_importance', 'rank']].sort_values(by='avg_importance')
 
-    return first_score, train, importance
+    return cv_score, train, importance
