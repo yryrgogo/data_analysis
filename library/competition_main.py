@@ -8,17 +8,7 @@ except IndexError:
 try:
     learning_rate = float(sys.argv[3])
 except IndexError:
-    learning_rate = 0.02
-try:
-    early_stopping_rounds = int(sys.argv[4])
-except IndexError:
-    early_stopping_rounds = 150
-num_iterations = 20000
-
-try:
-    pred_type = int(sys.argv[5])
-except IndexError:
-    pred_type = 1
+    learning_rate = 0.1
 
 import numpy as np
 import pandas as pd
@@ -36,6 +26,8 @@ from experiment import first_train, much_feature_validation
 from params_tune import params_scoring, params_optimize
 from make_submission import make_submission
 
+early_stopping_rounds = 150
+num_iterations = 10000
 if model_type=='lgb':
     train_params = train_params_dima()
     train_params['learning_rate'] = learning_rate
