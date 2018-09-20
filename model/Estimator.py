@@ -470,7 +470,6 @@ def Estimator(x_train, y_train, x_val=[], y_val=[], test=[], params={}, categori
     if model_type=='lgb':
         lgb_train = lgb.Dataset(data=x_train, label=y_train)
         if len(x_val)>0:
-            print(x_train.head())
             lgb_eval = lgb.Dataset(data=x_val, label=y_val)
             clf = lgb.train(params=params,
                             train_set=lgb_train,
