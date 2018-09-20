@@ -225,9 +225,10 @@ def cross_validation(logger, train, target, metric, fold_type='stratified', fold
         if x_ray: model_list.append(clf)
 
     cv_score = np.mean(list_score)
-    [logger.info(f'''
+    logger.info(f'''
 #========================================================================
-# Train End.
+# Train End.''')
+    [logger.info(f'''
 # Validation No: {i} | {metric}: {score}''') for i, score in enumerate(list_score)]
     logger.info(f'''
 # Cross Validation End. CV score : {cv_score}
