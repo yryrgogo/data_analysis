@@ -11,7 +11,7 @@ import re
 unique_id = 'SK_ID_CURR'
 p_id = 'SK_ID_CURR'
 target = 'TARGET'
-ignore_features = [unique_id, target, 'valid_no',
+ignore_list = [unique_id, target, 'valid_no',
                    'valid_no_4', 'is_train', 'is_test', 'SK_ID_PREV']
 
 
@@ -44,7 +44,7 @@ def move_to_second_valid(best_select=[], rank=0, key_list=[]):
         if len(best_feature) == 0:
             sys.exit()
         for feature in best_feature:
-            if feature not in ignore_features:
+            if feature not in ignore_list:
                 try:
                     shutil.move(
                         f'../features/3_winner/{feature}.npy', '../features/1_third_valid/')
@@ -62,7 +62,7 @@ def move_to_second_valid(best_select=[], rank=0, key_list=[]):
             if len(best_feature) == 0:
                 sys.exit()
             for feature in best_feature:
-                if feature not in ignore_features:
+                if feature not in ignore_list:
                     shutil.move(
                         f'../features/3_winner/{feature}.npy', '../features/1_third_valid')
             print(f'move to third_valid:{len(best_feature)}')
