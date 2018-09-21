@@ -77,12 +77,12 @@ def data_check(logger, df, target, test=False, dummie=0, exclude_category=False,
     #========================================================================
     # 連続値として扱うべきカラムがobjectになっていることがあるので
     #========================================================================
-    for cat in categorical_list:
-        try:
-            df[cat] = df[cat].astype('int')
-            categorical_list.remove(cat)
-        except ValueError:
-            pass
+    #  for cat in categorical_list:
+    #      try:
+    #          df[cat] = df[cat].astype('int64')
+    #          categorical_list.remove(cat)
+    #      except ValueError:
+    #          pass
     #========================================================================
     # datetime系のカラムはdrop
     #========================================================================
