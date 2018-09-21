@@ -15,9 +15,6 @@ from utils import logger_func, get_categorical_features, get_numeric_features, p
 from dateutil.parser import parse
 from datetime import date, timedelta
 
-pd.set_option('max_columns', 200)
-pd.set_option('max_rows', 400)
-
 
 def diff_of_days(day1, day2):
     days = (parse(day1) - parse(day2)).days
