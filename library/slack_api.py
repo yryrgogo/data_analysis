@@ -5,10 +5,16 @@ def sendMessage(channel_key='test', sendText='test'):
     import requests
     import json
     import sys
+    import yaml
     from xml.sax.saxutils import unescape   # エスケープされた記号を戻す
 
+    # 設定ファイルのロード
+    config = {}
+    with open('config.yaml', "r", encoding="utf-8") as cf:
+        config = yaml.load(cf)
+
     ' Slack token load'
-    token = ''
+    token = config["slack_token"]
 
     url = {'dm': "https://slack.com/api/im.history?",
            'ch': "https://slack.com/api/channels.history?"
