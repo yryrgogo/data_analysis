@@ -19,144 +19,14 @@ import pickle
 from sklearn.ensemble.partial_dependence import partial_dependence
 
 
-def sc_metrics(test, pred, metric='rmse'):
-    if metric == 'logloss':
-        return log_loss(test, pred)
-    elif metric == 'auc':
-        return roc_auc_score(test, pred)
-    elif metric=='l2':
-        return r2_score(test, pred)
-    elif metric=='rmse':
-        return np.sqrt(mean_squared_error(test, pred))
-    else:
-        print('score caliculation error!')
+def cross_validation(logger, train, target, metric, fold_type='stratified', fold=5, group_col_name='', val_label='val_label', seed=1208, params={}, categorical_list=[], judge_flg=False, model_type='lgb', ignore_list=[], xray=False):
 
-def judgement(score, iter_no, return_score):
-    ' 一定基準を満たさなかったら打ち止め '
-    if iter_no==0 and score<0.813:
-        return [return_score], True
-    elif iter_no==1 and score<1.6155:
-        return [return_score], True
-    elif iter_no==2 and score<2.3:
-        return [return_score], True
-    elif iter_no==3 and score<3.1:
-        return [return_score], True
-    else:
-        return [return_score], False
-
-def df_feature_importance(model, model_type, use_cols, feim_name='importance'):
-    ' Feature Importance '
-    if model_type=='lgb':
-        tmp_feim = pd.Series(model.feature_importance(), name=feim_name)
-        feature_name = pd.Series(use_cols, name='feature')
-        feim = pd.concat([feature_name, tmp_feim], axis=1)
-    elif model_type=='xgb':
-        tmp_feim = model.get_fscore()
-        feim = pd.Series(tmp_feim,  name=feim_name).to_frame().reset_index().rename(columns={'index':'feature'})
-    elif model_type=='ext':
-        tmp_feim = model.feature_importance_()
-        feim = pd.Series(tmp_feim,  name=feim_name).to_frame().reset_index().rename(columns={'index':'feature'})
-
-    return feim
-
-
-def data_check(logger, df, target, test=False, dummie=0, exclude_category=False, ignore_list=[]):
-    logger.info(f'''
-#==============================================================================
-# DATA CHECK START
-#==============================================================================''')
-    categorical_list = get_categorical_features(df, ignore_list=ignore_list)
-    dt_list = get_datetime_features(df, ignore_list=ignore_list)
-    logger.info(f'''
-#==============================================================================
-# CATEGORICAL FEATURE: {categorical_list}
-# LENGTH: {len(categorical_list)}
-# DUMMIE: {dummie}
-#==============================================================================
-    ''')
-
-    #========================================================================
-    # 連続値として扱うべきカラムがobjectになっていることがあるので
-    #========================================================================
-    for cat in categorical_list:
-        try:
-            df[cat] = df[cat].astype('int')
-            categorical_list.remove(cat)
-        except ValueError:
-            pass
-    #========================================================================
-    # datetime系のカラムはdrop
-    #========================================================================
-    for dt in dt_list:
-        df.drop(dt, axis=1, inplace=True)
-
-    ' 対象カラムのユニーク数が100より大きかったら、ラベルエンコーディングにする '
-    label_list = []
-    for cat in categorical_list:
-        if len(df[cat].drop_duplicates())>100:
-            label_list.append(cat)
-            categorical_list.remove(cat)
-        df = factorize_categoricals(df, label_list)
-
-    if exclude_category:
-        for cat in categorical_list:
-            df.drop(cat, axis=1, inplace=True)
-            move_feature(feature_name=cat)
-        categorical_list = []
-    elif dummie==1:
-        df = get_dummies(df, categorical_list)
-        categorical_list=[]
-    elif dummie==0:
-        df = factorize_categoricals(df, categorical_list)
-        categorical_list=[]
-
-    logger.info(f'df SHAPE: {df.shape}')
-
-    drop_list = []
-    if test:
-        for col in df.columns:
-            length = len(df[col].drop_duplicates())
-            if length <=1 and col not in ignore_list:
-                logger.info(f'''
-    ***********WARNING************* LENGTH {length} COLUMN: {col}''')
-                move_feature(feature_name=col)
-                if col!=target:
-                    drop_list.append(col)
-
-    ' カラム名をソートし、カラム順による学習への影響をなくす '
-    df.sort_index(axis=1, inplace=True)
-
-    logger.info(f'''
-#==============================================================================
-# DATA CHECK END
-#==============================================================================''')
-
-    return df, drop_list
-
-
-def cross_validation(logger, train, target, metric, fold_type='stratified', fold=5, group_col_name='', val_label='val_label', seed=1208, params={}, categorical_list=[], judge_flg=False, model_type='lgb', ignore_list=[], x_ray=False):
-
-    #========================================================================
-    # For X-RAY READY
-    # カテゴリのラベルエンコーディングを元に戻す為の準備
-    #========================================================================
-    if x_ray:
-        if len(categorical_list)==0:
-            categorical_list = get_categorical_features(df=train, ignore_list=ignore_list)
-        origin_cat = train[categorical_list]
-        for cat in categorical_list:
-            origin_cat = origin_cat.rename(columns={cat:f"origin_{cat}"})
-
-        label_cat = train[categorical_list]
-        df_cat_decode = pd.concat([origin_cat, label_cat], axis=1).drop_duplicates()
-        del origin_cat, label_cat
-        gc.collect()
 
     if params['objective']=='regression':
         y = train[target].astype('float64')
         y = np.log1p(y)
     else:
-        y = train[target].values
+        y = train[target]
 
     list_score = []
     cv_feim = pd.DataFrame([])
@@ -181,9 +51,6 @@ def cross_validation(logger, train, target, metric, fold_type='stratified', fold
         x_train, y_train = train[use_cols].iloc[trn_idx, :], y.iloc[trn_idx]
         x_val, y_val = train[use_cols].iloc[val_idx, :], y.iloc[val_idx]
 
-        if n_fold==0:
-            logger.info(f'\nTrainset Col Number: {len(use_cols)}')
-
         clf, y_pred = Estimator(
             x_train=x_train,
             y_train=y_train,
@@ -199,7 +66,7 @@ def cross_validation(logger, train, target, metric, fold_type='stratified', fold
             first_score = sc_score
 
         list_score.append(sc_score)
-        logger.info(f'Validation No: {n_fold} | {metric}: {sc_score}')
+        logger.info(f'Valid No: {n_fold} | {metric}: {sc_score} | {x_train.shape}')
 
         #========================================================================
         # 学習結果に閾値を設けて、それを超えなかったら中止する
@@ -223,7 +90,7 @@ def cross_validation(logger, train, target, metric, fold_type='stratified', fold
         #========================================================================
 
         # For X-RAY
-        if x_ray: model_list.append(clf)
+        if xray: model_list.append(clf)
 
     cv_score = np.mean(list_score)
     logger.info(f'''
@@ -251,8 +118,8 @@ def cross_validation(logger, train, target, metric, fold_type='stratified', fold
     cv_feim['rank'] = np.arange(len(cv_feim))+1
     #========================================================================
 
-    if x_ray:
-        return cv_feim, len(use_cols), model_list, df_cat_decode
+    if xray:
+        return cv_feim, len(use_cols), model_list
     else:
         return cv_feim, len(use_cols)
 
@@ -534,3 +401,118 @@ def Estimator(x_train, y_train, x_val=[], y_val=[], test=[], params={}, categori
         logger.info(f'{model_type} is not supported.')
 
     return clf, y_pred
+
+
+def sc_metrics(test, pred, metric='rmse'):
+    if metric == 'logloss':
+        return log_loss(test, pred)
+    elif metric == 'auc':
+        return roc_auc_score(test, pred)
+    elif metric=='l2':
+        return r2_score(test, pred)
+    elif metric=='rmse':
+        return np.sqrt(mean_squared_error(test, pred))
+    else:
+        print('score caliculation error!')
+
+def judgement(score, iter_no, return_score):
+    ' 一定基準を満たさなかったら打ち止め '
+    if iter_no==0 and score<0.813:
+        return [return_score], True
+    elif iter_no==1 and score<1.6155:
+        return [return_score], True
+    elif iter_no==2 and score<2.3:
+        return [return_score], True
+    elif iter_no==3 and score<3.1:
+        return [return_score], True
+    else:
+        return [return_score], False
+
+def df_feature_importance(model, model_type, use_cols, feim_name='importance'):
+    ' Feature Importance '
+    if model_type=='lgb':
+        tmp_feim = pd.Series(model.feature_importance(), name=feim_name)
+        feature_name = pd.Series(use_cols, name='feature')
+        feim = pd.concat([feature_name, tmp_feim], axis=1)
+    elif model_type=='xgb':
+        tmp_feim = model.get_fscore()
+        feim = pd.Series(tmp_feim,  name=feim_name).to_frame().reset_index().rename(columns={'index':'feature'})
+    elif model_type=='ext':
+        tmp_feim = model.feature_importance_()
+        feim = pd.Series(tmp_feim,  name=feim_name).to_frame().reset_index().rename(columns={'index':'feature'})
+
+    return feim
+
+
+def data_check(logger, df, target, test=False, dummie=0, exclude_category=False, ignore_list=[]):
+    logger.info(f'''
+#==============================================================================
+# DATA CHECK START
+#==============================================================================''')
+    categorical_list = get_categorical_features(df, ignore_list=ignore_list)
+    dt_list = get_datetime_features(df, ignore_list=ignore_list)
+    logger.info(f'''
+#==============================================================================
+# CATEGORICAL FEATURE: {categorical_list}
+# LENGTH: {len(categorical_list)}
+# DUMMIE: {dummie}
+#==============================================================================
+    ''')
+
+    #========================================================================
+    # 連続値として扱うべきカラムがobjectになっていることがあるので
+    #========================================================================
+    #  for cat in categorical_list:
+    #      try:
+    #          df[cat] = df[cat].astype('int64')
+    #          categorical_list.remove(cat)
+    #      except ValueError:
+    #          pass
+    #========================================================================
+    # datetime系のカラムはdrop
+    #========================================================================
+    for dt in dt_list:
+        df.drop(dt, axis=1, inplace=True)
+
+    ' 対象カラムのユニーク数が100より大きかったら、ラベルエンコーディングにする '
+    label_list = []
+    for cat in categorical_list:
+        if len(df[cat].drop_duplicates())>100:
+            label_list.append(cat)
+            categorical_list.remove(cat)
+        df = factorize_categoricals(df, label_list)
+
+    if exclude_category:
+        for cat in categorical_list:
+            df.drop(cat, axis=1, inplace=True)
+            move_feature(feature_name=cat)
+        categorical_list = []
+    elif dummie==1:
+        df = get_dummies(df, categorical_list)
+        categorical_list=[]
+    elif dummie==0:
+        df = factorize_categoricals(df, categorical_list)
+        categorical_list=[]
+
+    logger.info(f'df SHAPE: {df.shape}')
+
+    drop_list = []
+    if test:
+        for col in df.columns:
+            length = len(df[col].drop_duplicates())
+            if length <=1 and col not in ignore_list:
+                logger.info(f'''
+    ***********WARNING************* LENGTH {length} COLUMN: {col}''')
+                move_feature(feature_name=col)
+                if col!=target:
+                    drop_list.append(col)
+
+    ' カラム名をソートし、カラム順による学習への影響をなくす '
+    df.sort_index(axis=1, inplace=True)
+
+    logger.info(f'''
+#==============================================================================
+# DATA CHECK END
+#==============================================================================''')
+
+    return df, drop_list
