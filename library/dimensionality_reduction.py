@@ -65,15 +65,13 @@ def t_SNE(data, D):
 
 def UMAP(df, D):
 
-    logger = logger_func()
-
     params = {'n_components':D}
     start_time = time.time()
-    logger.info(f'UMAP train starttime: {start_time}')
+    print(f'UMAP train starttime: {start_time}')
     # UMAP
     embedding = umap.UMAP(**params).fit_transform(df)
 
-    logger.info(f'UMAP train end. caliculation time: {time.time() - start_time}')
+    print(f'UMAP train end. caliculation time: {time.time() - start_time}')
 
     return embedding
 
