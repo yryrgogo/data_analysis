@@ -13,9 +13,7 @@ import sys, re
 sys.path.append('../../../github/module/')
 from preprocessing import factorize_categoricals
 from make_file import make_npy, make_feature_set
-from utils import get_categorical_features, get_numeric_features
-from logger import logger_func
-from categorical_encoding import select_category_value_agg
+from utils import get_categorical_features, get_numeric_features, logger_func
 
 
 start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
@@ -48,8 +46,6 @@ def kmeans(df, cluster=10):
 
     df['cluster'] = kmeans.labels_
 
-    df.to_csv(f'../output/embedding/umap_kmeans_3D_{cluster}cluster.csv')
-
     return df
 
 
@@ -67,13 +63,15 @@ def t_SNE(data, D):
     return embedding
 
 
-def UMAP(data, D):
+def UMAP(df, D):
+
+    logger = logger_func()
 
     params = {'n_components':D}
     start_time = time.time()
     logger.info(f'UMAP train starttime: {start_time}')
     # UMAP
-    embedding = umap.UMAP(**params).fit_transform(data)
+    embedding = umap.UMAP(**params).fit_transform(df)
 
     logger.info(f'UMAP train end. caliculation time: {time.time() - start_time}')
 
