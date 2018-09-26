@@ -4,7 +4,7 @@ import pandas as pd
 import shutil
 from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
 from tqdm import tqdm
-from select_feature import move_to_second_valid
+#  from select_feature import move_to_second_valid
 
 sys.path.append('../model')
 from Estimator import prediction, cross_validation, data_check
@@ -33,6 +33,7 @@ def much_feature_validation(base, path, move_path, dummie=0, val_col='valid_no')
 def first_train(
         logger,
         train,
+        key,
         target,
         fold_type='stratified',
         fold=5,
@@ -51,6 +52,7 @@ def first_train(
     cv_feim, col_length = cross_validation(
         logger=logger,
         train=train,
+        key=key,
         target=target,
         fold_type=fold_type,
         fold=fold,

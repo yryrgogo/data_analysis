@@ -19,7 +19,7 @@ import pickle
 from sklearn.ensemble.partial_dependence import partial_dependence
 
 
-def cross_validation(logger, train, target, metric, fold_type='stratified', fold=5, group_col_name='', val_label='val_label', seed=1208, params={}, categorical_list=[], judge_flg=False, model_type='lgb', ignore_list=[], xray=False):
+def cross_validation(logger, train, key, target, metric, fold_type='stratified', fold=5, group_col_name='', val_label='val_label', seed=1208, params={}, categorical_list=[], judge_flg=False, model_type='lgb', ignore_list=[], xray=False):
 
 
     if params['objective']=='regression':
@@ -35,13 +35,11 @@ def cross_validation(logger, train, target, metric, fold_type='stratified', fold
     if fold_type=='stratified':
         folds = StratifiedKFold(n_splits=fold, shuffle=True, random_state=seed) #1
         kfold = folds.split(train,y)
-    #========================================================================
-    # Group指定用のvaluesはset_indexしておく
-    #========================================================================
     elif fold_type=='group':
         if group_col_name=='':raise ValueError(f'Not exist group_col_name.')
         folds = GroupKFold(n_splits=fold)
         kfold = folds.split(train, y, groups=train[group_col_name].values)
+
 
     use_cols = [f for f in train.columns if f not in ignore_list]
     model_list = []
@@ -49,7 +47,14 @@ def cross_validation(logger, train, target, metric, fold_type='stratified', fold
     for n_fold, (trn_idx, val_idx) in enumerate(kfold):
 
         x_train, y_train = train[use_cols].iloc[trn_idx, :], y.iloc[trn_idx]
-        x_val, y_val = train[use_cols].iloc[val_idx, :], y.iloc[val_idx]
+
+        R_com = False
+        if R_com:
+            # fullIdを後で使うので、validationを切ってからset_indexしておく
+            x_val, y_val = train.iloc[val_idx, :], y.iloc[val_idx]
+            x_val = x_val.set_index(key)[use_cols]
+        else:
+            x_val, y_val = train[use_cols].iloc[val_idx, :], y.iloc[val_idx]
 
         clf, y_pred = Estimator(
             x_train=x_train,
@@ -61,7 +66,17 @@ def cross_validation(logger, train, target, metric, fold_type='stratified', fold
             model_type=model_type
         )
 
-        sc_score = sc_metrics(y_val, y_pred, metric)
+        if R_com:
+            x_val[target] = np.expm1(y_val)
+            x_val.fillna(0, inplace=True)
+            x_val['prediction'] = np.expm1(y_pred)
+            x_val.reset_index(inplace=True)
+            x_val = x_val.groupby(key)[target, 'prediction'].sum().reset_index()
+            x_val['prediction'] = np.clip(x_val['prediction'].values, a_min=0, a_max=None)
+            sc_score = sc_metrics(np.log1p(x_val[target].values), np.log1p(x_val['prediction'].values), metric)
+        else:
+            sc_score = sc_metrics(y_val, y_pred, metric)
+
         if n_fold==0:
             first_score = sc_score
 

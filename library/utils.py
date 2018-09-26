@@ -439,20 +439,24 @@ def x_y_split(data, target):
     y = data[target].values
     return x, y
 
-def load_file(path, delimiter='fp'):
+def load_file(path, delimiter='gz'):
     if path.count('.csv'):
         return pd.read_csv(path)
     filename = get_filename(path=path, delimiter=delimiter)
-    if delimiter=='npy':
+    if path[-3:]=='npy':
         tmp = pd.Series(np.load(path), name=filename)
-    elif delimiter=='fp':
+    elif path[-2:]=='fp':
         with gzip.open(path, mode='rb') as fp:
             data = fp.read()
             tmp = pd.Series(pickle.loads(data), name=filename)
+    elif path[-2:]=='gz':
+        with gzip.open(path, mode='rb') as gz:
+            data = gz.read()
+            tmp = pd.Series(pickle.loads(data), name=filename)
     return tmp
 
-def get_filename(path, delimiter='fp'):
-    filename = re.search(fr'/([^/.]*).{delimiter}', path).group(1)
+def get_filename(path, delimiter='gz'):
+    filename = re.search(rf'/([^/.]*).{delimiter}', path).group(1)
     return filename
 
 def pararell_load_data(path_list, delimiter=False):
