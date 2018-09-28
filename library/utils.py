@@ -490,8 +490,8 @@ def path_info(path):
 
 
 " 並列処理 "
-def pararell_process(func, arg_list):
-    process = Pool(multiprocessing.cpu_count())
+def pararell_process(func, arg_list, cpu_cnt=multiprocessing.cpu_count()):
+    process = Pool(cpu_cnt)
     #  p = Pool(len(arg_list))
     callback = process.map(func, arg_list)
     process.close()

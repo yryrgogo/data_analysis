@@ -15,13 +15,7 @@ import utils
 from preprocessing import factorize_categoricals, get_dummies
 
 
-def make_submission(logger, df, key, target, fold=5, fold_type='stratified', params={}, model_type='lgb', dummie=1, seed_num=1, ignore_list=[], pred_type=2, stack_name='', val_label=''):
-
-    #========================================================================
-    # Make Train Test Dataset
-    #========================================================================
-    train = df[~df[target].isnull()]
-    test = df[df[target].isnull()]
+def make_submission(logger, train, test, key, target, fold=5, fold_type='stratified', params={}, model_type='lgb', dummie=1, seed_num=1, ignore_list=[], pred_type=1, stack_name='', val_label=''):
 
     #========================================================================
     # For Seed Averaging
