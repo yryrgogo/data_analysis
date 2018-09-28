@@ -50,7 +50,7 @@ def cross_validation(logger, train, key, target, metric, fold_type='stratified',
 
         R_com = False
         if R_com:
-            # fullIdを後で使うので、validationを切ってからset_indexしておく
+            # 学習に使わないカラムを残しておきたい場合、validationを切ってからset_indexしておく
             x_val, y_val = train.iloc[val_idx, :], y.iloc[val_idx]
             x_val = x_val.set_index(key)[use_cols]
         else:
@@ -139,52 +139,41 @@ def cross_validation(logger, train, key, target, metric, fold_type='stratified',
         return cv_feim, len(use_cols)
 
 
-def prediction(logger, train, test, target, categorical_list=[], metric='auc', params={}, num_iterations=20000, learning_rate=0.02, model_type='lgb', oof_flg=False):
-
-    x_train, y_train = train, train[target]
-    use_cols = x_train.columns.values
-    use_cols = [col for col in use_cols if col not in ignore_list and not(col.count('valid_no'))]
-    test = test[use_cols]
-
-    ' 学習 '
-    clf, y_pred = Estimator(x_train=x_train[use_cols], y_train=y_train, params=params, test=test, categorical_list=categorical_list, num_iterations=num_iterations, learning_rate=learning_rate, model_type=model_type)
-
-    return y_pred, len(use_cols)
-
-
 def cross_prediction(logger, train, test, key, target, metric, fold_type='stratified', fold=5, group_col_name='', val_label='val_label', seed=1208, categorical_list=[], params={}, model_type='lgb', oof_flg=True, ignore_list=[]):
 
-    ' Data Check '
-    test, drop_list = data_check(logger, df=test, target=target, test=True, ignore_list=ignore_list)
-    test.drop(drop_list, axis=1, inplace=True)
-    train.drop(drop_list, axis=1, inplace=True)
-    train, _ = data_check(logger, df=train, target=target, ignore_list=ignore_list)
-    y = train[target]
+    if params['objective']=='regression':
+        y = train[target].astype('float64')
+        y = np.log1p(y)
+    else:
+        y = train[target]
+
 
     list_score = []
-    list_pred = []
-
-    prediction = np.array([])
     cv_feim = pd.DataFrame([])
+    prediction = np.array([])
 
     ' KFold '
     if fold_type=='stratified':
         folds = StratifiedKFold(n_splits=fold, shuffle=True, random_state=seed) #1
         kfold = folds.split(train,y)
     elif fold_type=='group':
+        if group_col_name=='':raise ValueError(f'Not exist group_col_name.')
         folds = GroupKFold(n_splits=fold)
-        kfold = folds.split(train,y, groups=train.index.values)
+        kfold = folds.split(train, y, groups=train[group_col_name].values)
 
     use_cols = [f for f in train.columns if f not in ignore_list]
 
     for n_fold, (trn_idx, val_idx) in enumerate(kfold):
 
         x_train, y_train = train[use_cols].iloc[trn_idx, :], y.iloc[trn_idx]
-        x_val, y_val = train[use_cols].iloc[val_idx, :], y.iloc[val_idx]
 
-        use_cols = list(x_train.columns)
-        if n_fold==0:
-            logger.info(f'\nTrainset Col Number: {len(use_cols)}')
+        R_com = False
+        if R_com:
+            # 学習に使わないカラムを残しておきたい場合、validationを切ってからset_indexしておく
+            x_val, y_val = train.iloc[val_idx, :], y.iloc[val_idx]
+            x_val = x_val.set_index(key)[use_cols]
+        else:
+            x_val, y_val = train[use_cols].iloc[val_idx, :], y.iloc[val_idx]
 
         if model_type=='xgb':
             " XGBは'[]'と','と'<>'がNGなのでreplace "
@@ -197,9 +186,17 @@ def cross_prediction(logger, train, test, key, target, metric, fold_type='strati
             x_val.columns = use_cols
             test.columns = use_cols
 
-        clf, y_pred = Estimator(x_train=x_train, y_train=y_train, x_val=x_val, y_val=y_val, params=params, categorical_list=categorical_list, num_iterations=num_iterations, early_stopping_rounds=early_stopping_rounds, learning_rate=learning_rate, model_type=model_type)
+        clf, y_pred = Estimator(
+            x_train=x_train,
+            y_train=y_train,
+            x_val=x_val,
+            y_val=y_val,
+            params=params,
+            categorical_list=categorical_list,
+            model_type=model_type
+        )
 
-        sc_score = sc_metrics(y_val, y_pred)
+        sc_score = sc_metrics(y_val, y_pred, metric)
 
         list_score.append(sc_score)
         logger.info(f'Fold No: {n_fold} | {metric}: {sc_score}')
@@ -236,9 +233,12 @@ def cross_prediction(logger, train, test, key, target, metric, fold_type='strati
             cv_feim = cv_feim.merge(feim, on='feature', how='inner')
 
     cv_score = np.mean(list_score)
-    logger.info(f'use_features: {use_cols}')
-    logger.info(f'params: {params}')
-    logger.info(f'\nCross Validation End\nCV score : {cv_score}')
+    #  logger.info(f'use_features: {use_cols}')
+    logger.info(f'''
+#========================================================================
+# Params   : {params}
+# CV score : {cv_score}
+#========================================================================''')
 
     ' fold数で平均をとる '
     prediction = prediction / fold
@@ -263,7 +263,7 @@ def cross_prediction(logger, train, test, key, target, metric, fold_type='strati
     cv_feim.sort_values(by=f'avg_importance', ascending=False, inplace=True)
     cv_feim['rank'] = np.arange(len(cv_feim))+1
 
-    cv_feim.to_csv(f'../output/cv_feature{len(cv_feim)}_importances_{metric}_{cv_score}.csv', index=False)
+    cv_feim.to_csv(f'../output/feim{len(cv_feim)}_{metric}_{cv_score}.csv', index=False)
 
     return prediction, cv_score, result_stack
 
@@ -346,6 +346,19 @@ def TimeSeriesPrediction(logger, train, test, key, target, val_label='val_label'
     feim.to_csv(f'../output/feature{len(feim)}_importances_{metric}_{sc_score}.csv', index=False)
 
     return y_pred, sc_score
+
+
+def prediction(logger, train, test, target, categorical_list=[], metric='auc', params={}, num_iterations=20000, learning_rate=0.02, model_type='lgb', oof_flg=False):
+
+    x_train, y_train = train, train[target]
+    use_cols = x_train.columns.values
+    use_cols = [col for col in use_cols if col not in ignore_list and not(col.count('valid_no'))]
+    test = test[use_cols]
+
+    ' 学習 '
+    clf, y_pred = Estimator(x_train=x_train[use_cols], y_train=y_train, params=params, test=test, categorical_list=categorical_list, num_iterations=num_iterations, learning_rate=learning_rate, model_type=model_type)
+
+    return y_pred, len(use_cols)
 
 
 def Estimator(x_train, y_train, x_val=[], y_val=[], test=[], params={}, categorical_list=[], num_iterations=3000, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb'):
