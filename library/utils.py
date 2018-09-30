@@ -443,9 +443,9 @@ def load_file(path, delimiter='fp'):
     if path.count('.csv'):
         return pd.read_csv(path)
     filename = get_filename(path=path, delimiter=delimiter)
-    if delimiter=='npy':
+    if path.count('npy'):
         tmp = pd.Series(np.load(path), name=filename)
-    elif delimiter=='fp':
+    elif path.count('.fp'):
         with gzip.open(path, mode='rb') as fp:
             data = fp.read()
             tmp = pd.Series(pickle.loads(data), name=filename)
