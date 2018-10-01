@@ -15,11 +15,12 @@ import utils
 from preprocessing import factorize_categoricals, get_dummies
 
 
-def make_submission(logger, train, test, key, target, fold=5, fold_type='stratified', params={}, model_type='lgb', dummie=1, seed_num=1, ignore_list=[], pred_type=1, stack_name='', val_label=''):
+def make_submission(submit_params):
 
     #========================================================================
     # For Seed Averaging
     #========================================================================
+    seed_num = submit_params['seed_num']
     seed_list = [
         1208,
         308,
@@ -34,6 +35,7 @@ def make_submission(logger, train, test, key, target, fold=5, fold_type='stratif
     ][:seed_num]
     logger.info(f'SEED AVERAGING LIST: {seed_list}')
 
+    test = submit_params['test']
     tmp_result = np.zeros(len(test)) # For Prediction Array
     score_list = []
     result_stack = []
@@ -55,34 +57,19 @@ def make_submission(logger, train, test, key, target, fold=5, fold_type='stratif
         #========================================================================
         # 1 validation
         #========================================================================
-        if pred_type==0:
+        if pred_type=='v':
             ' 予測 '
             result = prediction(
-                logger=logger,
-                train=train,
-                test=test,
-                target=target,
-                params = params,
-                model_type=model_type
+                **submit_params
             )
             score = '?'
         #========================================================================
         # Cross Validation 
         #========================================================================
-        elif pred_type==1:
+        elif pred_type=='cv':
             ' 予測 '
             y_pred, tmp_score, stack = cross_prediction(
-                logger=logger,
-                train=train,
-                test=test,
-                key=key,
-                target=target,
-                fold=fold,
-                fold_type=fold_type,
-                params = params,
-                model_type=model_type,
-                ignore_list=ignore_list,
-                oof_flg=len(stack_name)
+                **submit_params
             )
 
             #========================================================================
@@ -109,7 +96,7 @@ def make_submission(logger, train, test, key, target, fold=5, fold_type='stratif
         #========================================================================
         # Time Series Prediction
         #========================================================================
-        elif pred_type==2:
+        elif pred_type=='time':
             ' 予測 '
             y_pred, score = TimeSeriesPrediction(
                 logger=logger,
@@ -129,7 +116,7 @@ def make_submission(logger, train, test, key, target, fold=5, fold_type='stratif
 # CURRENT SCORE : {score}
 #==============================================================================''')
 
-    if pred_type==1:
+    if pred_type=='cv':
         result = tmp_result / len(seed_list)
 
     if len(result_stack)>0:

@@ -233,12 +233,15 @@ def cross_prediction(logger, train, test, key, target, metric, fold_type='strati
             cv_feim = cv_feim.merge(feim, on='feature', how='inner')
 
     cv_score = np.mean(list_score)
-    #  logger.info(f'use_features: {use_cols}')
     logger.info(f'''
 #========================================================================
+# Train End.''')
+    [logger.info(f'''
+# Validation No: {i} | {metric}: {score}''') for i, score in enumerate(list_score)]
+    logger.info(f'''
 # Params   : {params}
 # CV score : {cv_score}
-#========================================================================''')
+#======================================================================== ''')
 
     ' fold数で平均をとる '
     prediction = prediction / fold
