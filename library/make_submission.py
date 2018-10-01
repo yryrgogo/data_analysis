@@ -8,19 +8,30 @@ from select_feature import move_feature
 HOME = os.path.expanduser('~')
 
 sys.path.append(f'{HOME}/kaggle/github/model/')
-from Estimator import prediction, cross_prediction, TimeSeriesPrediction
+from Estimator import prediction, cross_prediction, TimeSeriesPrediction, data_check
 
 sys.path.append(f"{HOME}/kaggle/github/library/")
 import utils
 from preprocessing import factorize_categoricals, get_dummies
 
 
-def make_submission(submit_params):
+def make_submission(params):
+
+    pred_type = 'cv'
+
+    target = params['target']
+    logger = params['logger']
+    model_type = params['model_type']
+    test = params['test']
+    seed_num = params['seed_num']
+
+    test, _ = data_check(logger, test, target, dummie=params['dummie'], ignore_list=params['ignore_list'])
+
+    del params['judge_flg'], params['dummie'], params['seed_num']
 
     #========================================================================
     # For Seed Averaging
     #========================================================================
-    seed_num = submit_params['seed_num']
     seed_list = [
         1208,
         308,
@@ -35,7 +46,6 @@ def make_submission(submit_params):
     ][:seed_num]
     logger.info(f'SEED AVERAGING LIST: {seed_list}')
 
-    test = submit_params['test']
     tmp_result = np.zeros(len(test)) # For Prediction Array
     score_list = []
     result_stack = []
@@ -45,14 +55,14 @@ def make_submission(submit_params):
     #========================================================================
     for i, seed in enumerate(seed_list):
         if model_type=='lgb':
-            params['bagging_seed'] = seed
-            params['data_random_seed'] = seed
-            params['feature_fraction_seed'] = seed
-            params['random_seed'] = seed
+            params['params']['bagging_seed'] = seed
+            params['params']['data_random_seed'] = seed
+            params['params']['feature_fraction_seed'] = seed
+            params['params']['random_seed'] = seed
         elif model_type=='xgb':
-            params['seed'] = seed
+            params['params']['seed'] = seed
         elif model_type=='extra':
-            params['seed'] = seed
+            params['params']['seed'] = seed
 
         #========================================================================
         # 1 validation
@@ -60,7 +70,7 @@ def make_submission(submit_params):
         if pred_type=='v':
             ' 予測 '
             result = prediction(
-                **submit_params
+                **params
             )
             score = '?'
         #========================================================================
@@ -69,7 +79,7 @@ def make_submission(submit_params):
         elif pred_type=='cv':
             ' 予測 '
             y_pred, tmp_score, stack = cross_prediction(
-                **submit_params
+                **params
             )
 
             #========================================================================

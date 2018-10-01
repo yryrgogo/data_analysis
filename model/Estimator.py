@@ -19,7 +19,23 @@ import pickle
 from sklearn.ensemble.partial_dependence import partial_dependence
 
 
-def cross_validation(logger, train, key, target, metric, fold_type='stratified', fold=5, group_col_name='', val_label='val_label', seed=1208, params={}, categorical_list=[], judge_flg=False, model_type='lgb', ignore_list=[], xray=False):
+def cross_validation(logger,
+                     train,
+                     key,
+                     target,
+                     metric,
+                     fold_type='stratified',
+                     fold=5,
+                     group_col_name='',
+                     val_label='val_label',
+                     seed=1208,
+                     params={},
+                     categorical_list=[],
+                     judge_flg=False,
+                     model_type='lgb',
+                     ignore_list=[],
+                     xray=False
+                     ):
 
 
     if params['objective']=='regression':
@@ -75,6 +91,9 @@ def cross_validation(logger, train, key, target, metric, fold_type='stratified',
             x_val['prediction'] = np.clip(x_val['prediction'].values, a_min=0, a_max=None)
             sc_score = sc_metrics(np.log1p(x_val[target].values), np.log1p(x_val['prediction'].values), metric)
         else:
+            y_pred = np.expm1(y_pred)
+            y_pred[y_pred<0.5] = 0
+            y_pred = np.log1p(y_pred)
             sc_score = sc_metrics(y_val, y_pred, metric)
 
         if n_fold==0:
@@ -139,7 +158,23 @@ def cross_validation(logger, train, key, target, metric, fold_type='stratified',
         return cv_feim, len(use_cols)
 
 
-def cross_prediction(logger, train, test, key, target, metric, fold_type='stratified', fold=5, group_col_name='', val_label='val_label', seed=1208, categorical_list=[], params={}, model_type='lgb', oof_flg=True, ignore_list=[]):
+def cross_prediction(logger,
+                     train,
+                     test,
+                     key,
+                     target,
+                     metric,
+                     fold_type='stratified',
+                     fold=5,
+                     group_col_name='',
+                     val_label='val_label',
+                     params={},
+                     seed=1208,
+                     categorical_list=[],
+                     model_type='lgb',
+                     oof_flg=True,
+                     ignore_list=[]
+                     ):
 
     if params['objective']=='regression':
         y = train[target].astype('float64')
@@ -162,6 +197,7 @@ def cross_prediction(logger, train, test, key, target, metric, fold_type='strati
         kfold = folds.split(train, y, groups=train[group_col_name].values)
 
     use_cols = [f for f in train.columns if f not in ignore_list]
+    train.set_index(key, inplace=True)
 
     for n_fold, (trn_idx, val_idx) in enumerate(kfold):
 
@@ -346,7 +382,7 @@ def TimeSeriesPrediction(logger, train, test, key, target, val_label='val_label'
     feim.sort_values(by=f'importance', ascending=False, inplace=True)
     feim['rank'] = np.arange(len(feim))+1
 
-    feim.to_csv(f'../output/feature{len(feim)}_importances_{metric}_{sc_score}.csv', index=False)
+    feim.to_csv(f'../output/feim{len(feim)}_{metric}_{sc_score}.csv', index=False)
 
     return y_pred, sc_score
 
