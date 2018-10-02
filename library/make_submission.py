@@ -78,7 +78,7 @@ def make_submission(params):
         #========================================================================
         elif pred_type=='cv':
             ' 予測 '
-            y_pred, tmp_score, stack = cross_prediction(
+            y_pred, tmp_score, stack, use_cols = cross_prediction(
                 **params
             )
 
@@ -132,4 +132,4 @@ def make_submission(params):
     if len(result_stack)>0:
         result_stack[target] = result_stack[target].values / len(seed_list)
 
-    return result, score, result_stack
+    return result, score, result_stack, use_cols

@@ -211,9 +211,7 @@ def select_category_value_agg(base, df, key, category_col, value, method, path='
 
 def cnt_encoding(df, category_col, ignore_list):
 
-    cnt_enc = df[category_col].value_counts().reset_index().rename(columns={'index':category_col, category_col:f'cntec_{category_col}@'})
-
-    ' 元データの行数とインデックスを保つ為、Left Join '
+    cnt_enc = df[category_col].value_counts().reset_index().rename(columns={'index':category_col, category_col:f'cnt_{category_col}@'})
     result = df.merge(cnt_enc, on=category_col, how='left').drop(category_col, axis=1)
     return result
 

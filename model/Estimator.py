@@ -258,7 +258,7 @@ def cross_prediction(logger,
             logger.info(f'Fold No: {n_fold} | valid_stack shape: {val_stack.shape} | cnt_id: {len(val_stack[key].drop_duplicates())}')
 
         if model_type != 'xgb':
-            test_pred = clf.predict(test)
+            test_pred = clf.predict(test, num_iterations=clf.best_iteration)
         elif model_type == 'xgb':
             test_pred = clf.predict(xgb.DMatrix(test))
 
@@ -314,7 +314,7 @@ def cross_prediction(logger,
 
     cv_feim.to_csv(f'../valid/{model_type}_feat{len(cv_feim)}_{metric}{str(cv_score)[:8]}.csv', index=False)
 
-    return prediction, cv_score, result_stack
+    return prediction, cv_score, result_stack, use_cols
 
 
 ' Regression '
