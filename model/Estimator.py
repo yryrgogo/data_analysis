@@ -198,6 +198,7 @@ def cross_prediction(logger,
 
     use_cols = [f for f in train.columns if f not in ignore_list]
     train.set_index(key, inplace=True)
+    test.set_index(key, inplace=True)
 
     for n_fold, (trn_idx, val_idx) in enumerate(kfold):
 
@@ -221,6 +222,13 @@ def cross_prediction(logger,
             x_train.columns = use_cols
             x_val.columns = use_cols
             test.columns = use_cols
+
+        ' カラム名をソートし、カラム順による学習への影響をなくす '
+        x_train.sort_index(axis=1, inplace=True)
+        x_val.sort_index(axis=1, inplace=True)
+        if n_fold==0:
+            test =test[use_cols]
+            test.sort_index(axis=1, inplace=True)
 
         clf, y_pred = Estimator(
             x_train=x_train,
@@ -250,14 +258,16 @@ def cross_prediction(logger,
             logger.info(f'Fold No: {n_fold} | valid_stack shape: {val_stack.shape} | cnt_id: {len(val_stack[key].drop_duplicates())}')
 
         if model_type != 'xgb':
-            test_pred = clf.predict(test[use_cols])
+            test_pred = clf.predict(test)
         elif model_type == 'xgb':
             test_pred = clf.predict(xgb.DMatrix(test))
 
+        test_pred = np.expm1(test_pred)
+
         if len(prediction)==0:
-            prediction = test_pred / fold
+            prediction = test_pred
         else:
-            prediction += test_pred / fold
+            prediction += test_pred
 
         ' Feature Importance '
         feim_name = f'{n_fold}_importance'
@@ -302,7 +312,7 @@ def cross_prediction(logger,
     cv_feim.sort_values(by=f'avg_importance', ascending=False, inplace=True)
     cv_feim['rank'] = np.arange(len(cv_feim))+1
 
-    cv_feim.to_csv(f'../output/feim{len(cv_feim)}_{metric}_{cv_score}.csv', index=False)
+    cv_feim.to_csv(f'../valid/{model_type}_feat{len(cv_feim)}_{metric}{str(cv_score)[:8]}.csv', index=False)
 
     return prediction, cv_score, result_stack
 
@@ -341,6 +351,11 @@ def TimeSeriesPrediction(logger, train, test, key, target, val_label='val_label'
     use_cols = [f for f in train.columns if f not in ignore_list]
     x_train = x_train[use_cols]
     x_val = x_val[use_cols]
+    test = test[use_cols]
+    ' カラム名をソートし、カラム順による学習への影響をなくす '
+    x_train.sort_index(axis=1, inplace=True)
+    x_val.sort_index(axis=1, inplace=True)
+    test.sort_index(axis=1, inplace=True)
 
     if model_type=='xgb':
         " XGBはcolumn nameで'[]'と','と'<>'がNGなのでreplace "
@@ -372,7 +387,7 @@ def TimeSeriesPrediction(logger, train, test, key, target, val_label='val_label'
     y_pred = np.expm1(y_pred)
 
     if model_type != 'xgb':
-        test_pred = Model.predict(test[use_cols])
+        test_pred = Model.predict(test)
     elif model_type == 'xgb':
         test_pred = Model.predict(xgb.DMatrix(test))
 
@@ -573,9 +588,6 @@ def data_check(logger, df, target, test=False, dummie=0, exclude_category=False,
                 move_feature(feature_name=col)
                 if col!=target:
                     drop_list.append(col)
-
-    ' カラム名をソートし、カラム順による学習への影響をなくす '
-    df.sort_index(axis=1, inplace=True)
 
     logger.info(f'''
 #==============================================================================
