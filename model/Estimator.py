@@ -30,13 +30,14 @@ def cross_validation(logger,
                      val_label='val_label',
                      seed=1208,
                      params={},
+                     num_boost_round=2000,
+                     early_stopping_rounds=50,
                      categorical_list=[],
                      judge_flg=False,
                      model_type='lgb',
                      ignore_list=[],
                      xray=False
                      ):
-
 
     if params['objective']=='regression':
         y = train[target].astype('float64')
@@ -73,34 +74,30 @@ def cross_validation(logger,
             x_val, y_val = train[use_cols].iloc[val_idx, :], y.iloc[val_idx]
 
         clf, y_pred = Estimator(
+            logger=logger,
             x_train=x_train,
             y_train=y_train,
             x_val=x_val,
             y_val=y_val,
             params=params,
+            num_boost_round=2000,
+            early_stopping_rounds=50,
             categorical_list=categorical_list,
             model_type=model_type
         )
 
-        if R_com:
-            x_val[target] = np.expm1(y_val)
-            x_val.fillna(0, inplace=True)
-            x_val['prediction'] = np.expm1(y_pred)
-            x_val.reset_index(inplace=True)
-            x_val = x_val.groupby(key)[target, 'prediction'].sum().reset_index()
-            x_val['prediction'] = np.clip(x_val['prediction'].values, a_min=0, a_max=None)
-            sc_score = sc_metrics(np.log1p(x_val[target].values), np.log1p(x_val['prediction'].values), metric)
-        else:
+        if metric=='rmse':
             y_pred = np.expm1(y_pred)
             y_pred[y_pred<0.5] = 0
             y_pred = np.log1p(y_pred)
-            sc_score = sc_metrics(y_val, y_pred, metric)
+
+        sc_score = sc_metrics(y_val, y_pred, metric)
 
         if n_fold==0:
             first_score = sc_score
 
         list_score.append(sc_score)
-        logger.info(f'Valid No: {n_fold} | {metric}: {sc_score} | {x_train.shape}')
+        logger.info(f'Valid No: {n_fold} | {metric}: {sc_score} | {x_train.shape} | best_iter: {clf.best_iteration}')
 
         #========================================================================
         # 学習結果に閾値を設けて、それを超えなかったら中止する
@@ -169,6 +166,8 @@ def cross_prediction(logger,
                      group_col_name='',
                      val_label='val_label',
                      params={},
+                     num_boost_round=2000,
+                     early_stopping_rounds=50,
                      seed=1208,
                      categorical_list=[],
                      model_type='lgb',
@@ -197,8 +196,11 @@ def cross_prediction(logger,
         kfold = folds.split(train, y, groups=train[group_col_name].values)
 
     use_cols = [f for f in train.columns if f not in ignore_list]
-    train.set_index(key, inplace=True)
-    test.set_index(key, inplace=True)
+    if len(train)>900000:
+        train.set_index(['unique_id', key], inplace=True)
+        test.set_index(['unique_id', key], inplace=True)
+    else:
+        oof_flg=False
 
     for n_fold, (trn_idx, val_idx) in enumerate(kfold):
 
@@ -231,12 +233,15 @@ def cross_prediction(logger,
             test.sort_index(axis=1, inplace=True)
 
         clf, y_pred = Estimator(
+            logger=logger,
             x_train=x_train,
             y_train=y_train,
             x_val=x_val,
             y_val=y_val,
             params=params,
             categorical_list=categorical_list,
+            num_boost_round=2000,
+            early_stopping_rounds=50,
             model_type=model_type
         )
 
@@ -249,10 +254,10 @@ def cross_prediction(logger,
         if oof_flg:
             val_pred = y_pred
             if n_fold==0:
-                val_stack = x_val.reset_index()[key].to_frame()
+                val_stack = x_val.reset_index()[['unique_id', key]]
                 val_stack[target] = val_pred
             else:
-                tmp = x_val.reset_index()[key].to_frame()
+                tmp = x_val.reset_index()[['unique_id', key]]
                 tmp[target] = val_pred
                 val_stack = pd.concat([val_stack, tmp], axis=0)
             logger.info(f'Fold No: {n_fold} | valid_stack shape: {val_stack.shape} | cnt_id: {len(val_stack[key].drop_duplicates())}')
@@ -294,7 +299,7 @@ def cross_prediction(logger,
 
     ' OOF for Stackng '
     if oof_flg:
-        pred_stack = test.reset_index()[key].to_frame()
+        pred_stack = test.reset_index()[['unique_id', key]]
         pred_stack[target] = prediction
         result_stack = pd.concat([val_stack, pred_stack], axis=0)
         logger.info(f'result_stack shape: {result_stack.shape} | cnt_id: {len(result_stack[key].drop_duplicates())}')
@@ -369,14 +374,15 @@ def TimeSeriesPrediction(logger, train, test, key, target, val_label='val_label'
         test.columns = use_cols
 
     Model, y_pred = Estimator(
+        logger=logger,
         x_train=x_train,
         y_train=y_train,
         x_val=x_val,
         y_val=y_val,
         params=params,
         categorical_list=categorical_list,
-        num_iterations=num_iterations,
-        early_stopping_rounds=early_stopping_rounds,
+        num_boost_round=2000,
+        early_stopping_rounds=50,
         learning_rate=learning_rate,
         model_type=model_type
     )
@@ -410,19 +416,26 @@ def prediction(logger, train, test, target, categorical_list=[], metric='auc', p
     test = test[use_cols]
 
     ' 学習 '
-    clf, y_pred = Estimator(x_train=x_train[use_cols], y_train=y_train, params=params, test=test, categorical_list=categorical_list, num_iterations=num_iterations, learning_rate=learning_rate, model_type=model_type)
+    clf, y_pred = Estimator(logger=logger, x_train=x_train[use_cols], y_train=y_train, params=params, test=test, categorical_list=categorical_list, num_iterations=num_iterations, learning_rate=learning_rate, model_type=model_type)
 
     return y_pred, len(use_cols)
 
 
-def Estimator(x_train, y_train, x_val=[], y_val=[], test=[], params={}, categorical_list=[], num_iterations=3000, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb'):
+def Estimator(logger, x_train, y_train, x_val=[], y_val=[], test=[], params={}, categorical_list=[], num_boost_round=2000, learning_rate=0.1, early_stopping_rounds=50, model_type='lgb'):
 
+    logger.info(f'''
+#========================================================================
+# EARLY_STOPPING_ROUNDS : {early_stopping_rounds}
+# NUM_BOOST_ROUND       : {num_boost_round}
+#========================================================================''')
     ' LightGBM / XGBoost / ExtraTrees / LogisticRegression'
     if model_type=='lgb':
         lgb_train = lgb.Dataset(data=x_train, label=y_train)
         if len(x_val)>0:
             lgb_eval = lgb.Dataset(data=x_val, label=y_val)
             clf = lgb.train(params=params,
+                            early_stopping_rounds=early_stopping_rounds,
+                            num_boost_round=num_boost_round,
                             train_set=lgb_train,
                             valid_sets=lgb_eval,
                             verbose_eval=200,
@@ -430,7 +443,9 @@ def Estimator(x_train, y_train, x_val=[], y_val=[], test=[], params={}, categori
                             )
             y_pred = clf.predict(x_val)
         else:
-            clf = lgb.train(params,
+            clf = lgb.train(params=params,
+                            early_stopping_rounds=early_stopping_rounds,
+                            num_boost_round=num_boost_round,
                             train_set=lgb_train,
                             categorical_feature = categorical_list
                             )
