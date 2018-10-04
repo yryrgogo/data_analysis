@@ -64,14 +64,7 @@ def cross_validation(logger,
     for n_fold, (trn_idx, val_idx) in enumerate(kfold):
 
         x_train, y_train = train[use_cols].iloc[trn_idx, :], y.iloc[trn_idx]
-
-        R_com = False
-        if R_com:
-            # 学習に使わないカラムを残しておきたい場合、validationを切ってからset_indexしておく
-            x_val, y_val = train.iloc[val_idx, :], y.iloc[val_idx]
-            x_val = x_val.set_index(key)[use_cols]
-        else:
-            x_val, y_val = train[use_cols].iloc[val_idx, :], y.iloc[val_idx]
+        x_val, y_val = train[use_cols].iloc[val_idx, :], y.iloc[val_idx]
 
         clf, y_pred = Estimator(
             logger=logger,
@@ -87,9 +80,11 @@ def cross_validation(logger,
         )
 
         if metric=='rmse':
-            y_pred = np.expm1(y_pred)
+            x_val['predictions'] = y_pred
+            hits = x_val['totals-hits'].map(lambda x: 0 if x==1 else 1).values
+            bounces = x_val['totals-bounces'].map(lambda x: 0 if x==1 else 1).values
+            y_pred = y_pred * hits * bounces
             y_pred[y_pred<0.5] = 0
-            y_pred = np.log1p(y_pred)
 
         sc_score = sc_metrics(y_val, y_pred, metric)
 
@@ -167,7 +162,7 @@ def cross_prediction(logger,
                      val_label='val_label',
                      params={},
                      num_boost_round=2000,
-                     early_stopping_rounds=50,
+                     early_stopping_rounds=150,
                      seed=1208,
                      categorical_list=[],
                      model_type='lgb',
@@ -200,19 +195,14 @@ def cross_prediction(logger,
         train.set_index(['unique_id', key], inplace=True)
         test.set_index(['unique_id', key], inplace=True)
     else:
+        train.set_index(key, inplace=True)
+        test.set_index(key, inplace=True)
         oof_flg=False
 
     for n_fold, (trn_idx, val_idx) in enumerate(kfold):
 
         x_train, y_train = train[use_cols].iloc[trn_idx, :], y.iloc[trn_idx]
-
-        R_com = False
-        if R_com:
-            # 学習に使わないカラムを残しておきたい場合、validationを切ってからset_indexしておく
-            x_val, y_val = train.iloc[val_idx, :], y.iloc[val_idx]
-            x_val = x_val.set_index(key)[use_cols]
-        else:
-            x_val, y_val = train[use_cols].iloc[val_idx, :], y.iloc[val_idx]
+        x_val, y_val = train[use_cols].iloc[val_idx, :], y.iloc[val_idx]
 
         if model_type=='xgb':
             " XGBは'[]'と','と'<>'がNGなのでreplace "
@@ -240,10 +230,18 @@ def cross_prediction(logger,
             y_val=y_val,
             params=params,
             categorical_list=categorical_list,
-            num_boost_round=2000,
-            early_stopping_rounds=50,
+            num_boost_round=num_boost_round,
+            early_stopping_rounds=early_stopping_rounds,
             model_type=model_type
         )
+
+        if metric=='rmse':
+            #  hits = x_val['totals-hits'].map(lambda x: 0 if x==1 else 1).values
+            #  bounces = x_val['totals-bounces'].map(lambda x: 0 if x==1 else 1).values
+            #  y_pred = y_pred * hits * bounces
+            #  y_pred = np.expm1(y_pred)
+            y_pred[y_pred<0.5] = 0
+            #  y_pred = np.log1p(y_pred)
 
         sc_score = sc_metrics(y_val, y_pred, metric)
 
@@ -263,11 +261,16 @@ def cross_prediction(logger,
             logger.info(f'Fold No: {n_fold} | valid_stack shape: {val_stack.shape} | cnt_id: {len(val_stack[key].drop_duplicates())}')
 
         if model_type != 'xgb':
-            test_pred = clf.predict(test, num_iterations=clf.best_iteration)
+            #  test_pred = clf.predict(test, num_iterations=clf.best_iteration)
+            test_pred = clf.predict(test)
         elif model_type == 'xgb':
             test_pred = clf.predict(xgb.DMatrix(test))
 
-        test_pred = np.expm1(test_pred)
+        if metric=='rmse':
+            test_pred = np.expm1(test_pred)
+
+        #  if params['objective']=='regression':
+        #      test_pred = np.expm1(test_pred)
 
         if len(prediction)==0:
             prediction = test_pred
@@ -317,7 +320,10 @@ def cross_prediction(logger,
     cv_feim.sort_values(by=f'avg_importance', ascending=False, inplace=True)
     cv_feim['rank'] = np.arange(len(cv_feim))+1
 
-    cv_feim.to_csv(f'../valid/{model_type}_feat{len(cv_feim)}_{metric}{str(cv_score)[:8]}.csv', index=False)
+    if len(train)>900000:
+        cv_feim.to_csv(f'../valid/{model_type}_feat{len(cv_feim)}_{metric}{str(cv_score)[:8]}.csv', index=False)
+    else:
+        cv_feim.to_csv(f'../valid/two_{model_type}_feat{len(cv_feim)}_{metric}{str(cv_score)[:8]}.csv', index=False)
 
     return prediction, cv_score, result_stack, use_cols
 
@@ -421,7 +427,7 @@ def prediction(logger, train, test, target, categorical_list=[], metric='auc', p
     return y_pred, len(use_cols)
 
 
-def Estimator(logger, x_train, y_train, x_val=[], y_val=[], test=[], params={}, categorical_list=[], num_boost_round=2000, learning_rate=0.1, early_stopping_rounds=50, model_type='lgb'):
+def Estimator(logger, x_train, y_train, x_val=[], y_val=[], test=[], params={}, categorical_list=[], num_boost_round=2000, learning_rate=0.1, early_stopping_rounds=150, model_type='lgb'):
 
     logger.info(f'''
 #========================================================================

@@ -30,6 +30,7 @@ from logging import StreamHandler, DEBUG, Formatter, FileHandler, getLogger
 # global variables
 # =============================================================================
 COMPETITION_NAME = 'home-credit-default-risk'
+COMPETITION_NAME = 'ga-customer-revenue-prediction'
 
 # =============================================================================
 # def
