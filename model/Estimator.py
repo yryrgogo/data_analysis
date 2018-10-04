@@ -19,6 +19,25 @@ import pickle
 from sklearn.ensemble.partial_dependence import partial_dependence
 
 
+def get_folds(df=None, n_splits=5):
+    """Returns dataframe indices corresponding to Visitors Group KFold"""
+    # Get sorted unique visitors
+    unique_vis = np.array(sorted(df['fullVisitorId'].unique()))
+
+    # Get folds
+    folds = GroupKFold(n_splits=n_splits)
+    fold_ids = []
+    ids = np.arange(df.shape[0])
+    for trn_vis, val_vis in folds.split(X=unique_vis, y=unique_vis, groups=unique_vis):
+        fold_ids.append(
+            [
+                ids[df['fullVisitorId'].isin(unique_vis[trn_vis])],
+                ids[df['fullVisitorId'].isin(unique_vis[val_vis])]
+            ]
+        )
+
+    return fold_ids
+
 def cross_validation(logger,
                      train,
                      key,
@@ -54,9 +73,9 @@ def cross_validation(logger,
         kfold = folds.split(train,y)
     elif fold_type=='group':
         if group_col_name=='':raise ValueError(f'Not exist group_col_name.')
-        folds = GroupKFold(n_splits=fold)
-        kfold = folds.split(train, y, groups=train[group_col_name].values)
-
+        #  folds = GroupKFold(n_splits=fold)
+        #  kfold = folds.split(train, y, groups=train[group_col_name].values)
+        kfold = get_folds(df=train, n_splits=5)
 
     use_cols = [f for f in train.columns if f not in ignore_list]
     model_list = []
@@ -176,7 +195,6 @@ def cross_prediction(logger,
     else:
         y = train[target]
 
-
     list_score = []
     cv_feim = pd.DataFrame([])
     prediction = np.array([])
@@ -187,8 +205,9 @@ def cross_prediction(logger,
         kfold = folds.split(train,y)
     elif fold_type=='group':
         if group_col_name=='':raise ValueError(f'Not exist group_col_name.')
-        folds = GroupKFold(n_splits=fold)
-        kfold = folds.split(train, y, groups=train[group_col_name].values)
+        #  folds = GroupKFold(n_splits=fold)
+        #  kfold = folds.split(train, y, groups=train[group_col_name].values)
+        kfold = get_folds(df=train, n_splits=5)
 
     use_cols = [f for f in train.columns if f not in ignore_list]
     if len(train)>900000:
@@ -236,12 +255,10 @@ def cross_prediction(logger,
         )
 
         if metric=='rmse':
-            #  hits = x_val['totals-hits'].map(lambda x: 0 if x==1 else 1).values
-            #  bounces = x_val['totals-bounces'].map(lambda x: 0 if x==1 else 1).values
-            #  y_pred = y_pred * hits * bounces
-            #  y_pred = np.expm1(y_pred)
+            hits = x_val['totals-hits'].map(lambda x: 0 if x==1 else 1).values
+            bounces = x_val['totals-bounces'].map(lambda x: 0 if x==1 else 1).values
+            y_pred = y_pred * hits * bounces
             y_pred[y_pred<0.5] = 0
-            #  y_pred = np.log1p(y_pred)
 
         sc_score = sc_metrics(y_val, y_pred, metric)
 
@@ -265,9 +282,6 @@ def cross_prediction(logger,
             test_pred = clf.predict(test)
         elif model_type == 'xgb':
             test_pred = clf.predict(xgb.DMatrix(test))
-
-        if metric=='rmse':
-            test_pred = np.expm1(test_pred)
 
         #  if params['objective']=='regression':
         #      test_pred = np.expm1(test_pred)
@@ -299,6 +313,8 @@ def cross_prediction(logger,
 
     ' fold数で平均をとる '
     prediction = prediction / fold
+    if metric=='rmse':
+        prediction = np.expm1(prediction)
 
     ' OOF for Stackng '
     if oof_flg:
