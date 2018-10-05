@@ -22,7 +22,8 @@ from sklearn.ensemble.partial_dependence import partial_dependence
 def get_folds(df=None, n_splits=5):
     """Returns dataframe indices corresponding to Visitors Group KFold"""
     # Get sorted unique visitors
-    unique_vis = np.array(sorted(df['fullVisitorId'].unique()))
+    val = df['fullVisitorId'].unique()
+    unique_vis = np.array(sorted(val))
 
     # Get folds
     folds = GroupKFold(n_splits=n_splits)
