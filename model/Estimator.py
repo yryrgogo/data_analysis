@@ -564,6 +564,13 @@ def df_feature_importance(model, model_type, use_cols, feim_name='importance'):
 
 
 def data_check(logger, df, target, test=False, dummie=0, exclude_category=False, ignore_list=[]):
+    '''
+    Explain:
+        学習を行う前にデータに問題がないかチェックする
+        カテゴリカルなデータが入っていたらエンコーディング or Dropする
+    Args:
+    Return:
+    '''
     logger.info(f'''
 #==============================================================================
 # DATA CHECK START
@@ -615,6 +622,7 @@ def data_check(logger, df, target, test=False, dummie=0, exclude_category=False,
 
     logger.info(f'df SHAPE: {df.shape}')
 
+    ' Testsetで値のユニーク数が1のカラムを除外する '
     drop_list = []
     if test:
         for col in df.columns:
