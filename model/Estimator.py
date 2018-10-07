@@ -211,13 +211,13 @@ def cross_prediction(logger,
         kfold = get_folds(df=train, n_splits=5)
 
     use_cols = [f for f in train.columns if f not in ignore_list]
-    if len(train)>900000:
+    if 'unique_id' in list(train.columns):
         train.set_index(['unique_id', key], inplace=True)
         test.set_index(['unique_id', key], inplace=True)
     else:
         train.set_index(key, inplace=True)
         test.set_index(key, inplace=True)
-        oof_flg=False
+        #  oof_flg=False
 
     for n_fold, (trn_idx, val_idx) in enumerate(kfold):
 
@@ -255,10 +255,10 @@ def cross_prediction(logger,
             model_type=model_type
         )
 
+        hits = x_val['totals-hits'].map(lambda x: 0 if x==1 else 1).values
+        bounces = x_val['totals-bounces'].map(lambda x: 0 if x==1 else 1).values
+        y_pred = y_pred * hits * bounces
         if metric=='rmse':
-            hits = x_val['totals-hits'].map(lambda x: 0 if x==1 else 1).values
-            bounces = x_val['totals-bounces'].map(lambda x: 0 if x==1 else 1).values
-            y_pred = y_pred * hits * bounces
             y_pred[y_pred<0.5] = 0
 
         sc_score = sc_metrics(y_val, y_pred, metric)
@@ -337,7 +337,7 @@ def cross_prediction(logger,
     cv_feim.sort_values(by=f'avg_importance', ascending=False, inplace=True)
     cv_feim['rank'] = np.arange(len(cv_feim))+1
 
-    if len(train)>900000:
+    if 'unique_id' in train.reset_index().columns:
         cv_feim.to_csv(f'../valid/{model_type}_feat{len(cv_feim)}_{metric}{str(cv_score)[:8]}.csv', index=False)
     else:
         cv_feim.to_csv(f'../valid/two_{model_type}_feat{len(cv_feim)}_{metric}{str(cv_score)[:8]}.csv', index=False)
