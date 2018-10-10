@@ -18,6 +18,8 @@ from sklearn.linear_model import LogisticRegression, ridge
 import pickle
 from sklearn.ensemble.partial_dependence import partial_dependence
 
+sys.path.append('../../GA-revenue/py')
+from info_R_Competition import zero_id
 
 def get_folds(df=None, n_splits=5):
     """Returns dataframe indices corresponding to Visitors Group KFold"""
@@ -199,6 +201,7 @@ def cross_prediction(logger,
     list_score = []
     cv_feim = pd.DataFrame([])
     prediction = np.array([])
+    us_other_id = zero_id()
 
     ' KFold '
     if fold_type=='stratified':
@@ -255,11 +258,19 @@ def cross_prediction(logger,
             model_type=model_type
         )
 
+        # 特定の国のRevenueを0にする
+        # absolute
+        #  x_val = x_val.reset_index().set_index(key)
+        #  val_id = list(x_val.index)
+        #  val_0_id = set(val_id) & set(us_other_id)
+        #  x_val.loc[val_0_id, 'totals-hits'] = 1
+        #  x_val.reset_index().set_index(['unique_id', key], inplace=True)
+
         hits = x_val['totals-hits'].map(lambda x: 0 if x==1 else 1).values
         bounces = x_val['totals-bounces'].map(lambda x: 0 if x==1 else 1).values
         y_pred = y_pred * hits * bounces
         if metric=='rmse':
-            y_pred[y_pred<0.5] = 0
+            y_pred[y_pred<0.1] = 0
 
         sc_score = sc_metrics(y_val, y_pred, metric)
 
