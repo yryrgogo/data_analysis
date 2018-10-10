@@ -1,7 +1,7 @@
 def params_GA():
     train_params = {
     #  'boosting':'goss',
-    'num_threads': 33,
+    'num_threads': 35,
     #  'num_threads': 20,
     'metric': 'rmse',
     'objective': 'regression',
