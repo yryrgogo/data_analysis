@@ -23,3 +23,19 @@ def gini_score(data, target, feat_idx, threshold):
 
 
 def search_best_split(data, target):
+    num_feature = data.shape[1]
+    best_thres = None
+    best_f = None
+    gini = None
+    gini_min = 1
+
+    for feat_idx in range(num_feature):
+        feature = data[:, feat_idx]
+        for value in feature:
+            gini = gini_score(data, target, feat_idx, value)
+            if gini_min > gini:
+                gini_min = gini
+                best_f = feat_idx
+                best_thres = value
+
+    return gini_min, best_thrs, best_f
