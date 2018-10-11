@@ -74,9 +74,9 @@ def cross_validation(logger,
         kfold = folds.split(train,y)
     elif fold_type=='group':
         if group_col_name=='':raise ValueError(f'Not exist group_col_name.')
-        #  folds = GroupKFold(n_splits=fold)
-        #  kfold = folds.split(train, y, groups=train[group_col_name].values)
-        kfold = get_folds(df=train, n_splits=5)
+        folds = GroupKFold(n_splits=fold)
+        kfold = folds.split(train, y, groups=train[group_col_name].values)
+        #  kfold = get_folds(df=train, n_splits=5)
 
     use_cols = [f for f in train.columns if f not in ignore_list]
     model_list = []
@@ -206,9 +206,9 @@ def cross_prediction(logger,
         kfold = folds.split(train,y)
     elif fold_type=='group':
         if group_col_name=='':raise ValueError(f'Not exist group_col_name.')
-        #  folds = GroupKFold(n_splits=fold)
-        #  kfold = folds.split(train, y, groups=train[group_col_name].values)
-        kfold = get_folds(df=train, n_splits=5)
+        folds = GroupKFold(n_splits=fold)
+        kfold = folds.split(train, y, groups=train[group_col_name].values)
+        #  kfold = get_folds(df=train, n_splits=5)
 
     use_cols = [f for f in train.columns if f not in ignore_list]
     if 'unique_id' in list(train.columns):

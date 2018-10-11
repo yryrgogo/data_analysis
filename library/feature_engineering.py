@@ -226,7 +226,7 @@ def exclude_feature(col_name, feature):
     return False
 
 
-def target_encoding(logger, base, df, key, target, enc_feat, level, method_list=['mean'], path='../features/1_first_valid', prefix='', select_list=[], ignore_list=[], seed=1208):
+def target_encoding(logger, base, train, test, key, target, level, method='mean', path='../features/1_first_valid', prefix='', select_list=[], ignore_list=[], seed=1208):
     '''
     Explain:
         TARGET関連の特徴量を4partisionに分割したデータセットから作る.
@@ -234,8 +234,8 @@ def target_encoding(logger, base, df, key, target, enc_feat, level, method_list=
         test対する特徴量は、train全てを使って作成する
     Args:
         df(DF)               : 入力データ。カラムにはkeyとvalid_noがある前提
-        level(str/list/taple): 目的変数を集計する粒度
         key                  : ユニークカラム名
+        level(str/list/taple): ターゲットを集計する粒度
         target               : エンコーディングに使うカラム名
         method(str)          : 集計のメソッド
         select_list(list)    : 特定のfeatureのみ保存したい場合はこちらにリストでfeature名を格納
@@ -250,116 +250,44 @@ def target_encoding(logger, base, df, key, target, enc_feat, level, method_list=
     elif str(type(level)).count('tuple'):
         level = list(level)
 
-    #  train = df[~df[target].isnull()]
+    ' KFold '
+    if fold_type=='stratified':
+        folds = StratifiedKFold(n_splits=fold, shuffle=True, random_state=seed) #1
+        kfold = folds.split(train,y)
+    elif fold_type=='group':
+        if group_col_name=='':raise ValueError(f'Not exist group_col_name.')
+        folds = GroupKFold(n_splits=fold)
+        kfold = folds.split(train, y, groups=train[group_col_name].values)
 
-    #  cnt=0
-    #  tmp_val = train[key].reset_index(drop=True).to_frame()
-    #  x = train[key].to_frame()
-    #  y = train[target].values
+    base_train = train[key].to_frame()
+    result = pd.DataFrame()
+    # Train内のTE
+    for n_fold, (trn_idx, val_idx) in enumerate(kfold):
 
-    #  ' KFold '
-    #  cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=seed)
-    #  for trn_idx, val_idx in cv.split(x, y):
-    #      cnt+=1
+        x_train, y_train = train.iloc[trn_idx, :], y.iloc[trn_idx]
+        x_val, y_val = train.iloc[val_idx, :], y.iloc[val_idx]
 
-    #      valid_no = np.zeros(len(val_idx))+cnt
-    #      tmp = pd.DataFrame({'index':val_idx, val_col:valid_no})
+        x_train = x_train.groupby(level)[target].agg({f'TE_{target}@{level}':f'{method}'}).reset_index()
+        tmp_result = x_val.drop(target, axis=1).merge(x_train, on=level, how='left')
 
-    #      if cnt==1:
-    #          tmp_result = tmp.copy()
-    #      else:
-    #          tmp_result = pd.concat([tmp_result, tmp], axis=0)
+        if len(result) == 0:
+            result = tmp_result.copy()
+        else:
+            result = pd.concat([result, tmp_result], axis=0)
 
-    #  tmp_result.set_index('index', inplace=True)
-
-    #  ' valid_colをつける '
-    #  df_val = tmp_val.join(tmp_result)
-    #  df = df.merge(df_val, on=key, how='left')
-    #  df[val_col] = df[val_col].where(df[val_col]>=0, -1)
-
-    # valid_noをカラムとして保存
-    #  utils.to_pkl_gzip(obj=df[val_col].values, path=f'../input/{val_col}.fp')
-    #  sys.exit()
-
-    #  del train, tmp_val, df_val, x, y
-    #  gc.collect()
-
-    #  valid_no = pd.Series(utils.read_pkl_gzip(path='../input/valid_no.fp.gz'), name='valid_no')
-    base[val_col] = utils.read_pkl_gzip(path='../input/valid_no.fp.gz')
-    if enc_feat.count(target):
-        df = df.merge(base[[key, val_col, target]], on=key, how='inner')
-    else:
-        df = df.merge(base[[key, val_col, enc_feat, target]], on=key, how='inner')
-    test = df[df[target].isnull()]
-
-    ' key, valid_no, エンコードするカラムをもたせたbaseを作る '
-    tmp_base = df[[key, val_col] + level].drop_duplicates()
-    if len(base)>0:
-        ex_base = base[key].to_frame().merge(tmp_base, on=key, how='left')
-
-    for method in method_list:
-        result = pd.DataFrame([])
-        valid_list = df[val_col].drop_duplicates().values
-
-        for valid_no in valid_list:
-
-            if valid_no == -1:
-                tmp = df
-            else:
-                tmp = df[~df[target].isnull()]
-            '''
-            集計に含めないpartisionのDFをdf_val.
-            集計するpartisionのDFをdf_aggとして作成
-            '''
-            df_val = tmp[tmp[val_col] == valid_no][level].drop_duplicates()
-            #  logger.info(f"\ndf_val: {df_val.shape}")
-
-            df_agg = tmp[tmp[val_col] != valid_no][level+[enc_feat]]
-            if enc_feat.count('EXT_SOURCE'):
-                df_agg = pd.concat([df_agg, test[level+[enc_feat]]], axis=0)
-            #  logger.info(f"\ndf_agg: {df_agg.shape}")
-
-            #  logger.info(f'\nlevel: {level}\nvalid_no: {valid_no}')
-            df_agg = base_aggregation(
-                df=df_agg,
-                level=level,
-                feature=enc_feat,
-                method=method
-            )
-
-            ' リークしないようにvalidation側のデータにJOIN '
-            tmp_result = df_val.merge(df_agg, on=level, how='left')
-            tmp_result[val_col] = valid_no
-
-            if len(result) == 0:
-                result = tmp_result
-            else:
-                result = pd.concat([result, tmp_result], axis=0)
-
-        result = ex_base.merge(result, on=level+[val_col], how='left')
-
-        if True:
-            for col in result.columns:
-                if col.count('@') and col not in ignore_list:
-                    for i, method in enumerate(['mean', 'var', 'min']):
-                        tmp = base_aggregation(df=result[[key, col]], level=key, feature=col, method=method, base=base).to_frame().rename(columns={col:f'{col}_{method}'})
-                        tmp = pd.concat([base[key], tmp], axis=1)
-                        if i==0:
-                            tmp_result = tmp.copy()
-                        else:
-                            tmp_result = tmp_result.merge(tmp, on=key, how='left')
-            result = tmp_result
         gc.collect()
 
-        #  make_npy(result, ignore_list, prefix, select_list=select_list, npy_key=npy_key)
-        level = '-'.join(level)
-        for col in result.columns:
-            if col.count('@') and col not in ignore_list:
-                utils.to_pkl_gzip(obj=result[col].values, path=f"{path}/{prefix}tgec-{col}-{level}.fp")
-                logger.info(f'''
+    result = base_train.merge(result, on=key, how='inner')
+
+    # Train内のTE
+    train = train.groupby(level)[target].agg({f'TE_{target}@{level}':f'{method}'}).reset_index()
+    test_result = test.merge(train, on=level, how='left')
+
+    logger.info(f'''
 #========================================================================
 # COMPLETE TARGET ENCODING!!
-# FEATURE : {prefix}tgec-{col}-{level}.fp
-# LENGTH  : {len(result[col])}
+# FEATURE : TE_{target}@{level}
+# LENGTH  : Train{len(result)} / Test{len(test_result)}
 #========================================================================''')
 
+    return result[f'TE_{target}@{level}'].values, test_result[f'TE_{target}@{level}'].values
