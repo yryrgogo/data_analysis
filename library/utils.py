@@ -64,20 +64,15 @@ def end(fname):
     return
 
 
+def read_text(file_path):
+    with open(file_path) as f:
+        text = f.read()
+        #  text_list = text.split()
+    return text
+
+
 def elapsed_minute():
     return (time() - st_time)/60
-
-
-def to_feather(df, path):
-
-    if df.columns.duplicated().sum() > 0:
-        raise Exception(
-            f'duplicated!: { df.columns[df.columns.duplicated()] }')
-    df.reset_index(inplace=True, drop=True)
-    df.columns = [c.replace('/', '-').replace(' ', '-') for c in df.columns]
-    for c in df.columns:
-        df[[c]].to_feather(f'{path}_{c}.f')
-    return
 
 
 def to_pickle(path, obj):
@@ -152,48 +147,6 @@ def read_df_pickle(path, col=None, use_tqdm=True):
         df = pd.concat([pd.read_pickle(f)[col]
                         for f in tqdm(sorted(glob(path)))])
     return df
-
-# def to_feathers(df, path, split_size=3, inplace=True):
-#    """
-#    path = '../output/mydf'
-#
-#    wirte '../output/mydf/0.f'
-#          '../output/mydf/1.f'
-#          '../output/mydf/2.f'
-#
-#    """
-#    if inplace==True:
-#        df.reset_index(drop=True, inplace=True)
-#    else:
-#        df = df.reset_index(drop=True)
-#    gc.collect()
-#    mkdir_p(path)
-#
-#    kf = KFold(n_splits=split_size)
-#    for i, (train_index, val_index) in enumerate(tqdm(kf.split(df))):
-#        df.iloc[val_index].to_feather(f'{path}/{i:03d}.f')
-#    return
-#
-# def read_feathers(path, col=None):
-#    if col is None:
-#        df = pd.concat([pd.read_feather(f) for f in tqdm(sorted(glob(path+'/*')))])
-#    else:
-#        df = pd.concat([pd.read_feather(f)[col] for f in tqdm(sorted(glob(path+'/*')))])
-#    return df
-
-
-def load_train(col=None):
-    if col is None:
-        return read_pickles('../data/train')
-    else:
-        return read_pickles('../data/train', col)
-
-
-def load_test(col=None):
-    if col is None:
-        return read_pickles('../data/test')
-    else:
-        return read_pickles('../data/test', col)
 
 
 def merge(df, col):
@@ -337,39 +290,6 @@ def __get_use_files__():
     return
 
 
-def get_use_files(prefixes=[], is_train=True):
-
-    unused_files = [f.split('/')[-1]
-                    for f in sorted(glob('../feature_unused/*.f'))]
-    unused_files += [f.split('/')[-1]
-                     for f in sorted(glob('../feature_var0/*.f'))]
-    unused_files += [f.split('/')[-1]
-                     for f in sorted(glob('../feature_corr1/*.f'))]
-
-    if is_train:
-        all_files = sorted(glob('../feature/train*.f'))
-        unused_files = ['../feature/train_'+f for f in unused_files]
-    else:
-        all_files = sorted(glob('../feature/test*.f'))
-        unused_files = ['../feature/test_'+f for f in unused_files]
-
-    if len(prefixes) > 0:
-        use_files = []
-        for prefix in prefixes:
-            use_files += glob(f'../feature/*{prefix}*')
-        all_files = (set(all_files) & set(use_files)) - set(unused_files)
-
-    else:
-        for f in unused_files:
-            if f in all_files:
-                all_files.remove(f)
-
-    all_files = sorted(all_files)
-
-    print(f'got {len(all_files)}')
-    return all_files
-
-
 # =============================================================================
 # other API
 # =============================================================================
@@ -435,11 +355,6 @@ def logger_func():
     return logger
 
 
-def x_y_split(data, target):
-    x = data.drop(target, axis=1)
-    y = data[target].values
-    return x, y
-
 def load_file(path, delimiter='gz'):
     if path.count('.csv'):
         return pd.read_csv(path)
@@ -479,18 +394,7 @@ def pararell_load_data(path_list, delimiter=False):
 def load_file_wrapper(args):
     return load_file(*args)
 
-def path_info(path):
 
-    path_dict = {}
-    path_dict['filename'] = re.search(r'/([^/.]*).csv', path).group(1)  # Linux
-    path_dict['particle'] = re.search(r'feature_([0-9]+)@', path).group(1)
-    path_dict['time'] = re.search(r'@([^.]*)@', path).group(1)
-    path_dict['elem'] = re.search(r'\D@([^.]*).csv', path).group(1)
-
-    return path_dict
-
-
-" 並列処理 "
 def pararell_process(func, arg_list, cpu_cnt=multiprocessing.cpu_count()):
     process = Pool(cpu_cnt)
     #  p = Pool(len(arg_list))
