@@ -2,7 +2,7 @@ import gc
 import numpy as np
 import pandas as pd
 import sys
-from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import StratifiedKFold, GroupKFold, KFold
 import os
 HOME = os.path.expanduser('~')
 sys.path.append(f"{HOME}/kaggle/github/library/")
@@ -226,7 +226,7 @@ def exclude_feature(col_name, feature):
     return False
 
 
-def target_encoding(logger, base, train, test, key, target, level, method='mean', path='../features/1_first_valid', prefix='', select_list=[], ignore_list=[], seed=1208):
+def target_encoding(logger, train, test, key, target, level, method='mean',fold_type='stratified', fold=5, group_col_name='fullVisitorId', prefix='', select_list=[], ignore_list=[], seed=1208, return_df=False):
     '''
     Explain:
         TARGET関連の特徴量を4partisionに分割したデータセットから作る.
@@ -253,19 +253,21 @@ def target_encoding(logger, base, train, test, key, target, level, method='mean'
     ' KFold '
     if fold_type=='stratified':
         folds = StratifiedKFold(n_splits=fold, shuffle=True, random_state=seed) #1
-        kfold = folds.split(train,y)
+        kfold = folds.split(train,train[target].values)
     elif fold_type=='group':
         if group_col_name=='':raise ValueError(f'Not exist group_col_name.')
-        folds = GroupKFold(n_splits=fold)
-        kfold = folds.split(train, y, groups=train[group_col_name].values)
+        #  folds = GroupKFold(n_splits=fold)
+        #  kfold = folds.split(train.drop(target, axis=1), train[target].values, groups=train[group_col_name].values)
+        folds = KFold(n_splits=fold)
+        kfold = folds.split(train.drop(target, axis=1), train[target].values)
 
     base_train = train[key].to_frame()
     result = pd.DataFrame()
     # Train内のTE
     for n_fold, (trn_idx, val_idx) in enumerate(kfold):
 
-        x_train, y_train = train.iloc[trn_idx, :], y.iloc[trn_idx]
-        x_val, y_val = train.iloc[val_idx, :], y.iloc[val_idx]
+        x_train = train.iloc[trn_idx, :]
+        x_val = train.iloc[val_idx, :]
 
         x_train = x_train.groupby(level)[target].agg({f'TE_{target}@{level}':f'{method}'}).reset_index()
         tmp_result = x_val.drop(target, axis=1).merge(x_train, on=level, how='left')
@@ -290,4 +292,7 @@ def target_encoding(logger, base, train, test, key, target, level, method='mean'
 # LENGTH  : Train{len(result)} / Test{len(test_result)}
 #========================================================================''')
 
-    return result[f'TE_{target}@{level}'].values, test_result[f'TE_{target}@{level}'].values
+    if return_df:
+        return result[[key, f'TE_{target}@{level}']], test_result[[key, f'TE_{target}@{level}']]
+    else:
+        return result[f'TE_{target}@{level}'].values, test_result[f'TE_{target}@{level}'].values
