@@ -75,7 +75,7 @@ def elapsed_minute():
     return (time() - st_time)/60
 
 
-def to_pickle(path, obj):
+def to_pkl(path, obj):
     with open(path, 'wb') as f:
         pickle.dump(obj=obj, file=f)
         print(f"""
@@ -85,7 +85,7 @@ def to_pickle(path, obj):
 """)
 
 
-def read_pickle(path):
+def read_pkl(path):
     with open(path, 'rb') as f:
         obj = pickle.load(f)
         print(f"""
@@ -111,7 +111,7 @@ def read_pkl_gzip(path):
     return pickle.loads(data)
 
 
-def to_df_pickle(df, path, fname='', split_size=3, index=False):
+def to_df_pkl(df, path, fname='', split_size=3, index=False):
     """
     path = '../output/mydf'
 
@@ -134,7 +134,7 @@ def to_df_pickle(df, path, fname='', split_size=3, index=False):
     return
 
 
-def read_df_pickle(path, col=None, use_tqdm=True):
+def read_df_pkl(path, col=None, use_tqdm=True):
     if col is None:
         if use_tqdm:
             df = pd.concat([pd.read_pickle(f)
