@@ -328,7 +328,7 @@ def stop_instance():
         f'gcloud compute instances stop {os.uname()[1]} --zone us-east1-b')
 
 
-def mkdir_p(path):
+def mkdir_func(path):
     try:
         os.stat(path)
     except:
@@ -343,7 +343,7 @@ def logger_func():
     handler.setFormatter(log_fmt)
     logger.addHandler(handler)
 
-    mkdir_p('../output')
+    mkdir_func('../output')
     handler = FileHandler('../output/py_train.py.log', 'a')
     handler.setLevel(DEBUG)
     handler.setFormatter(log_fmt)
