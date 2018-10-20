@@ -5,7 +5,6 @@ import lightgbm as lgb
 from sklearn.model_selection import ParameterGrid, StratifiedKFold, GroupKFold
 from sklearn.metrics import log_loss, roc_auc_score, mean_squared_error, r2_score
 import datetime
-from tqdm import tqdm
 import sys
 sys.path.append('../library')
 from select_feature import move_feature
@@ -16,7 +15,6 @@ from preprocessing import factorize_categoricals, get_dummies
 from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression, ridge
 import pickle
-from sklearn.ensemble.partial_dependence import partial_dependence
 
 start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 kaggle='home_credit'
@@ -65,6 +63,7 @@ def cross_prediction(logger,
         kfold = folds.split(train, y, groups=train[group_col_name].values)
 
     use_cols = [f for f in train.columns if f not in ignore_list]
+    use_cols = sorted(use_cols) # カラム名をソートし、カラム順による学習への影響をなくす
 
     if kaggle=='ga':
         if 'unique_id' in list(train.columns):
@@ -90,12 +89,8 @@ def cross_prediction(logger,
             x_val.columns = use_cols
             test.columns = use_cols
 
-        ' カラム名をソートし、カラム順による学習への影響をなくす '
-        x_train.sort_index(axis=1, inplace=True)
-        x_val.sort_index(axis=1, inplace=True)
         if n_fold==0:
             test =test[use_cols]
-            test.sort_index(axis=1, inplace=True)
 
         clf, y_pred = Estimator(
             logger=logger,
@@ -110,10 +105,10 @@ def cross_prediction(logger,
             model_type=model_type
         )
 
-        utils.mkdir_func('../model')
-        utils.mkdir_func(f'../model/{start_time[4:12]}_{model_type}')
-        with open(f'../model/{start_time[4:12]}/{model_type}_fold{n_fold}_feat{len(use_cols)}.pkl', 'wb') as m:
-            pickle.dump(obj=clf, file=m)
+        #  utils.mkdir_func('../model')
+        #  utils.mkdir_func(f'../model/{start_time[4:12]}_{model_type}')
+        #  with open(f'../model/{start_time[4:12]}/{model_type}_fold{n_fold}_feat{len(use_cols)}.pkl', 'wb') as m:
+        #      pickle.dump(obj=clf, file=m)
 
         if kaggle=='ga':
             hits = x_val['totals-hits'].map(lambda x: 0 if x==1 else 1).values
@@ -630,7 +625,7 @@ def data_check(logger, df, target, test=False, dummie=0, exclude_category=False,
     drop_list = []
     if test:
         for col in df.columns:
-            length = len(df[col].drop_duplicates())
+            length = df[col].nunique()
             if length <=1 and col not in ignore_list:
                 logger.info(f'''
     ***********WARNING************* LENGTH {length} COLUMN: {col}''')
