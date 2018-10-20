@@ -30,7 +30,7 @@ from logging import StreamHandler, DEBUG, Formatter, FileHandler, getLogger
 # global variables
 # =============================================================================
 COMPETITION_NAME = 'home-credit-default-risk'
-COMPETITION_NAME = 'ga-customer-revenue-prediction'
+#  COMPETITION_NAME = 'ga-customer-revenue-prediction'
 
 # =============================================================================
 # def
@@ -359,6 +359,12 @@ def load_file(path, delimiter='gz'):
     if path.count('.csv'):
         return pd.read_csv(path)
     filename = get_filename(path=path, delimiter=delimiter)
+
+    if filename[:5]=='train':
+        filename = filename[6:]
+    elif filename[:4]=='test':
+        filename = filename[5:]
+
     if path[-3:]=='npy':
         tmp = pd.Series(np.load(path), name=filename)
     elif path[-2:]=='fp':

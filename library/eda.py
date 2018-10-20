@@ -3,9 +3,12 @@
 import numpy as np
 import pandas as pd
 import itertools
-import seaborn as sns
-from matplotlib import pyplot as plt
-from matplotlib_venn import venn2
+try:
+    import seaborn as sns
+    from matplotlib import pyplot as plt
+    from matplotlib_venn import venn2
+except ImportError:
+    pass
 
 
 def df_info(target_df, topN=10):

@@ -11,35 +11,212 @@ sys.path.append('../library')
 from select_feature import move_feature
 import utils
 from utils import get_categorical_features, get_datetime_features
-from preprocessing import factorize_categoricals
-import xgboost as xgb
+from preprocessing import factorize_categoricals, get_dummies
+#  import xgboost as xgb
 from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression, ridge
 import pickle
 from sklearn.ensemble.partial_dependence import partial_dependence
 
-sys.path.append('../../GA-revenue/py')
-from info_R_Competition import zero_id
+start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
+kaggle='home_credit'
+if kaggle=='ga':
+    sys.path.append('../../GA-revenue/py')
+    from info_R_Competition import zero_id
+    us_other_id = zero_id()
 
-def get_folds(df=None, n_splits=5):
-    """Returns dataframe indices corresponding to Visitors Group KFold"""
-    # Get sorted unique visitors
-    val = df['fullVisitorId'].unique()
-    unique_vis = np.array(sorted(val))
 
-    # Get folds
-    folds = GroupKFold(n_splits=n_splits)
-    fold_ids = []
-    ids = np.arange(df.shape[0])
-    for trn_vis, val_vis in folds.split(X=unique_vis, y=unique_vis, groups=unique_vis):
-        fold_ids.append(
-            [
-                ids[df['fullVisitorId'].isin(unique_vis[trn_vis])],
-                ids[df['fullVisitorId'].isin(unique_vis[val_vis])]
-            ]
+def cross_prediction(logger,
+                     train,
+                     test,
+                     key,
+                     target,
+                     metric,
+                     fold_type='stratified',
+                     fold=5,
+                     group_col_name='',
+                     params={},
+                     num_boost_round=2000,
+                     early_stopping_rounds=150,
+                     seed=1208,
+                     categorical_list=[],
+                     model_type='lgb',
+                     oof_flg=True,
+                     ignore_list=[]
+                     ):
+
+    if params['objective']=='regression':
+        y = train[target].astype('float64')
+        y = np.log1p(y)
+    else:
+        y = train[target]
+
+    list_score = []
+    cv_feim = pd.DataFrame([])
+    prediction = np.array([])
+
+    ' KFold '
+    if fold_type=='stratified':
+        folds = StratifiedKFold(n_splits=fold, shuffle=True, random_state=seed) #1
+        kfold = folds.split(train,y)
+    elif fold_type=='group':
+        if group_col_name=='':raise ValueError(f'Not exist group_col_name.')
+        folds = GroupKFold(n_splits=fold)
+        kfold = folds.split(train, y, groups=train[group_col_name].values)
+
+    use_cols = [f for f in train.columns if f not in ignore_list]
+
+    if kaggle=='ga':
+        if 'unique_id' in list(train.columns):
+            train.set_index(['unique_id', key], inplace=True)
+            test.set_index(['unique_id', key], inplace=True)
+        else:
+            train.set_index(key, inplace=True)
+            test.set_index(key, inplace=True)
+
+    for n_fold, (trn_idx, val_idx) in enumerate(kfold):
+
+        x_train, y_train = train[use_cols].iloc[trn_idx, :], y.iloc[trn_idx]
+        x_val, y_val = train[use_cols].iloc[val_idx, :], y.iloc[val_idx]
+
+        if model_type.count('xgb'):
+            " XGBは'[]'と','と'<>'がNGなのでreplace "
+            if i==0:
+                test = test[use_cols]
+            use_cols = []
+            for col in x_train.columns:
+                use_cols.append(col.replace("[", "-q-").replace("]", "-p-").replace(",", "-o-"))
+            x_train.columns = use_cols
+            x_val.columns = use_cols
+            test.columns = use_cols
+
+        ' カラム名をソートし、カラム順による学習への影響をなくす '
+        x_train.sort_index(axis=1, inplace=True)
+        x_val.sort_index(axis=1, inplace=True)
+        if n_fold==0:
+            test =test[use_cols]
+            test.sort_index(axis=1, inplace=True)
+
+        clf, y_pred = Estimator(
+            logger=logger,
+            x_train=x_train,
+            y_train=y_train,
+            x_val=x_val,
+            y_val=y_val,
+            params=params,
+            categorical_list=categorical_list,
+            num_boost_round=num_boost_round,
+            early_stopping_rounds=early_stopping_rounds,
+            model_type=model_type
         )
 
-    return fold_ids
+        utils.mkdir_func('../model')
+        utils.mkdir_func(f'../model/{start_time[4:12]}_{model_type}')
+        with open(f'../model/{start_time[4:12]}/{model_type}_fold{n_fold}_feat{len(use_cols)}.pkl', 'wb') as m:
+            pickle.dump(obj=clf, file=m)
+
+        if kaggle=='ga':
+            hits = x_val['totals-hits'].map(lambda x: 0 if x==1 else 1).values
+            bounces = x_val['totals-bounces'].map(lambda x: 0 if x==1 else 1).values
+            y_pred = y_pred * hits * bounces
+            if metric=='rmse':
+                y_pred[y_pred<0.1] = 0
+
+        sc_score = sc_metrics(y_val, y_pred, metric)
+
+        list_score.append(sc_score)
+        logger.info(f'Fold No: {n_fold} | {metric}: {sc_score}')
+
+        ' OOF for Stackng '
+        if oof_flg:
+            val_pred = y_pred
+            if n_fold==0:
+                if kaggle=='ga':
+                    val_stack = x_val.reset_index()[['unique_id', key]]
+                else:
+                    val_stack = x_val.reset_index()[key].to_frame()
+                val_stack[target] = val_pred
+            else:
+                if kaggle=='ga':
+                    tmp = x_val.reset_index()[['unique_id', key]]
+                else:
+                    tmp = x_val.reset_index()[key].to_frame()
+                tmp[target] = val_pred
+                val_stack = pd.concat([val_stack, tmp], axis=0)
+            logger.info(f'Fold No: {n_fold} | valid_stack shape: {val_stack.shape} | cnt_id: {len(val_stack[key].drop_duplicates())}')
+
+        if not(model_type.count('xgb')):
+            #  test_pred = clf.predict(test, num_iterations=clf.best_iteration)
+            test_pred = clf.predict(test)
+        elif model_type.count('xgb'):
+            test_pred = clf.predict(xgb.DMatrix(test))
+
+        #  if params['objective']=='regression':
+        #      test_pred = np.expm1(test_pred)
+
+        if len(prediction)==0:
+            prediction = test_pred
+        else:
+            prediction += test_pred
+
+        ' Feature Importance '
+        feim_name = f'{n_fold}_importance'
+        feim = df_feature_importance(model=clf, model_type=model_type, use_cols=use_cols, feim_name=feim_name)
+
+        if len(cv_feim)==0:
+            cv_feim = feim.copy()
+        else:
+            cv_feim = cv_feim.merge(feim, on='feature', how='inner')
+
+    cv_score = np.mean(list_score)
+    logger.info(f'''
+#========================================================================
+# Train End.''')
+    [logger.info(f'''
+# Validation No: {i} | {metric}: {score}''') for i, score in enumerate(list_score)]
+    logger.info(f'''
+# Params   : {params}
+# CV score : {cv_score}
+#======================================================================== ''')
+
+    ' fold数で平均をとる '
+    prediction = prediction / fold
+    if params['objective']=='regression':
+        prediction = np.expm1(prediction)
+
+    ' OOF for Stackng '
+    if oof_flg:
+        if kaggle=='ga':
+            pred_stack = test.reset_index()[['unique_id', key]]
+        else:
+            pred_stack = test.reset_index()[key].to_frame()
+        pred_stack[target] = prediction
+        result_stack = pd.concat([val_stack, pred_stack], axis=0)
+        logger.info(f'result_stack shape: {result_stack.shape} | cnt_id: {len(result_stack[key].drop_duplicates())}')
+    else:
+        result_stack=[]
+
+    importance = []
+    for fold_no in range(fold):
+        if len(importance)==0:
+            importance = cv_feim[f'{fold_no}_importance'].values.copy()
+        else:
+            importance += cv_feim[f'{fold_no}_importance'].values
+
+    cv_feim['avg_importance'] = importance / fold
+    cv_feim.sort_values(by=f'avg_importance', ascending=False, inplace=True)
+    cv_feim['rank'] = np.arange(len(cv_feim))+1
+
+    if kaggle=='ga':
+        if 'unique_id' in train.reset_index().columns:
+            cv_feim.to_csv(f'../valid/{model_type}_feat{len(cv_feim)}_{metric}{str(cv_score)[:8]}.csv', index=False)
+        else:
+            cv_feim.to_csv(f'../valid/two_{model_type}_feat{len(cv_feim)}_{metric}{str(cv_score)[:8]}.csv', index=False)
+    else:
+        cv_feim.to_csv(f'../valid/{model_type}_feat{len(cv_feim)}_{metric}{str(cv_score)[:8]}.csv', index=False)
+
+    return prediction, cv_score, result_stack, use_cols
+
 
 def cross_validation(logger,
                      train,
@@ -49,7 +226,6 @@ def cross_validation(logger,
                      fold_type='stratified',
                      fold=5,
                      group_col_name='',
-                     val_label='val_label',
                      seed=1208,
                      params={},
                      num_boost_round=2000,
@@ -172,190 +348,6 @@ def cross_validation(logger,
         return cv_feim, len(use_cols)
 
 
-def cross_prediction(logger,
-                     train,
-                     test,
-                     key,
-                     target,
-                     metric,
-                     fold_type='stratified',
-                     fold=5,
-                     group_col_name='',
-                     val_label='val_label',
-                     params={},
-                     num_boost_round=2000,
-                     early_stopping_rounds=150,
-                     seed=1208,
-                     categorical_list=[],
-                     model_type='lgb',
-                     oof_flg=True,
-                     ignore_list=[]
-                     ):
-
-    if params['objective']=='regression':
-        y = train[target].astype('float64')
-        y = np.log1p(y)
-    else:
-        y = train[target]
-
-    list_score = []
-    cv_feim = pd.DataFrame([])
-    prediction = np.array([])
-    us_other_id = zero_id()
-
-    ' KFold '
-    if fold_type=='stratified':
-        folds = StratifiedKFold(n_splits=fold, shuffle=True, random_state=seed) #1
-        kfold = folds.split(train,y)
-    elif fold_type=='group':
-        if group_col_name=='':raise ValueError(f'Not exist group_col_name.')
-        folds = GroupKFold(n_splits=fold)
-        kfold = folds.split(train, y, groups=train[group_col_name].values)
-        #  kfold = get_folds(df=train, n_splits=5)
-
-    use_cols = [f for f in train.columns if f not in ignore_list]
-    if 'unique_id' in list(train.columns):
-        train.set_index(['unique_id', key], inplace=True)
-        test.set_index(['unique_id', key], inplace=True)
-    else:
-        train.set_index(key, inplace=True)
-        test.set_index(key, inplace=True)
-        #  oof_flg=False
-
-    for n_fold, (trn_idx, val_idx) in enumerate(kfold):
-
-        x_train, y_train = train[use_cols].iloc[trn_idx, :], y.iloc[trn_idx]
-        x_val, y_val = train[use_cols].iloc[val_idx, :], y.iloc[val_idx]
-
-        if model_type=='xgb':
-            " XGBは'[]'と','と'<>'がNGなのでreplace "
-            if i==0:
-                test = test[use_cols]
-            use_cols = []
-            for col in x_train.columns:
-                use_cols.append(col.replace("[", "-q-").replace("]", "-p-").replace(",", "-o-"))
-            x_train.columns = use_cols
-            x_val.columns = use_cols
-            test.columns = use_cols
-
-        ' カラム名をソートし、カラム順による学習への影響をなくす '
-        x_train.sort_index(axis=1, inplace=True)
-        x_val.sort_index(axis=1, inplace=True)
-        if n_fold==0:
-            test =test[use_cols]
-            test.sort_index(axis=1, inplace=True)
-
-        clf, y_pred = Estimator(
-            logger=logger,
-            x_train=x_train,
-            y_train=y_train,
-            x_val=x_val,
-            y_val=y_val,
-            params=params,
-            categorical_list=categorical_list,
-            num_boost_round=num_boost_round,
-            early_stopping_rounds=early_stopping_rounds,
-            model_type=model_type
-        )
-
-        # 特定の国のRevenueを0にする
-        # absolute
-        #  x_val = x_val.reset_index().set_index(key)
-        #  val_id = list(x_val.index)
-        #  val_0_id = set(val_id) & set(us_other_id)
-        #  x_val.loc[val_0_id, 'totals-hits'] = 1
-        #  x_val.reset_index().set_index(['unique_id', key], inplace=True)
-
-        hits = x_val['totals-hits'].map(lambda x: 0 if x==1 else 1).values
-        bounces = x_val['totals-bounces'].map(lambda x: 0 if x==1 else 1).values
-        y_pred = y_pred * hits * bounces
-        if metric=='rmse':
-            y_pred[y_pred<0.1] = 0
-
-        sc_score = sc_metrics(y_val, y_pred, metric)
-
-        list_score.append(sc_score)
-        logger.info(f'Fold No: {n_fold} | {metric}: {sc_score}')
-
-        ' OOF for Stackng '
-        if oof_flg:
-            val_pred = y_pred
-            if n_fold==0:
-                val_stack = x_val.reset_index()[['unique_id', key]]
-                val_stack[target] = val_pred
-            else:
-                tmp = x_val.reset_index()[['unique_id', key]]
-                tmp[target] = val_pred
-                val_stack = pd.concat([val_stack, tmp], axis=0)
-            logger.info(f'Fold No: {n_fold} | valid_stack shape: {val_stack.shape} | cnt_id: {len(val_stack[key].drop_duplicates())}')
-
-        if model_type != 'xgb':
-            #  test_pred = clf.predict(test, num_iterations=clf.best_iteration)
-            test_pred = clf.predict(test)
-        elif model_type == 'xgb':
-            test_pred = clf.predict(xgb.DMatrix(test))
-
-        #  if params['objective']=='regression':
-        #      test_pred = np.expm1(test_pred)
-
-        if len(prediction)==0:
-            prediction = test_pred
-        else:
-            prediction += test_pred
-
-        ' Feature Importance '
-        feim_name = f'{n_fold}_importance'
-        feim = df_feature_importance(model=clf, model_type=model_type, use_cols=use_cols, feim_name=feim_name)
-
-        if len(cv_feim)==0:
-            cv_feim = feim.copy()
-        else:
-            cv_feim = cv_feim.merge(feim, on='feature', how='inner')
-
-    cv_score = np.mean(list_score)
-    logger.info(f'''
-#========================================================================
-# Train End.''')
-    [logger.info(f'''
-# Validation No: {i} | {metric}: {score}''') for i, score in enumerate(list_score)]
-    logger.info(f'''
-# Params   : {params}
-# CV score : {cv_score}
-#======================================================================== ''')
-
-    ' fold数で平均をとる '
-    prediction = prediction / fold
-    if metric=='rmse':
-        prediction = np.expm1(prediction)
-
-    ' OOF for Stackng '
-    if oof_flg:
-        pred_stack = test.reset_index()[['unique_id', key]]
-        pred_stack[target] = prediction
-        result_stack = pd.concat([val_stack, pred_stack], axis=0)
-        logger.info(f'result_stack shape: {result_stack.shape} | cnt_id: {len(result_stack[key].drop_duplicates())}')
-    else:
-        result_stack=[]
-
-    importance = []
-    for fold_no in range(fold):
-        if len(importance)==0:
-            importance = cv_feim[f'{fold_no}_importance'].values.copy()
-        else:
-            importance += cv_feim[f'{fold_no}_importance'].values
-
-    cv_feim['avg_importance'] = importance / fold
-    cv_feim.sort_values(by=f'avg_importance', ascending=False, inplace=True)
-    cv_feim['rank'] = np.arange(len(cv_feim))+1
-
-    if 'unique_id' in train.reset_index().columns:
-        cv_feim.to_csv(f'../valid/{model_type}_feat{len(cv_feim)}_{metric}{str(cv_score)[:8]}.csv', index=False)
-    else:
-        cv_feim.to_csv(f'../valid/two_{model_type}_feat{len(cv_feim)}_{metric}{str(cv_score)[:8]}.csv', index=False)
-
-    return prediction, cv_score, result_stack, use_cols
-
-
 ' Regression '
 def TimeSeriesPrediction(logger, train, test, key, target, val_label='val_label', categorical_list=[], metric='rmse', params={}, model_type='lgb', ignore_list=[]):
     '''
@@ -396,7 +388,7 @@ def TimeSeriesPrediction(logger, train, test, key, target, val_label='val_label'
     x_val.sort_index(axis=1, inplace=True)
     test.sort_index(axis=1, inplace=True)
 
-    if model_type=='xgb':
+    if model_type.count('xgb'):
         " XGBはcolumn nameで'[]'と','と'<>'がNGなのでreplace "
         if i==0:
             test = test[use_cols]
@@ -426,9 +418,9 @@ def TimeSeriesPrediction(logger, train, test, key, target, val_label='val_label'
     y_train = np.expm1(y_val)
     y_pred = np.expm1(y_pred)
 
-    if model_type != 'xgb':
+    if not(model_type.count('xgb')):
         test_pred = Model.predict(test)
-    elif model_type == 'xgb':
+    elif model_type.count('xgb'):
         test_pred = Model.predict(xgb.DMatrix(test))
 
     ' Feature Importance '
@@ -463,7 +455,7 @@ def Estimator(logger, x_train, y_train, x_val=[], y_val=[], test=[], params={}, 
 # NUM_BOOST_ROUND       : {num_boost_round}
 #========================================================================''')
     ' LightGBM / XGBoost / ExtraTrees / LogisticRegression'
-    if model_type=='lgb':
+    if model_type.count('lgb'):
         lgb_train = lgb.Dataset(data=x_train, label=y_train)
         if len(x_val)>0:
             lgb_eval = lgb.Dataset(data=x_val, label=y_val)
@@ -485,7 +477,7 @@ def Estimator(logger, x_train, y_train, x_val=[], y_val=[], test=[], params={}, 
                             )
             y_pred = clf.predict(test)
 
-    elif model_type=='xgb':
+    elif model_type.count('xgb'):
 
         d_train = xgb.DMatrix(x_train, label=y_train)
         if len(x_val)>0:
@@ -508,7 +500,7 @@ def Estimator(logger, x_train, y_train, x_val=[], y_val=[], test=[], params={}, 
                             )
             y_pred = clf.predict(d_test)
 
-    elif model_type=='ext':
+    elif model_type.count('ext'):
 
         clf = ExtraTreesClassifier(
             **params,
@@ -518,7 +510,7 @@ def Estimator(logger, x_train, y_train, x_val=[], y_val=[], test=[], params={}, 
         clf.fit(x_train, y_train)
         y_pred = clf.predict_proba(x_val)[:,1]
 
-    elif model_type=='lgr':
+    elif model_type.count('lgr'):
 
         clf = LogisticRegression(
             **params,
@@ -561,14 +553,14 @@ def judgement(score, iter_no, return_score):
 
 def df_feature_importance(model, model_type, use_cols, feim_name='importance'):
     ' Feature Importance '
-    if model_type=='lgb':
+    if model_type.count('lgb'):
         tmp_feim = pd.Series(model.feature_importance(), name=feim_name)
         feature_name = pd.Series(use_cols, name='feature')
         feim = pd.concat([feature_name, tmp_feim], axis=1)
-    elif model_type=='xgb':
+    elif model_type.count('xgb'):
         tmp_feim = model.get_fscore()
         feim = pd.Series(tmp_feim,  name=feim_name).to_frame().reset_index().rename(columns={'index':'feature'})
-    elif model_type=='ext':
+    elif model_type.count('ext'):
         tmp_feim = model.feature_importance_()
         feim = pd.Series(tmp_feim,  name=feim_name).to_frame().reset_index().rename(columns={'index':'feature'})
 

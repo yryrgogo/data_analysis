@@ -1,64 +1,26 @@
-def params_GA():
-    train_params = {
-    #  'boosting':'goss',
-    'num_threads': 35,
-    #  'num_threads': 20,
-    'metric': 'rmse',
-    'objective': 'regression',
-    'bagging_freq': 1,
-    'colsample_bytree': 0.7,
-    'lambda_l1': 0.10,
-    'lambda_l2': 0.60,
-    'learning_rate': 0.1,
-    'max_bin': 100,
-    #  'max_depth': -1,
-    'min_child_samples': 30,
-    'min_child_weight': 96,
-    'min_data_in_bin': 21,
-    'min_split_gain': 0,
-    #  'num_leaves': 63,
-    #  'max_depth': 7,
-    'num_leaves': 31,
-    'max_depth': -1,
-    #  'num_leaves': 128,
-    'sigmoid': 0.9,
-    'subsample': 0.9,
-    #  'subsample': 0.95,
-    'random_seed': 1208,
-    'bagging_seed':1208,
-    'feature_fraction_seed':1208,
-    'data_random_seed':1208
-    }
-
-    return train_params
-
 def params_home_credit():
 
     # 81354, 8040 AUC AVG 0.809672
     train_params = {'num_threads':35, 'bagging_freq': 1, 'bagging_seed': 1208, 'colsample_bytree': 0.01, 'data_random_seed': 1208, 'feature_fraction_seed': 1208, 'lambda_l1': 0.1, 'lambda_l2': 48.0, 'learning_rate': 0.02, 'max_bin': 400, 'max_depth': 5, 'metric': 'auc', 'min_child_samples': 44, 'min_child_weight': 12, 'min_data_in_bin': 72, 'min_split_gain': 0.01, 'num_leaves': 13, 'num_threads': 35, 'objective': 'binary', 'random_seed': 1208, 'subsample': 1.0} 
 
     train_params = {
-    #  'boosting':'dart',
-    'num_threads': 35,
-    'learning_rate':0.02,
+    'num_threads': -1,
     #  'colsample_bytree':0.01,
-    'colsample_bytree':0.02,
-    #  'subsample':0.9,
-    'min_split_gain':0.01,
+    'colsample_bytree':0.2,
+    'subsample':0.9,
+    'min_split_gain':0,
     'objective':'binary',
     'boosting_type':'gbdt',
     'metric':'auc',
+    'num_leaves':31,
     'max_depth':6,
-    'min_child_weight':18,
     #  'min_child_weight':36,
     #  'max_bin':250,
     #  'min_child_samples':96,
     #  'min_data_in_bin':96,
 
     'lambda_l1':0.1,
-    'lambda_l2':110,
-    'num_leaves':30,
-    #  'num_leaves':11,
+    'lambda_l2':90,
     'random_seed': 1208,
     'bagging_seed':1208,
     'feature_fraction_seed':1208,
