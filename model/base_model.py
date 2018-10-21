@@ -71,7 +71,7 @@ class Model(metaclass=ABCMeta):
         return feim
 
 
-    def data_check(self, df, test=False, cat_encode=False, dummie=0, exclude_category=False):
+    def data_check(self, df, test_flg=False, cat_encode=False, dummie=0, exclude_category=False):
         '''
         Explain:
             学習を行う前にデータに問題がないかチェックする
@@ -116,7 +116,7 @@ class Model(metaclass=ABCMeta):
 
         ' Testsetで値のユニーク数が1のカラムを除外する '
         drop_list = []
-        if test:
+        if test_flg:
             for col in df.columns:
                 length = df[col].nunique()
                 if length <=1 and col not in ignore_list:
@@ -135,7 +135,7 @@ class Model(metaclass=ABCMeta):
         return df, drop_list
 
 
-    def cross_prediction(self, train, test, key, target, metric, fold_type='stratified', fold=5, group_col_name='', params={}, num_boost_round=0, early_stopping_rounds=0, seed=1208, oof_flg=True, ignore_list=[]):
+    def cross_prediction(self, train, test, key, target, fold_type='stratified', fold=5, group_col_name='', params={}, num_boost_round=0, early_stopping_rounds=0, oof_flg=True):
 
         # Result Variables
         list_score = []
@@ -213,13 +213,13 @@ class Model(metaclass=ABCMeta):
                 bounces = x_val['totals-bounces'].map(
                     lambda x: 0 if x == 1 else 1).values
                 y_pred = y_pred * hits * bounces
-                if metric == 'rmse':
+                if self.metric == 'rmse':
                     y_pred[y_pred < 0.1] = 0
 
-            sc_score = self.sc_metrics(y_val, y_pred, metric)
+            sc_score = self.sc_metrics(y_val, y_pred)
 
             list_score.append(sc_score)
-            self.logger.info(f'Fold No: {n_fold} | {metric}: {sc_score}')
+            self.logger.info(f'Fold No: {n_fold} | {self.metric}: {sc_score}')
 
             ' OOF for Stackng '
             if oof_flg:
@@ -266,7 +266,7 @@ class Model(metaclass=ABCMeta):
 #========================================================================
 # Train End.''')
         [self.logger.info(f'''
-# Validation No: {i} | {metric}: {score}''') for i, score in enumerate(list_score)]
+# Validation No: {i} | {self.metric}: {score}''') for i, score in enumerate(list_score)]
         self.logger.info(f'''
 # Params   : {params}
 # CV score : {cv_score}
