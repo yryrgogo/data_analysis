@@ -22,10 +22,19 @@ class lightgbm_ex(Model):
         self.cv_score = None
 
     def train(self, x_train, y_train, x_val, y_val, params={}, verbose_eval=100, gbdt_args={}):
+
+        # Params
+        params['bagging_seed'] = self.seed
+        params['data_random_seed'] = self.seed
+        params['feature_fraction_seed'] = self.seed
+        params['random_seed'] = self.seed
         num_boost_round = gbdt_args['num_boost_round']
         early_stopping_rounds = gbdt_args['early_stopping_rounds']
+
+        # Dataset
         lgb_train = self.__model.Dataset(data=x_train, label=y_train)
         lgb_eval = self.__model.Dataset(data=x_val, label=y_val)
+
         estimator = self.__model.train(
             train_set=lgb_train,
             valid_sets=lgb_eval,
