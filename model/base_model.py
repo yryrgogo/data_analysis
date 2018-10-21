@@ -5,8 +5,11 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 import pandas as pd
 from sklearn.metrics import log_loss, roc_auc_score, mean_squared_error, r2_score
+from sklearn.model_selection import ParameterGrid, StratifiedKFold, GroupKFold
 import multiprocessing
+import shutil
 
+kaggle = 'home-credit-default-risk'
 
 class Model(metaclass=ABCMeta):
     """
@@ -24,7 +27,7 @@ class Model(metaclass=ABCMeta):
     def predict_proba(self):
         pass
 
-    @abstractmethod
+    #  @abstractmethod
     def accuracy(self):
         pass
 
@@ -55,20 +58,28 @@ class Model(metaclass=ABCMeta):
         pass
 
 
-    def df_feature_importance(self):
-        feim_name='importance'
+    def df_feature_importance(self, feim_name):
         ' Feature Importance '
         if self.model_type.count('lgb'):
-            tmp_feim = pd.Series(self.__model.feature_importance(), name=feim_name)
-            feature_name = pd.Series(use_cols, name='feature')
+            tmp_feim = pd.Series(self.estimator.feature_importance(), name=feim_name)
+            feature_name = pd.Series(self.use_cols, name='feature')
             feim = pd.concat([feature_name, tmp_feim], axis=1)
         elif self.model_type.count('xgb'):
-            tmp_feim = self.__model.get_fscore()
+            tmp_feim = self.estimator.get_fscore()
             feim = pd.Series(tmp_feim,  name=feim_name).to_frame().reset_index().rename(columns={'index':'feature'})
         elif self.model_type.count('ext'):
-            tmp_feim = self.__model.feature_importance_()
+            tmp_feim = self.estimator.feature_importance_()
             feim = pd.Series(tmp_feim,  name=feim_name).to_frame().reset_index().rename(columns={'index':'feature'})
         return feim
+
+
+    def move_feature(self, feature_name, move_path='../features/9_delete'):
+
+        try:
+            shutil.move(f'../features/4_winner/{feature_name}.gz', move_path)
+        except FileNotFoundError:
+            print(f'FileNotFound. : {feature_name}.gz')
+            pass
 
 
     def data_check(self, df, test_flg=False, cat_encode=False, dummie=0, exclude_category=False):
@@ -105,7 +116,7 @@ class Model(metaclass=ABCMeta):
             if exclude_category:
                 for cat in categorical_list:
                     df.drop(cat, axis=1, inplace=True)
-                    move_feature(feature_name=cat)
+                    self.move_feature(feature_name=cat)
                 categorical_list = []
             elif dummie==1:
                 df = get_dummies(df, categorical_list)
@@ -119,10 +130,10 @@ class Model(metaclass=ABCMeta):
         if test_flg:
             for col in df.columns:
                 length = df[col].nunique()
-                if length <=1 and col not in ignore_list:
+                if length <=1 and col not in self.ignore_list:
                     self.logger.info(f'''
 ***********WARNING************* LENGTH {length} COLUMN: {col}''')
-                    move_feature(feature_name=col)
+                    self.move_feature(feature_name=col)
                     if col not in self.ignore_list:
                         drop_list.append(col)
 
@@ -151,7 +162,7 @@ class Model(metaclass=ABCMeta):
 
         ' KFold '
         if fold_type == 'stratified':
-            folds = StratifiedKFold(n_splits=fold, shuffle=True, random_state=seed)  # 1
+            folds = StratifiedKFold(n_splits=fold, shuffle=True, random_state=self.seed)  # 1
             kfold = folds.split(train, y)
         elif fold_type == 'group':
             if group_col_name == '':
@@ -162,40 +173,41 @@ class Model(metaclass=ABCMeta):
         use_cols = [f for f in train.columns if f not in self.ignore_list]
         self.use_cols = sorted(use_cols)  # カラム名をソートし、カラム順による学習への影響をなくす
 
-        if kaggle == 'ga':
-            if 'unique_id' in list(train.columns):
+        if kaggle == 'ga' and 'unique_id' in list(train.columns):
                 train.set_index(['unique_id', key], inplace=True)
                 test.set_index(['unique_id', key], inplace=True)
-            else:
-                train.set_index(key, inplace=True)
-                test.set_index(key, inplace=True)
+        else:
+            train.set_index(key, inplace=True)
+            test.set_index(key, inplace=True)
 
         for n_fold, (trn_idx, val_idx) in enumerate(kfold):
 
-            x_train, y_train = train[use_cols].iloc[trn_idx, :], y.iloc[trn_idx]
-            x_val, y_val = train[use_cols].iloc[val_idx, :], y.iloc[val_idx]
+            x_train, y_train = train[self.use_cols].iloc[trn_idx, :], y.iloc[trn_idx]
+            x_val, y_val = train[self.use_cols].iloc[val_idx, :], y.iloc[val_idx]
 
             if self.model_type.count('xgb'):
                 " XGBは'[]'と','と'<>'がNGなのでreplace "
                 if i == 0:
-                    test = test[use_cols]
+                    test = test[self.use_cols]
                 use_cols = []
                 for col in x_train.columns:
                     use_cols.append(col.replace(
                         "[", "-q-").replace("]", "-p-").replace(",", "-o-"))
+                use_cols = sorted(use_cols)
                 x_train.columns = use_cols
                 x_val.columns = use_cols
                 test.columns = use_cols
+                self.use_cols = use_cols
 
             if n_fold == 0:
-                test = test[use_cols]
+                test = test[self.use_cols]
 
             # GBDTのみ適用するargs
             gbdt_args = {}
             if num_boost_round:
                 gbdt_args['num_boost_round'] = num_boost_round
                 gbdt_args['early_stopping_rounds'] = early_stopping_rounds
-            estimator = self.train(
+            self.estimator = self.train(
                 x_train=x_train,
                 y_train=y_train,
                 x_val=x_val,
@@ -203,9 +215,9 @@ class Model(metaclass=ABCMeta):
                 params=params,
                 gbdt_args=gbdt_args
             )
-            y_pred = estimator.predict(x_val)
+            y_pred = self.estimator.predict(x_val)
 
-            self.fold_model_list.append(estimator)
+            self.fold_model_list.append(self.estimator)
 
             if kaggle == 'ga':
                 hits = x_val['totals-hits'].map(lambda x: 0 if x ==
@@ -239,9 +251,9 @@ class Model(metaclass=ABCMeta):
                     val_stack = pd.concat([val_stack, tmp], axis=0)
 
             if not(self.model_type.count('xgb')):
-                test_pred = estimator.predict(test)
+                test_pred = self.estimator.predict(test)
             elif self.model_type.count('xgb'):
-                test_pred = estimator.predict(xgb.DMatrix(test))
+                test_pred = self.estimator.predict(xgb.DMatrix(test))
 
             if params['objective']=='regression':
                 test_pred = np.expm1(test_pred)
@@ -253,8 +265,7 @@ class Model(metaclass=ABCMeta):
 
             ' Feature Importance '
             feim_name = f'{n_fold}_importance'
-            feim = df_feature_importance(
-                model=estimator, use_cols=use_cols, feim_name=feim_name)
+            feim = self.df_feature_importance(feim_name=feim_name)
 
             if len(cv_feim) == 0:
                 cv_feim = feim.copy()
@@ -285,7 +296,7 @@ class Model(metaclass=ABCMeta):
                 pred_stack = test.reset_index()[key].to_frame()
             pred_stack[target] = prediction
             result_stack = pd.concat([val_stack, pred_stack], axis=0)
-            logger.info(
+            self.logger.info(
                 f'result_stack shape: {result_stack.shape} | cnt_id: {len(result_stack[key].drop_duplicates())}')
         else:
             result_stack = []
@@ -441,3 +452,4 @@ class Model(metaclass=ABCMeta):
                 result = tmp_result.copy()
 
         return result
+

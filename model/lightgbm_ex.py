@@ -1,7 +1,6 @@
 from .base_model import Model
 import numpy as np
 import lightgbm as lgb
-from sklearn.model_selection import ParameterGrid, StratifiedKFold, GroupKFold
 import sys
 
 
@@ -9,11 +8,12 @@ class lightgbm_ex(Model):
 
     def __init__(self, logger, metric, seed=1208, model_type='lgb', ignore_list=[]):
         self.__model = lgb
-        self.model_type==model_type
+        self.estimator = None
+        self.model_type = model_type
         self.logger = logger
         self.metric = metric
         self.seed = seed
-        self.ignore_list = []
+        self.ignore_list = ignore_list
         self.fold_model_list = []
         self.cv_feim = []
         self.prediction = []
