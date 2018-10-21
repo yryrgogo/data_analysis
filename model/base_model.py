@@ -351,7 +351,7 @@ class Model(metaclass=ABCMeta):
         return pararell_xray_caliculation(*args)
 
 
-    def x_ray(self, fold_num, base_xray, col_list=[], max_point=30, threshold=0.005, ex_feature_list=[], cpu_cnt=multiprocessing.cpu_count()):
+    def xray(self, fold_num, base_xray, col_list=[], max_point=30, threshold=0.005, ex_feature_list=[], cpu_cnt=multiprocessing.cpu_count()):
         '''
         Explain:
         Args:
