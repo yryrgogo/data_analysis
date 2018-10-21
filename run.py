@@ -1,1 +1,1 @@
-from model.lightgbm_ex import LightGBM_EX as lgb_ex
+from model.lightgbm_ex import lightgbm_ex as lgb_ex
