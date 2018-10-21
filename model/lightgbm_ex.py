@@ -20,6 +20,7 @@ class lightgbm_ex(Model):
         self.result_stack = []
         self.xray_list = []
         self.cv_score = None
+        self.base_xray = []
 
     def train(self, x_train, y_train, x_val, y_val, params={}, verbose_eval=100, gbdt_args={}):
 

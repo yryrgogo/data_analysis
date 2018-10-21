@@ -382,19 +382,9 @@ def get_filename(path, delimiter='gz'):
     return filename
 
 def pararell_load_data(path_list, delimiter=False):
-    #  logger = logger_func()
     p = Pool(multiprocessing.cpu_count())
-    if delimiter:
-        p_list = p.map(load_file, path_list)
-        #  arg_list = []
-        #  for i, path in enumerate(path_list):
-        #      arg_list.append([path, delimiter])
-        #  p_list = p.map(load_file_wrapper, arg_list)
-        #  logger.info(i)
-    else:
-        p_list = p.map(load_file, path_list)
+    p_list = p.map(load_file, path_list)
     p.close
-
     return p_list
 
 def load_file_wrapper(args):

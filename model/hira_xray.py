@@ -15,7 +15,6 @@ import re
 import gc
 import glob
 sys.path.append(f"{HOME}/kaggle/github/model/")
-import utils
 from Estimator import cross_validation, data_check, sc_metrics
 import pickle
 logger = logger_func()
