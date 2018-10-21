@@ -1,3 +1,4 @@
+import numpy as np
 """
 機械学習モデル基底クラス
 """
@@ -382,9 +383,6 @@ class Model(metaclass=ABCMeta):
             ex_feature: データポイントの取得方法が特殊なfeature_list
         Return:
         '''
-        self.base_xray = base_xray[self.use_cols].copy()
-        del base_xray
-        gc.collect()
         result = pd.DataFrame([])
 
         if len(col_list)==0:
@@ -394,6 +392,12 @@ class Model(metaclass=ABCMeta):
                 continue
             xray_list = []
 
+            null_values = base_xray[col][base_xray[col].isnull()].values
+            if len(null_values)>0:
+                null_value = null_values[0]
+            self.base_xray = base_xray[self.use_cols].copy()
+            del base_xray
+
             #========================================================================
             # Get X-RAY Data Point
             # 1. 対象カラムの各値のサンプル数をカウントし、割合を算出。
@@ -401,29 +405,31 @@ class Model(metaclass=ABCMeta):
             #========================================================================
             # TODO: Numericはnuniqueが多くなるので、丸められるようにしたい
             val_cnt = self.base_xray[col].value_counts().reset_index().rename(columns={'index':col, col:'cnt'})
-            val_cnt['ratio'] = val_cnt['cnt']/len(self.base_xray)
-
-            if col in ex_feature_list or len(val_cnt)<=max_point:
-                threshold = 0
-            # TODO thresholdはデフォルト0.5%でなく、閾値で切った時にpointが30を切らない値を設定する様にしたい
-            val_cnt = val_cnt.query(f"ratio>={threshold}") # サンプル数の0.5%未満しか存在しない値は除く
 
             # max_pointよりnuniqueが大きい場合、max_pointに取得ポイント数を絞る.
             # 合わせて10パーセンタイルをとり, 分布全体のポイントを最低限取得できるようにする
             if len(val_cnt)>max_point:
-                length = max_point-10
-                data_points = val_cnt.head(length).index.values
+                # 1. binにして中央値をとりデータポイントとする
+                bins = max_point-10
+                tmp_points = pd.qcut(x=self.base_xray[col], q=bins)
+                self.base_xray[f'bin_{col}'] = tmp_points
+                data_points = self.base_xray[[f'bin_{col}', col]].groupby(f'bin_{col}')[col].median().values
+                print(len(data_points))
+
+                # 2. percentileで10データポイントとる
                 percentiles = np.linspace(0.05, 0.95, num=10)
-                val_percentiles = mquantiles(val_cnt.index.values, prob=percentiles, axis=0)
+                percentiles_points = mquantiles(val_cnt.index.values, prob=percentiles, axis=0)
                 max_val = self.base_xray[col].max()
                 min_val = self.base_xray[col].min()
                 # 小数点以下が大きい場合、第何位までを計算するか取得して丸める
                 r = round_size(max_val, max_val, min_val)
-                val_percentiles = np.round(val_percentiles, r)
-                data_points = np.hstack((data_points, val_percentiles))
+                percentiles_points = np.round(percentiles_points, r)
+                data_points = np.hstack((data_points, percentiles_points, np.array([null_value])))
             else:
                 length = len(val_cnt)
                 data_points = val_cnt.head(length).index.values # indexにデータポイント, valueにサンプル数が入ってる
+            print(len(data_points))
+            sys.exit()
             data_points = np.sort(data_points)
 
             #========================================================================
