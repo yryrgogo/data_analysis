@@ -8,6 +8,14 @@ from sklearn.metrics import log_loss, roc_auc_score, mean_squared_error, r2_scor
 from sklearn.model_selection import ParameterGrid, StratifiedKFold, GroupKFold
 import multiprocessing
 import shutil
+import gc
+from scipy.stats.mstats import mquantiles
+from tqdm import tqdm
+import sys
+import os
+HOME = os.path.expanduser('~')
+sys.path.append(f"{HOME}/kaggle/data_analysis/library/")
+from pararell_utils import pararell_process
 
 kaggle = 'home-credit-default-risk'
 
@@ -323,7 +331,9 @@ class Model(metaclass=ABCMeta):
     #========================================================================
     # X-RAY
     #========================================================================
-    def pararell_xray_caliculation(col, val, fold_num):
+    def pararell_xray_caliculation(self, col, val, fold_num):
+        print(self.ignore_list)
+        sys.exit()
         dataset = self.base_xray
         dataset[col] = val
         pred = self.fold_model_list[fold_num].predict(dataset)
@@ -339,7 +349,7 @@ class Model(metaclass=ABCMeta):
             'xray' :p_avg
         })
 
-    def single_xray_caliculation(col, val, model, df_xray):
+    def single_xray_caliculation(self, col, val, model, df_xray):
 
         df_xray[col] = val
         df_xray.sort_index(axis=1, inplace=True)
@@ -358,11 +368,11 @@ class Model(metaclass=ABCMeta):
         })
 
 
-    def pararell_xray_wrapper(args):
-        return pararell_xray_caliculation(*args)
+    def pararell_xray_wrapper(self, args):
+        return self.pararell_xray_caliculation(*args)
 
 
-    def xray(self, fold_num, base_xray, col_list=[], max_point=30, threshold=0.005, ex_feature_list=[], cpu_cnt=multiprocessing.cpu_count()):
+    def xray(self, fold_num, base_xray, col_list=[], max_point=30, threshold=0.005, ex_feature_list=[], Pararell=True, cpu_cnt=multiprocessing.cpu_count()):
         '''
         Explain:
         Args:
@@ -378,7 +388,7 @@ class Model(metaclass=ABCMeta):
         result = pd.DataFrame([])
 
         if len(col_list)==0:
-            col_list = base_xray.columns
+            col_list = self.base_xray.columns
         for i, col in enumerate(col_list):
             if col in self.ignore_list:
                 continue
@@ -393,7 +403,7 @@ class Model(metaclass=ABCMeta):
             val_cnt = self.base_xray[col].value_counts().reset_index().rename(columns={'index':col, col:'cnt'})
             val_cnt['ratio'] = val_cnt['cnt']/len(self.base_xray)
 
-            if col in ex_feature or len(val_cnt)<=max_point:
+            if col in ex_feature_list or len(val_cnt)<=max_point:
                 threshold = 0
             # TODO thresholdはデフォルト0.5%でなく、閾値で切った時にpointが30を切らない値を設定する様にしたい
             val_cnt = val_cnt.query(f"ratio>={threshold}") # サンプル数の0.5%未満しか存在しない値は除く
@@ -425,16 +435,18 @@ class Model(metaclass=ABCMeta):
             # データセットを逐一更新して予測を行うので、データセットの非同期並列必須
             # TODO DataFrameでなくnumpyでデータセットをattributeに持たせてみる?
             #========================================================================
+            Pararell=False
             if Pararell:
                 arg_list = []
                 for point in data_points:
                     arg_list.append([col, point, fold_num])
-                xray_values = pararell_process(pararell_xray_wrapper, arg_list, cpu_cnt=cpu_cnt)
+                xray_values = pararell_process(self.pararell_xray_wrapper, arg_list, cpu_cnt=cpu_cnt)
             else:
                 xray_values = []
                 model = self.fold_model_list[fold_num]
+
                 for point in data_points:
-                    one_xray = single_xray_caliculation(col=col, val=point, model=model, df_xray=df_xray)
+                    one_xray = self.single_xray_caliculation(col=col, val=point, model=model, df_xray=self.df_xray)
                     xray_values.append(one_xray)
 
             #========================================================================
