@@ -100,3 +100,9 @@
 ### 6. Prediction Management
 
 #### Sample Weight
+
+
+### 99. Important
+
+These mean & std is same.
+![dp9y2dauwaaorlq](https://user-images.githubusercontent.com/29481336/47257269-ad3efe80-d4c6-11e8-9411-412ca30a4b92.jpg)
