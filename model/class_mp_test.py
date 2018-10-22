@@ -3,12 +3,14 @@ HOME = os.path.expanduser('~')
 import sys
 sys.path.append(f"{HOME}/kaggle/github/library/")
 from utils import pararell_process
+#  import lightgbm as lgb
 
 
 class multi_test:
 
     def __init__(self):
         self.comment_list = ['hello', 'thanks', 'good-bye']
+        #  self.model = lgb
 
     def comment(self, comment):
         print(comment)
