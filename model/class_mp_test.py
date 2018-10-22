@@ -15,10 +15,11 @@ class multi_test:
     def comment(self, comment):
         print(comment)
 
-    def multi_comment(self, c1, c2, c3):
+    def multi_comment(self, c1, c2, c3, model):
         print(c1)
         print(c2)
         print(c3)
+        print(model)
 
     def com_wrapper(self, args):
         return self.multi_comment(*args)
