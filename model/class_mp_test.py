@@ -1,8 +1,8 @@
 import os
 HOME = os.path.expanduser('~')
 import sys
-sys.path.append(f"{HOME}/kaggle/github/library/")
-from utils import pararell_process
+sys.path.append(f"{HOME}/kaggle/data_analysis/library/")
+from pararell_utils import pararell_process
 
 
 class multi_test:
@@ -13,10 +13,11 @@ class multi_test:
     def comment(self, comment):
         print(comment)
 
-    def multi_comment(self, c1, c2, c3):
+    def multi_comment(self, c1, c2, c3, model):
         print(c1)
         print(c2)
         print(c3)
+        print(model)
 
     def com_wrapper(self, args):
         return self.multi_comment(*args)

@@ -1,7 +1,11 @@
 from .base_model import Model
 import numpy as np
 import lightgbm as lgb
+import os
+HOME = os.path.expanduser('~')
 import sys
+sys.path.append(f"{HOME}/kaggle/data_analysis/library/")
+from pararell_utils import pararell_process
 
 
 class lightgbm_ex(Model):
