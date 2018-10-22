@@ -1,3 +1,4 @@
+Pararell=True
 import numpy as np
 """
 機械学習モデル基底クラス
@@ -17,8 +18,10 @@ import os
 HOME = os.path.expanduser('~')
 sys.path.append(f"{HOME}/kaggle/data_analysis/library/")
 from pararell_utils import pararell_process
+from caliculate_utils import round_size
 
 kaggle = 'home-credit-default-risk'
+
 
 class Model(metaclass=ABCMeta):
     """
@@ -328,146 +331,3 @@ class Model(metaclass=ABCMeta):
         self.result_stack = result_stack
 
         return self
-
-    #========================================================================
-    # X-RAY
-    #========================================================================
-    def pararell_xray_caliculation(self, col, val, fold_num):
-        print(self.ignore_list)
-        sys.exit()
-        dataset = self.base_xray
-        dataset[col] = val
-        pred = self.fold_model_list[fold_num].predict(dataset)
-        p_avg = np.mean(pred)
-
-        self.logger.info(f'''
-#========================================================================
-# CALICULATION PROGRESS... COLUMN: {col} | VALUE: {val} | X-RAY: {p_avg}
-#========================================================================''')
-        self.xray_list.append({
-            'feature':col,
-            'value':val,
-            'xray' :p_avg
-        })
-
-    def single_xray_caliculation(self, col, val, model, df_xray):
-
-        df_xray[col] = val
-        df_xray.sort_index(axis=1, inplace=True)
-        pred = model.predict(df_xray)
-        gc.collect()
-        p_avg = np.mean(pred)
-
-        self.logger.info(f'''
-#========================================================================
-# CALICULATION PROGRESS... COLUMN: {col} | VALUE: {val} | X-RAY: {p_avg}
-#========================================================================''')
-        self.xray_list.append({
-            'feature':col,
-            'value':val,
-            'xray' :p_avg
-        })
-
-
-    def pararell_xray_wrapper(self, args):
-        return self.pararell_xray_caliculation(*args)
-
-
-    def xray(self, fold_num, base_xray, col_list=[], max_point=30, threshold=0.005, ex_feature_list=[], Pararell=True, cpu_cnt=multiprocessing.cpu_count()):
-        '''
-        Explain:
-        Args:
-            fold_num  : 何番目のfoldsのモデルから出力するか
-            col_list  : x-rayを出力したいカラムリスト.引数なしの場合はデータセットの全カラム
-            max_point : x-rayを可視化するデータポイント数
-            ex_feature: データポイントの取得方法が特殊なfeature_list
-        Return:
-        '''
-        result = pd.DataFrame([])
-
-        if len(col_list)==0:
-            col_list = self.base_xray.columns
-        for i, col in enumerate(col_list):
-            if col in self.ignore_list:
-                continue
-            xray_list = []
-
-            null_values = base_xray[col][base_xray[col].isnull()].values
-            if len(null_values)>0:
-                null_value = null_values[0]
-            self.base_xray = base_xray[self.use_cols].copy()
-            del base_xray
-
-            #========================================================================
-            # Get X-RAY Data Point
-            # 1. 対象カラムの各値のサンプル数をカウントし、割合を算出。
-            # 2. 全体においてサンプル数の少ない値は閾値で切ってX-RAYを算出しない
-            #========================================================================
-            # TODO: Numericはnuniqueが多くなるので、丸められるようにしたい
-            val_cnt = self.base_xray[col].value_counts().reset_index().rename(columns={'index':col, col:'cnt'})
-
-            # max_pointよりnuniqueが大きい場合、max_pointに取得ポイント数を絞る.
-            # 合わせて10パーセンタイルをとり, 分布全体のポイントを最低限取得できるようにする
-            if len(val_cnt)>max_point:
-                # 1. binにして中央値をとりデータポイントとする
-                bins = max_point-10
-                tmp_points = pd.qcut(x=self.base_xray[col], q=bins)
-                self.base_xray[f'bin_{col}'] = tmp_points
-                data_points = self.base_xray[[f'bin_{col}', col]].groupby(f'bin_{col}')[col].median().values
-                print(len(data_points))
-
-                # 2. percentileで10データポイントとる
-                percentiles = np.linspace(0.05, 0.95, num=10)
-                percentiles_points = mquantiles(val_cnt.index.values, prob=percentiles, axis=0)
-                max_val = self.base_xray[col].max()
-                min_val = self.base_xray[col].min()
-                # 小数点以下が大きい場合、第何位までを計算するか取得して丸める
-                r = round_size(max_val, max_val, min_val)
-                percentiles_points = np.round(percentiles_points, r)
-                data_points = np.hstack((data_points, percentiles_points, np.array([null_value])))
-            else:
-                length = len(val_cnt)
-                data_points = val_cnt.head(length).index.values # indexにデータポイント, valueにサンプル数が入ってる
-            print(len(data_points))
-            sys.exit()
-            data_points = np.sort(data_points)
-
-            #========================================================================
-            # 一番計算が重くなる部分
-            # multi_processにするとprocess数分のデータセットをメモリに乗せる必要が
-            # あり, Overheadがめちゃでかく大量のメモリを食う。また、各データポイントに
-            # ついてpredictを行うので、毎回全CPUを使っての予測が行われる。
-            # また、modelオブジェクトも重いらしく引数にmodelを載せて並列すると死ぬ
-            # データセットを逐一更新して予測を行うので、データセットの非同期並列必須
-            # TODO DataFrameでなくnumpyでデータセットをattributeに持たせてみる?
-            #========================================================================
-            Pararell=False
-            if Pararell:
-                arg_list = []
-                for point in data_points:
-                    arg_list.append([col, point, fold_num])
-                xray_values = pararell_process(self.pararell_xray_wrapper, arg_list, cpu_cnt=cpu_cnt)
-            else:
-                xray_values = []
-                model = self.fold_model_list[fold_num]
-
-                for point in data_points:
-                    one_xray = self.single_xray_caliculation(col=col, val=point, model=model, df_xray=self.df_xray)
-                    xray_values.append(one_xray)
-
-            #========================================================================
-            # 各featureのX-RAYの結果を統合
-            #========================================================================
-            tmp_result = pd.DataFrame(data=self.xray_list)
-
-            del self.base_xray
-            self.xray_list = []
-            gc.collect()
-
-            if len(result):
-                result = pd.concat([result, tmp_result], axis=0)
-            else:
-                result = tmp_result.copy()
-
-        return result
-
