@@ -125,7 +125,7 @@ def to_df_pkl(df, path, fname='', split_size=3, index=False):
     if index:
         df.reset_index(drop=True, inplace=True)
         gc.collect()
-    mkdir_p(path)
+    mkdir_func(path)
 
     ' データセットを切り分けて保存しておく '
     kf = KFold(n_splits=split_size)
