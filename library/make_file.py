@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
 import sys, glob
-from load_data import pararell_load_data
 import os
 HOME = os.path.expanduser('~')
 sys.path.append(f"{HOME}/kaggle/github/library/")
+from pararell_utils import pararell_load_data
 import utils
 from utils import logger_func, get_categorical_features, get_numeric_features, pararell_process
 pd.set_option('max_columns', 200)
