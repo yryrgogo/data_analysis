@@ -40,6 +40,7 @@ class lightgbm_ex(Model):
         lgb_train = self.__model.Dataset(data=x_train, label=y_train)
         lgb_eval = self.__model.Dataset(data=x_val, label=y_val)
 
+        self.logger.info(params)
         estimator = self.__model.train(
             train_set=lgb_train,
             valid_sets=lgb_eval,
@@ -47,7 +48,7 @@ class lightgbm_ex(Model):
             verbose_eval=verbose_eval,
             early_stopping_rounds=early_stopping_rounds,
             num_boost_round=num_boost_round,
-            categorical_feature= [col for col in list(x_train.columns) if (x_train[col].dtype == 'object') and col not in self.ignore_list]
+            categorical_feature= []
         )
         return estimator
 

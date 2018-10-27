@@ -7,7 +7,7 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 import pandas as pd
 from sklearn.metrics import log_loss, roc_auc_score, mean_squared_error, r2_score
-from sklearn.model_selection import ParameterGrid, StratifiedKFold, GroupKFold
+from sklearn.model_selection import ParameterGrid, StratifiedKFold, GroupKFold, KFold
 import multiprocessing
 import shutil
 import gc
@@ -19,6 +19,7 @@ HOME = os.path.expanduser('~')
 sys.path.append(f"{HOME}/kaggle/data_analysis/library/")
 from pararell_utils import pararell_process
 from caliculate_utils import round_size
+from preprocessing import factorize_categoricals, get_dummies
 
 kaggle = 'home-credit-default-risk'
 
@@ -94,7 +95,7 @@ class Model(metaclass=ABCMeta):
             pass
 
 
-    def data_check(self, df, test_flg=False, cat_encode=False, dummie=0, exclude_category=False):
+    def data_check(self, df, test_flg=False, cat_encode=True, dummie=0, exclude_category=False):
         '''
         Explain:
             学習を行う前にデータに問題がないかチェックする
@@ -181,6 +182,9 @@ class Model(metaclass=ABCMeta):
                 raise ValueError(f'Not exist group_col_name.')
             folds = GroupKFold(n_splits=fold)
             kfold = folds.split(train, y, groups=train[group_col_name].values)
+        elif fold_type == 'kfold':
+            folds = KFold(n_splits=fold, shuffle=True, random_state=self.seed)  # 1
+            kfold = folds.split(train, y)
 
         use_cols = [f for f in train.columns if f not in self.ignore_list]
         self.use_cols = sorted(use_cols)  # カラム名をソートし、カラム順による学習への影響をなくす
@@ -194,8 +198,8 @@ class Model(metaclass=ABCMeta):
 
         for n_fold, (trn_idx, val_idx) in enumerate(kfold):
 
-            x_train, y_train = train[self.use_cols].iloc[trn_idx, :], y.iloc[trn_idx]
-            x_val, y_val = train[self.use_cols].iloc[val_idx, :], y.iloc[val_idx]
+            x_train, y_train = train[self.use_cols].iloc[trn_idx, :], y.iloc[trn_idx].values
+            x_val, y_val = train[self.use_cols].iloc[val_idx, :], y.iloc[val_idx].values
 
             if self.model_type.count('xgb'):
                 " XGBは'[]'と','と'<>'がNGなのでreplace "
@@ -297,8 +301,6 @@ class Model(metaclass=ABCMeta):
 
         ' fold数で平均をとる '
         prediction = prediction / fold
-        if params['objective'] == 'regression':
-            prediction = np.expm1(prediction)
 
         ' OOF for Stackng '
         if oof_flg:
