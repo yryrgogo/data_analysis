@@ -1,7 +1,7 @@
 Pararell=True
 import numpy as np
 """
-機械学習モデル基底クラス
+基底クラス
 """
 from abc import ABCMeta, abstractmethod
 import numpy as np
@@ -25,9 +25,6 @@ kaggle = 'home-credit-default-risk'
 
 
 class Model(metaclass=ABCMeta):
-    """
-    機械学習モデル基底クラス
-    """
     @abstractmethod
     def train(self):
         pass

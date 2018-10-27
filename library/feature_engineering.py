@@ -33,50 +33,63 @@ def base_aggregation(df, level, feature, method, prefix='', suffix='', base=[]):
     df = df[level+[feature]]
 
     result = df.groupby(level)[feature].agg({'tmp': {method}})
-    result = result['tmp'].reset_index().rename(columns={f'{method}': f'{prefix}{feature}_{method}{suffix}@'})
+    result = result['tmp'].reset_index().rename(columns={f'{method}': f'{prefix}{feature}_{method}{suffix}@{level}'})
     if len(base):
         try:
-            result = base[level].to_frame().merge(result, on=level, how='left')[f'{prefix}{feature}_{method}{suffix}@']
+            result = base[level].to_frame().merge(result, on=level, how='left')[f'{prefix}{feature}_{method}{suffix}@{level}']
         except AttributeError:
-            result = base[level].merge(result, on=level, how='left')[f'{prefix}{feature}_{method}{suffix}@']
+            result = base[level].merge(result, on=level, how='left')[f'{prefix}{feature}_{method}{suffix}@{level}']
 
 
     return result
 
 
-def diff_feature(df, first, second):
+def diff_feature(df, first, second, only_feat=False):
     ' 大きい値がf1に来るようにする '
-    if df[first].mean()<df[second].mean():
-        f1 = second
-        f2 = first
-    else:
-        f1 = first
-        f2 = second
+    #  if df[first].mean()<df[second].mean():
+    #      f1 = second
+    #      f2 = first
+    #  else:
+    #      f1 = first
+    #      f2 = second
+    f1 = first
+    f2 = second
     df[f'{f1}_diff_{f2}@'] = df[f1] - df[f2]
+    if only_feat:
+        return df[f'{f1}_diff_{f2}@']
     return df
 
 
-def division_feature(df, first, second, sort=1):
+def division_feature(df, first, second, sort=1, only_feat=False):
     ' 大きい値がf1に来るようにする '
-    if df[first].mean()<df[second].mean() and sort==1:
-        f1 = second
-        f2 = first
-    else:
-        f1 = first
-        f2 = second
+    #  if df[first].mean()<df[second].mean() and sort==1:
+    #      f1 = second
+    #      f2 = first
+    #  else:
+    #      f1 = first
+    #      f2 = second
+    f1 = first
+    f2 = second
+    df[f2] = df[f2] + 1e8
     df[f'{f1}_div_{f2}@'] = df[f1] / df[f2]
+    if only_feat:
+        return df[f'{f1}_div_{f2}@']
     return df
 
 
-def product_feature(df, first, second):
+def product_feature(df, first, second, only_feat=False):
     ' 大きい値がf1に来るようにする '
-    if df[first].mean()<df[second].mean():
-        f1 = second
-        f2 = first
-    else:
-        f1 = first
-        f2 = second
+    #  if df[first].mean()<df[second].mean():
+    #      f1 = second
+    #      f2 = first
+    #  else:
+    #      f1 = first
+    #      f2 = second
+    f1 = first
+    f2 = second
     df[f'{f1}_pro_{f2}@'] = df[f1] * df[f2]
+    if only_feat:
+        return df[f'{f1}_pro_{f2}@']
     return df
 
 
