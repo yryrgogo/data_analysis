@@ -242,9 +242,9 @@ def exclude_feature(col_name, feature):
 def target_encoding(logger, train, test, key, target, level, method='mean',fold_type='stratified', fold=5, group_col_name='fullVisitorId', prefix='', select_list=[], ignore_list=[], seed=1208, return_df=False):
     '''
     Explain:
-        TARGET関連の特徴量を4partisionに分割したデータセットから作る.
-        1partisionの特徴量は、残り3partisionの集計から作成する。
-        test対する特徴量は、train全てを使って作成する
+        TARGET関連の特徴量をpartisionに分割したデータセットから作る.
+        1partisionの特徴量は、残りのpartisionの集計から作成する。
+        testに対する特徴量は、train全てを使って作成する
     Args:
         df(DF)               : 入力データ。カラムにはkeyとvalid_noがある前提
         key                  : ユニークカラム名
@@ -269,10 +269,10 @@ def target_encoding(logger, train, test, key, target, level, method='mean',fold_
         kfold = folds.split(train,train[target].values)
     elif fold_type=='group':
         if group_col_name=='':raise ValueError(f'Not exist group_col_name.')
-        #  folds = GroupKFold(n_splits=fold)
-        #  kfold = folds.split(train.drop(target, axis=1), train[target].values, groups=train[group_col_name].values)
-        folds = KFold(n_splits=fold)
-        kfold = folds.split(train.drop(target, axis=1), train[target].values)
+        folds = GroupKFold(n_splits=fold)
+        kfold = folds.split(train.drop(target, axis=1), train[target].values, groups=train[group_col_name].values)
+        #  folds = KFold(n_splits=fold)
+        #  kfold = folds.split(train.drop(target, axis=1), train[target].values)
 
     base_train = train[key].to_frame()
     result = pd.DataFrame()
@@ -305,6 +305,7 @@ def target_encoding(logger, train, test, key, target, level, method='mean',fold_
 # LENGTH  : Train{len(result)} / Test{len(test_result)}
 #========================================================================''')
 
+    # arrayで返すか、keyの入ったDFを返すか
     if return_df:
         return result[[key, f'TE_{target}@{level}']], test_result[[key, f'TE_{target}@{level}']]
     else:
