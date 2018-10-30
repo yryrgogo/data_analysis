@@ -1,4 +1,6 @@
 # data_analysis
+  
+The code in the directory is not organized at all. Please be patient while preparing...  
 
 ## For Data Mining
 
