@@ -19,7 +19,8 @@ HOME = os.path.expanduser('~')
 sys.path.append(f"{HOME}/kaggle/data_analysis/library/")
 from pararell_utils import pararell_process
 from caliculate_utils import round_size
-from preprocessing import factorize_categoricals, get_dummies
+from preprocessing import factorize_categoricals, get_dummies, ordinal_encode, get_ordinal_mapping
+import category_encoders as ce
 
 kaggle = 'home-credit-default-risk'
 
@@ -39,10 +40,6 @@ class Model(metaclass=ABCMeta):
 
     #  @abstractmethod
     def accuracy(self):
-        pass
-
-    #  @abstractmethod
-    def cross_validation(self):
         pass
 
     #  @abstractmethod
@@ -92,7 +89,7 @@ class Model(metaclass=ABCMeta):
             pass
 
 
-    def data_check(self, df, test_flg=False, cat_encode=True, dummie=0, exclude_category=False):
+    def data_check(self, train=[], test=[], target='', encode='', exclude_category=False):
         '''
         Explain:
             学習を行う前にデータに問題がないかチェックする
@@ -101,6 +98,11 @@ class Model(metaclass=ABCMeta):
         Return:
         '''
 
+        if len(test):
+            df = pd.concat([train, test], axis=0)
+        else:
+            df = train
+
         categorical_list = [col for col in list(df.columns) if (df[col].dtype == 'object') and col not in self.ignore_list]
         dt_list = [col for col in list(df.columns) if str(df[col].dtype).count('time') and col not in self.ignore_list]
         self.logger.info(f'''
@@ -108,38 +110,29 @@ class Model(metaclass=ABCMeta):
 # DATA CHECK START
 # CATEGORICAL FEATURE: {categorical_list}
 # DATETIME FEATURE   : {dt_list}
-# CAT ENCODE         : {cat_encode}
-# DUMMIE             : {dummie}
+# CAT ENCODE         : {encode}
 # ignore_list        : {self.ignore_list}
 #==============================================================================
         ''')
 
-        if cat_encode:
-            ' 対象カラムのユニーク数が100より大きかったら、ラベルエンコーディングにする '
-            label_list = []
-            for cat in categorical_list:
-                if df[cat].nunique()>100:
-                    label_list.append(cat)
-                    categorical_list.remove(cat)
-                df = factorize_categoricals(df, label_list)
+        if encode=='label':
+            df = factorize_categoricals(df, categorical_list)
+        elif encode=='dummie':
+            df = get_dummies(df, categorical_list)
+        elif encode=='ordinal':
+            df, decoder = ordinal_encode(df, categorical_list)
+            self.decoder = decoder
 
-            if exclude_category:
-                for cat in categorical_list:
-                    df.drop(cat, axis=1, inplace=True)
-                    self.move_feature(feature_name=cat)
-                categorical_list = []
-            elif dummie==1:
-                df = get_dummies(df, categorical_list)
-                categorical_list=[]
-            elif dummie==0:
-                df = factorize_categoricals(df, categorical_list)
-                categorical_list=[]
-
+        if len(test):
+            train = df[~df[target].isnull()]
+            test = df[df[target].isnull()]
+        else:
+            train = df
         ' Testsetで値のユニーク数が1のカラムを除外する '
         drop_list = []
-        if test_flg:
-            for col in df.columns:
-                length = df[col].nunique()
+        if len(test):
+            for col in test.columns:
+                length = test[col].nunique()
                 if length <=1 and col not in self.ignore_list:
                     self.logger.info(f'''
 ***********WARNING************* LENGTH {length} COLUMN: {col}''')
@@ -153,7 +146,114 @@ class Model(metaclass=ABCMeta):
 # SHAPE: {df.shape}
 #==============================================================================''')
 
-        return df, drop_list
+        return train, test, drop_list
+
+
+    def cross_validation(self, train, key, target, fold_type='stratified', fold=5, group_col_name='', params={}, num_boost_round=0, early_stopping_rounds=0):
+
+        # Result Variables
+        list_score = []
+        cv_feim = pd.DataFrame([])
+
+        # Y Setting
+        if params['objective'] == 'regression':
+            y = train[target].astype('float64')
+            y = np.log1p(y)
+        else:
+            y = train[target]
+
+        ' KFold '
+        if fold_type == 'stratified':
+            folds = StratifiedKFold(n_splits=fold, shuffle=True, random_state=self.seed)  # 1
+            kfold = folds.split(train, y)
+        elif fold_type == 'group':
+            if group_col_name == '':
+                raise ValueError(f'Not exist group_col_name.')
+            folds = GroupKFold(n_splits=fold)
+            kfold = folds.split(train, y, groups=train[group_col_name].values)
+        elif fold_type == 'kfold':
+            folds = KFold(n_splits=fold, shuffle=True, random_state=self.seed)  # 1
+            kfold = folds.split(train, y)
+
+        use_cols = [f for f in train.columns if f not in self.ignore_list]
+        self.use_cols = sorted(use_cols)  # カラム名をソートし、カラム順による学習への影響をなくす
+
+        train.set_index(key, inplace=True)
+
+        for n_fold, (trn_idx, val_idx) in enumerate(kfold):
+
+            x_train, y_train = train[self.use_cols].iloc[trn_idx, :], y.iloc[trn_idx].values
+            x_val, y_val = train[self.use_cols].iloc[val_idx, :], y.iloc[val_idx].values
+
+            if self.model_type.count('xgb'):
+                " XGBは'[]'と','と'<>'がNGなのでreplace "
+                use_cols = []
+                for col in x_train.columns:
+                    use_cols.append(col.replace(
+                        "[", "-q-").replace("]", "-p-").replace(",", "-o-"))
+                use_cols = sorted(use_cols)
+                x_train.columns = use_cols
+                x_val.columns = use_cols
+                self.use_cols = use_cols
+
+            # GBDTのみ適用するargs
+            gbdt_args = {}
+            if num_boost_round:
+                gbdt_args['num_boost_round'] = num_boost_round
+                gbdt_args['early_stopping_rounds'] = early_stopping_rounds
+            self.estimator = self.train(
+                x_train=x_train,
+                y_train=y_train,
+                x_val=x_val,
+                y_val=y_val,
+                params=params,
+                gbdt_args=gbdt_args
+            )
+            y_pred = self.estimator.predict(x_val)
+
+            self.fold_model_list.append(self.estimator)
+
+            sc_score = self.sc_metrics(y_val, y_pred)
+
+            list_score.append(sc_score)
+            self.logger.info(f'Fold No: {n_fold} | {self.metric}: {sc_score}')
+
+            ' Feature Importance '
+            feim_name = f'{n_fold}_importance'
+            feim = self.df_feature_importance(feim_name=feim_name)
+
+            if len(cv_feim) == 0:
+                cv_feim = feim.copy()
+            else:
+                cv_feim = cv_feim.merge(feim, on='feature', how='inner')
+
+        cv_score = np.mean(list_score)
+        self.logger.info(f'''
+#========================================================================
+# Train End.''')
+        [self.logger.info(f'''
+# Validation No: {i} | {self.metric}: {score}''') for i, score in enumerate(list_score)]
+        self.logger.info(f'''
+# Params   : {params}
+# CV score : {cv_score}
+#======================================================================== ''')
+
+        importance = []
+        for fold_no in range(fold):
+            if len(importance) == 0:
+                importance = cv_feim[f'{fold_no}_importance'].values.copy()
+            else:
+                importance += cv_feim[f'{fold_no}_importance'].values
+
+        cv_feim['avg_importance'] = importance / fold
+        cv_feim.sort_values(by=f'avg_importance',
+                            ascending=False, inplace=True)
+        cv_feim['rank'] = np.arange(len(cv_feim))+1
+
+        self.cv_feim = cv_feim
+        self.cv_score = cv_score
+
+        return self
 
 
     def cross_prediction(self, train, test, key, target, fold_type='stratified', fold=5, group_col_name='', params={}, num_boost_round=0, early_stopping_rounds=0, oof_flg=True):
@@ -231,15 +331,6 @@ class Model(metaclass=ABCMeta):
             y_pred = self.estimator.predict(x_val)
 
             self.fold_model_list.append(self.estimator)
-
-            if kaggle == 'ga':
-                hits = x_val['totals-hits'].map(lambda x: 0 if x ==
-                                                1 else 1).values
-                bounces = x_val['totals-bounces'].map(
-                    lambda x: 0 if x == 1 else 1).values
-                y_pred = y_pred * hits * bounces
-                if self.metric == 'rmse':
-                    y_pred[y_pred < 0.1] = 0
 
             sc_score = self.sc_metrics(y_val, y_pred)
 

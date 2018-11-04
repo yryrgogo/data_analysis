@@ -239,7 +239,7 @@ def exclude_feature(col_name, feature):
     return False
 
 
-def target_encoding(logger, train, test, key, target, level, method='mean',fold_type='stratified', fold=5, group_col_name='fullVisitorId', prefix='', select_list=[], ignore_list=[], seed=1208, return_df=False):
+def target_encoding(logger, train, test, key, target, level, method='mean',fold_type='stratified', fold=5, group_col_name='', prefix='', select_list=[], ignore_list=[], seed=1208, return_df=False):
     '''
     Explain:
         TARGET関連の特徴量をpartisionに分割したデータセットから作る.

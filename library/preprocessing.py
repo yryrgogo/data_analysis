@@ -7,6 +7,7 @@ from utils import pararell_load_data
 from multiprocessing import Pool
 import multiprocessing
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
+import category_encoders as ce
 
 
 sc = StandardScaler()
@@ -275,6 +276,37 @@ def lag_feature(df, col_name, lag, level=[]):
         df[f'shift{lag}_{value}@{level}'] = df.groupby(level)[col_name].shift(lag)
 
     return df
+
+
+def ordinal_encode(df, to_cat_list):
+
+    '''
+    Explain:
+    Args:
+        to_cat_list: Eoncodeしたい列をリストで指定。もちろん複数指定可能。
+    Return:
+    '''
+
+    # 序数をカテゴリに付与して変換
+    ce_oe = ce.OrdinalEncoder(cols=to_cat_list,handle_unknown='impute')
+    ce_oe
+    return ce_oe.fit_transform(df), ce_oe
+
+
+def get_ordinal_mapping(obj):
+    '''
+    Explain:
+        Ordinal Encodingの対応をpd.DataFrameで返す
+    Args:
+        obj : category_encodersのインスタンス
+    Return:
+        dframe
+    '''
+    tmp_list = list()
+    for x in obj.category_mapping:
+        tmp_list.extend([tuple([x['col']])+ i for i in x['mapping']])
+    df_ord_map = pd.DataFrame(tmp_list, columns=['column','label','ord_num'])
+    return df_ord_map
 
 
 # カテゴリ変数をファクトライズ (整数に置換)する関数
