@@ -1,14 +1,18 @@
 # data_analysis
+  
+The code in the directory is not organized at all. Please be patient while preparing...  
 
 ## For Data Mining
 
 ### 0. EDA
 
+#### Visualize
+
+#### Feature Importance(gain, split)/Feature_Permutation/Partial Dependence Plot
+
 #### correlation
 
 #### Adversarial Distribusion
-
-##### -X-ray
 
 ### 1. Preprocessing
 
