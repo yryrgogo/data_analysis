@@ -10,8 +10,7 @@ HOME = os.path.expanduser('~')
 sys.path.append(f"{HOME}/kaggle/data_analysis/library/")
 from pararell_utils import pararell_process
 from caliculate_utils import round_size
-
-kaggle = 'home-credit-default-risk'
+import concurrent.futures
 
 class Xray_Cal:
 
@@ -20,30 +19,33 @@ class Xray_Cal:
         self.model = model
         self.ignore_list = ignore_list
         self.df_xray=[]
+        self.xray_list=[]
         self.point_dict = {}
         self.N_dict = {}
+        self.fold_num = None
 
-    def pararell_xray_caliculation(self, col, val, N):
-        # TODO 並列プロセス内での更新はプロセス内でのみ適用されるはず
-        dataset = self.df_xray
+    def pararell_xray_caliculation(self, args):
+        col = args[0]
+        val = args[1]
+        N = args[2]
+        dataset = self.df_xray.copy()
         dataset[col] = val
         pred = self.model.predict(dataset)
         p_avg = np.mean(pred)
 
         self.logger.info(f'''
 #========================================================================
-# CALICULATION PROGRESS... COLUMN: {col} | VALUE: {val} | X-RAY: {p_avg}
+# FOLD{self.fold_num} CALCULATION... COLUMN: {col} | VALUE: {val} | X-RAY: {p_avg}
 #========================================================================''')
-        return {
+        del dataset
+        gc.collect()
+        self.xray_list.append({
             'feature':col,
             'value'  :val,
             'xray'   :p_avg,
             'N'      :N
-        }
+        })
 
-
-    def pararell_xray_wrapper(self, args):
-        return self.pararell_xray_caliculation(*args)
 
 
     def single_xray_caliculation(self, col, val, N):
@@ -56,7 +58,7 @@ class Xray_Cal:
 
         self.logger.info(f'''
 #========================================================================
-# CALICULATION PROGRESS... COLUMN: {col} | VALUE: {val} | X-RAY: {p_avg}
+# CALCULATION PROGRESS... COLUMN: {col} | VALUE: {val} | X-RAY: {p_avg}
 #========================================================================''')
         return {
             'feature':col,
@@ -77,6 +79,7 @@ class Xray_Cal:
         Return:
         '''
         result = pd.DataFrame([])
+        self.fold_num = fold_num
 
         if len(col_list)==0:
             col_list = base_xray.columns
@@ -117,7 +120,7 @@ class Xray_Cal:
 
                     # 2. binの中央値と合わせ、percentileで10データポイントとる
                     percentiles = np.linspace(0.05, 0.95, num=10)
-                    percentiles_points = mquantiles(val_cnt.index.values, prob=percentiles, axis=0)
+                    percentiles_points = mquantiles(val_cnt[col].values, prob=percentiles, axis=0)
                     max_val = df_not_null[col].max()
                     min_val = df_not_null[col].min()
                     # 小数点以下が大きい場合、第何位までを計算するか取得して丸める
@@ -141,7 +144,10 @@ class Xray_Cal:
                 self.point_dict[col] = data_points
                 self.N_dict[col] = data_N
 
-            self.df_xray = base_xray.sample(N_sample, random_state=fold_num)
+            if len(base_xray)>N_sample:
+                self.df_xray = base_xray.sample(N_sample, random_state=fold_num)
+            else:
+                self.df_xray = base_xray
             #========================================================================
             # 一番計算が重くなる部分
             # multi_processにするとprocess数分のデータセットをメモリに乗せる必要が
@@ -155,18 +161,22 @@ class Xray_Cal:
                 arg_list = []
                 for point, N in zip(self.point_dict[col], self.N_dict[col]):
                     arg_list.append([col, point, N])
-                xray_list = pararell_process(self.pararell_xray_wrapper, arg_list, cpu_cnt=cpu_cnt)
+
+                for args in arg_list:
+                    executor = concurrent.futures.ThreadPoolExecutor(max_workers=max_point)
+                    executor.submit(self.pararell_xray_caliculation, args)
+                executor.shutdown()
+
             else:
-                xray_list = []
                 for point, N in zip(self.point_dict[col], self.N_dict[col]):
                     one_xray = self.single_xray_caliculation(col=col, val=point, N=N)
-                    xray_list.append(one_xray)
+                    self.xray_list.append(one_xray)
             #========================================================================
             # 各featureのX-RAYの結果を統合
             #========================================================================
-            tmp_result = pd.DataFrame(data=xray_list)
+            tmp_result = pd.DataFrame(data=self.xray_list)
 
-            xray_list = []
+            self.xray_list = []
             gc.collect()
 
             if len(result):
