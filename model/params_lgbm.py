@@ -30,25 +30,19 @@ def params_home_credit():
     return train_params
 
 
-def train_params_dart():
+def train_params_nlp():
     train_params = {
-    'boosting':'dart',
-    'num_threads': 35,
-    'learning_rate':0.02,
-    'colsample_bytree':0.10,
-    #  'subsample':0.9,
-    'min_split_gain':0.01,
-    'objective':'binary',
     'boosting_type':'gbdt',
+    'num_threads': -1,
+    'learning_rate':0.1,
+    'subsample':0.9,
+    'colsample_bytree':0.80,
+    'objective':'binary',
     'metric':'auc',
-    'max_depth':6,
-    'max_bin':560,
-    'min_child_samples':56,
-    'min_child_weight':52,
-    'min_data_in_bin':92,
-    'lambda_l1':0.7,
-    'lambda_l2':70,
-    'num_leaves':24,
+    'max_depth':4,
+    'lambda_l1':0.1,
+    'lambda_l2':0.5,
+    'num_leaves':8,
     'random_seed': 1208,
     'bagging_seed':1208,
     'feature_fraction_seed':1208,

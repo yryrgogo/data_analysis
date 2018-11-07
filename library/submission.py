@@ -6,7 +6,6 @@ import datetime
 import os
 from select_feature import move_feature
 HOME = os.path.expanduser('~')
-
 sys.path.append(f'{HOME}/kaggle/github/model/')
 from Estimator import prediction, cross_prediction, TimeSeriesPrediction, data_check
 
