@@ -19,13 +19,13 @@ class lightgbm_ex(Model):
         self.seed = seed
         self.ignore_list = ignore_list
         self.fold_model_list = []
-        self.cv_feim = []
-        self.prediction = []
-        self.result_stack = []
-        self.xray_list = []
-        self.cv_score = None
-        self.base_xray = []
-        self.decoder = None
+        #  self.cv_feim = []
+        #  self.prediction = []
+        #  self.result_stack = []
+        #  self.xray_list = []
+        #  self.cv_score = None
+        #  self.base_xray = []
+        #  self.decoder = None
 
     def train(self, x_train, y_train, x_val, y_val, params={}, verbose_eval=100, gbdt_args={}):
 

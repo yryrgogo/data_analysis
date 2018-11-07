@@ -1,15 +1,12 @@
 Pararell=True
-import numpy as np
-"""
-基底クラス
-"""
 from abc import ABCMeta, abstractmethod
 import numpy as np
 import pandas as pd
-from sklearn.metrics import log_loss, roc_auc_score, mean_squared_error, r2_score
+from sklearn.metrics import log_loss, roc_auc_score, mean_squared_error, r2_score, confusion_matrix, f1_score, accuracy_score
 from sklearn.model_selection import ParameterGrid, StratifiedKFold, GroupKFold, KFold
 import multiprocessing
 import shutil
+from copy import copy
 import gc
 from scipy.stats.mstats import mquantiles
 from tqdm import tqdm
@@ -23,7 +20,6 @@ from preprocessing import factorize_categoricals, get_dummies, ordinal_encode, g
 import category_encoders as ce
 
 kaggle = 'home-credit-default-risk'
-
 
 class Model(metaclass=ABCMeta):
     @abstractmethod
@@ -47,16 +43,117 @@ class Model(metaclass=ABCMeta):
         pass
 
     def sc_metrics(self, y_test, y_pred):
-        if self.metric == 'logloss':
-            return log_loss(y_test, y_pred)
-        elif self.metric == 'auc':
-            return roc_auc_score(y_test, y_pred)
-        elif self.metric=='l2':
-            return r2_score(y_test, y_pred)
-        elif self.metric=='rmse':
-            return np.sqrt(mean_squared_error(y_test, y_pred))
-        else:
-            print('SCORE CALICULATION ERROR!')
+        try:
+            if self.metric == 'logloss':
+                score = log_loss(y_test, y_pred)
+            elif self.metric == 'auc':
+                score = roc_auc_score(y_test, y_pred)
+            elif self.metric=='l2':
+                score = r2_score(y_test, y_pred)
+            elif self.metric=='rmse':
+                score = np.sqrt(mean_squared_error(y_test, y_pred))
+            elif self.metric=='accuracy':
+                y_pred_max = np.argmax(y_pred, axis=1)  # 最尤と判断したクラスの値にする
+                score = sum(y_test == y_pred_max) / len(y_test)
+            else:
+                print('SCORE CALICULATION ERROR!')
+        except ValueError:
+            self.logger.info(f"""
+# ==============================
+# WARNING!!!!!
+# {self.target} is True Only.
+# y_test Unique: {np.unique(y_test)}
+# y_pred Unique: {np.unique(y_pred)}
+# ==============================
+            """)
+        return score
+
+    def sc_confusion_matrix(self, y_test, y_pred):
+        #========================================================================
+        # F1Scoreを最大化するポイントで混同行列を算出する
+        #========================================================================
+        if self.objective=='binary':
+            threshold = 0.5
+            binary_method = lambda x: 1 if x>=threshold else 0
+            def to_binary_f1():
+                bi_test = list(map(binary_method, y_test))
+                bi_pred = list(map(binary_method, y_pred))
+                f1 = f1_score(bi_test, bi_pred)
+                return f1
+
+            best_f1 = to_binary_f1()
+            best_threshold = threshold
+            tmp = copy(best_threshold)
+            meta1 = 0
+            meta2 = 1
+
+            # 二分探索でF1 Scoreを最大化する閾値を探る
+            while True:
+                threshold = (tmp + meta1) / 2
+                f1 = to_binary_f1()
+                print(f"Best : {best_f1} | F1 : {f1}")
+                print(f"Threshold : {threshold} | Tmp : {tmp} | Meta1 : {meta1} | Meta2 : {meta2}")
+                tmp_f1 = copy(f1) # 1つ目の閾値におけるF1を保存しておく
+                if f1>best_f1:
+                    #========================================================================
+                    # meta1を使い算出した閾値でBest F1を更新したら, 下記を更新して再ループ
+                    # meta1: stay
+                    # meta2: 元のtmp
+                    # tmp  : Best F1を更新したthreshold
+                    #========================================================================
+                    best_f1 = f1
+                    best_threshold = threshold
+                    meta2 = copy(tmp)
+                    tmp = copy(best_threshold)
+                elif f1<best_f1:
+                    threshold = (tmp + meta2) / 2
+                    f1 = to_binary_f1()
+                    if f1>best_f1:
+                        #========================================================================
+                        # meta2を使い算出したthresholdでBest F1を更新したら, 下記を更新して再ループ
+                        # meta1: 元のtmp
+                        # meta2: stay
+                        # tmp  : Best F1を更新したthreshold
+                        #========================================================================
+                        best_f1 = f1
+                        best_threshold = threshold
+                        meta1 = copy(tmp)
+                        tmp = copy(best_threshold)
+                    elif f1<best_f1:
+                        #========================================================================
+                        # thresholdを更新してもF1が向上しなかった分岐
+                        # 新しい作成した2つのthresholdを比較して、F1が向上する可能性がある分岐を決める
+                        # meta1: stay or 元tmp
+                        # meta2: stay or 元tmp
+                        # tmp  : BestF1のthreshold
+                        #========================================================================
+                        if tmp_f1>=f1:
+                            meta2 = copy(tmp)
+                            tmp = copy(best_threshold)
+                        elif tmp_f1<f1:
+                            meta1 = copy(tmp)
+                            tmp = copy(best_threshold)
+                    elif f1==best_f1:
+                        # 新しい閾値でF1が変わらなかったループ終了
+                        break
+                elif f1==best_f1:
+                    # 新しい閾値でF1が変わらなかったループ終了
+                    break
+
+
+            if self.objective=='multiclass':
+                y_pred = np.argmax(self.prediction, axis=1)  # 最尤と判断したクラスの値にする
+                self.accuracy = sum(y_test == y_pred_max) / len(y_test)
+
+            else:
+                y_pred = list(map(binary_method, y_pred))
+                tp, fn, fp, tn = confusion_matrix(y_test, y_pred).ravel()
+                self.cmx = np.array([tp, fn, fp, tn])
+                self.f1 = f1
+                self.accuracy = accuracy_score(y_test, y_pred)
+                self.true = accuracy_score(y_test, y_pred, normalize=False)
+                self.best_threshold = best_threshold
+
 
     def auc(self, test_features, test_target):
         return roc_auc_score(test_target, self.predict(test_features))
@@ -153,7 +250,7 @@ class Model(metaclass=ABCMeta):
 
         # Result Variables
         list_score = []
-        cv_feim = pd.DataFrame([])
+        self.cv_feim = pd.DataFrame([])
 
         # Y Setting
         if params['objective'] == 'regression':
@@ -178,7 +275,8 @@ class Model(metaclass=ABCMeta):
         use_cols = [f for f in train.columns if f not in self.ignore_list]
         self.use_cols = sorted(use_cols)  # カラム名をソートし、カラム順による学習への影響をなくす
 
-        train.set_index(key, inplace=True)
+        if len(key):
+            train.set_index(key, inplace=True)
 
         for n_fold, (trn_idx, val_idx) in enumerate(kfold):
 
@@ -222,12 +320,12 @@ class Model(metaclass=ABCMeta):
             feim_name = f'{n_fold}_importance'
             feim = self.df_feature_importance(feim_name=feim_name)
 
-            if len(cv_feim) == 0:
-                cv_feim = feim.copy()
+            if len(self.cv_feim) == 0:
+                self.cv_feim = feim.copy()
             else:
-                cv_feim = cv_feim.merge(feim, on='feature', how='inner')
+                self.cv_feim = self.cv_feim.merge(feim, on='feature', how='inner')
 
-        cv_score = np.mean(list_score)
+        self.cv_score = np.mean(list_score)
         self.logger.info(f'''
 #========================================================================
 # Train End.''')
@@ -235,33 +333,31 @@ class Model(metaclass=ABCMeta):
 # Validation No: {i} | {self.metric}: {score}''') for i, score in enumerate(list_score)]
         self.logger.info(f'''
 # Params   : {params}
-# CV score : {cv_score}
+# CV score : {self.cv_score}
 #======================================================================== ''')
 
         importance = []
         for fold_no in range(fold):
             if len(importance) == 0:
-                importance = cv_feim[f'{fold_no}_importance'].values.copy()
+                importance = self.cv_feim[f'{fold_no}_importance'].values.copy()
             else:
-                importance += cv_feim[f'{fold_no}_importance'].values
+                importance += self.cv_feim[f'{fold_no}_importance'].values
 
-        cv_feim['avg_importance'] = importance / fold
-        cv_feim.sort_values(by=f'avg_importance',
+        self.cv_feim['avg_importance'] = importance / fold
+        self.cv_feim.sort_values(by=f'avg_importance',
                             ascending=False, inplace=True)
-        cv_feim['rank'] = np.arange(len(cv_feim))+1
-
-        self.cv_feim = cv_feim
-        self.cv_score = cv_score
+        self.cv_feim['rank'] = np.arange(len(self.cv_feim))+1
 
         return self
 
 
     def cross_prediction(self, train, test, key, target, fold_type='stratified', fold=5, group_col_name='', params={}, num_boost_round=0, early_stopping_rounds=0, oof_flg=True):
 
-        # Result Variables
+        self.target = target
+        self.cv_feim = pd.DataFrame([])
+        self.prediction = np.array([])
         list_score = []
-        cv_feim = pd.DataFrame([])
-        prediction = np.array([])
+        val_stack = pd.DataFrame()
 
         # Y Setting
         if params['objective'] == 'regression':
@@ -269,6 +365,7 @@ class Model(metaclass=ABCMeta):
             y = np.log1p(y)
         else:
             y = train[target]
+        self.objective = params['objective']
 
         ' KFold '
         if fold_type == 'stratified':
@@ -286,12 +383,8 @@ class Model(metaclass=ABCMeta):
         use_cols = [f for f in train.columns if f not in self.ignore_list]
         self.use_cols = sorted(use_cols)  # カラム名をソートし、カラム順による学習への影響をなくす
 
-        if kaggle == 'ga' and 'unique_id' in list(train.columns):
-                train.set_index(['unique_id', key], inplace=True)
-                test.set_index(['unique_id', key], inplace=True)
-        else:
-            train.set_index(key, inplace=True)
-            test.set_index(key, inplace=True)
+        train.set_index(key, inplace=True)
+        test.set_index(key, inplace=True)
 
         for n_fold, (trn_idx, val_idx) in enumerate(kfold):
 
@@ -339,20 +432,26 @@ class Model(metaclass=ABCMeta):
 
             ' OOF for Stackng '
             if oof_flg:
-                val_pred = y_pred
-                if n_fold == 0:
-                    if kaggle == 'ga':
-                        val_stack = x_val.reset_index()[['unique_id', key]]
-                    else:
-                        val_stack = x_val.reset_index()[key].to_frame()
-                    val_stack[target] = val_pred
-                else:
-                    if kaggle == 'ga':
-                        tmp = x_val.reset_index()[['unique_id', key]]
-                    else:
-                        tmp = x_val.reset_index()[key].to_frame()
-                    tmp[target] = val_pred
+                if len(val_stack):
+                    tmp = x_val.reset_index()[key].to_frame()
+                    tmp[target] = y_val
+
+                    # Multi-Classは全クラスに対する確率がカラム別に出力される
+                    if self.objective=='binary':
+                        tmp['prediction'] = y_pred
+                    elif self.objective=='multiclass':
+                        y_pred_max = np.argmax(y_pred, axis=1)  # 最尤と判断したクラスの値にする
+                        tmp['prediction'] = y_pred_max
+
                     val_stack = pd.concat([val_stack, tmp], axis=0)
+                else:
+                    val_stack = x_val.reset_index()[key].to_frame()
+                    val_stack[target] = y_val
+                    if self.objective=='binary':
+                        val_stack['prediction'] = y_pred
+                    elif self.objective=='multiclass':
+                        y_pred_max = np.argmax(y_pred, axis=1)  # 最尤と判断したクラスの値にする
+                        val_stack['prediction'] = y_pred_max
 
             if not(self.model_type.count('xgb')):
                 test_pred = self.estimator.predict(test)
@@ -362,41 +461,68 @@ class Model(metaclass=ABCMeta):
             if params['objective']=='regression':
                 test_pred = np.expm1(test_pred)
 
-            if len(prediction) == 0:
-                prediction = test_pred
+            if len(self.prediction) == 0:
+                self.prediction = test_pred
             else:
-                prediction += test_pred
+                self.prediction += test_pred
 
             ' Feature Importance '
             feim_name = f'{n_fold}_importance'
             feim = self.df_feature_importance(feim_name=feim_name)
 
-            if len(cv_feim) == 0:
-                cv_feim = feim.copy()
+            if len(self.cv_feim) == 0:
+                self.cv_feim = feim.copy()
             else:
-                cv_feim = cv_feim.merge(feim, on='feature', how='inner')
+                self.cv_feim = self.cv_feim.merge(feim, on='feature', how='inner')
 
-        cv_score = np.mean(list_score)
-        self.logger.info(f'''
+        #========================================================================
+        # CV SCORE & F1SCORE
+        #========================================================================
+        self.cv_score = np.mean(list_score)
+        if oof_flg:
+            y_train = val_stack[target].values
+            y_allval = val_stack['prediction'].values
+            self.sc_confusion_matrix(y_train, y_allval)
+
+        if self.objective=='binary':
+            self.logger.info(f'''
 #========================================================================
 # Train End.''')
-        [self.logger.info(f'''
+            [self.logger.info(f'''
 # Validation No: {i} | {self.metric}: {score}''') for i, score in enumerate(list_score)]
-        self.logger.info(f'''
+            self.logger.info(f'''
 # Params   : {params}
-# CV score : {cv_score}
+# CV score : {self.cv_score}
+# Accuracy : {self.accuracy}  {self.true}/{len(test)}
+# F1 score : {self.f1}
+# TP:{self.cmx[0]}  FP:{self.cmx[2]}
+# FN:{self.cmx[1]}  TN:{self.cmx[3]}
 #======================================================================== ''')
 
-        ' fold数で平均をとる '
-        prediction = prediction / fold
+            ' fold数で平均をとる '
+            self.prediction = self.prediction / fold
+
+        elif self.objective=='multiclass':
+            self.logger.info(f'''
+#========================================================================
+# Train End.''')
+            [self.logger.info(f'''
+# Validation No: {i} | {self.metric}: {score}''') for i, score in enumerate(list_score)]
+            self.logger.info(f'''
+# Params   : {params}
+# CV score : {self.cv_score}
+#======================================================================== ''')
+
+            ' fold数で平均をとる '
+            self.multi_pred = self.prediction / fold
+            self.prediction = np.argmax(self.multi_pred, axis=1)  # 最尤と判断したクラスの値にする
+            self.multiclass = pd.DataFrame(self.multi_pred, columns=np.arange(params['num_class']))
+
 
         ' OOF for Stackng '
         if oof_flg:
-            if kaggle == 'ga':
-                pred_stack = test.reset_index()[['unique_id', key]]
-            else:
-                pred_stack = test.reset_index()[key].to_frame()
-            pred_stack[target] = prediction
+            pred_stack = test.reset_index()[key].to_frame()
+            pred_stack['prediction'] = self.prediction
             result_stack = pd.concat([val_stack, pred_stack], axis=0)
             self.logger.info(
                 f'result_stack shape: {result_stack.shape} | cnt_id: {len(result_stack[key].drop_duplicates())}')
@@ -406,18 +532,15 @@ class Model(metaclass=ABCMeta):
         importance = []
         for fold_no in range(fold):
             if len(importance) == 0:
-                importance = cv_feim[f'{fold_no}_importance'].values.copy()
+                importance = self.cv_feim[f'{fold_no}_importance'].values.copy()
             else:
-                importance += cv_feim[f'{fold_no}_importance'].values
+                importance += self.cv_feim[f'{fold_no}_importance'].values
 
-        cv_feim['avg_importance'] = importance / fold
-        cv_feim.sort_values(by=f'avg_importance',
+        self.cv_feim['avg_importance'] = importance / fold
+        self.cv_feim.sort_values(by=f'avg_importance',
                             ascending=False, inplace=True)
-        cv_feim['rank'] = np.arange(len(cv_feim))+1
+        self.cv_feim['rank'] = np.arange(len(self.cv_feim))+1
 
-        self.cv_feim = cv_feim
-        self.prediction = prediction
-        self.cv_score = cv_score
         self.result_stack = result_stack
 
         return self

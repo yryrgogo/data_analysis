@@ -289,7 +289,6 @@ def ordinal_encode(df, to_cat_list):
 
     # 序数をカテゴリに付与して変換
     ce_oe = ce.OrdinalEncoder(cols=to_cat_list,handle_unknown='impute')
-    ce_oe
     return ce_oe.fit_transform(df), ce_oe
 
 
