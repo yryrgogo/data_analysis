@@ -482,6 +482,7 @@ class Model(metaclass=ABCMeta):
         if oof_flg:
             y_train = val_stack[target].values
             y_allval = val_stack['prediction'].values
+            self.train_stack = val_stack
             self.sc_confusion_matrix(y_train, y_allval)
 
         if self.objective=='binary':
