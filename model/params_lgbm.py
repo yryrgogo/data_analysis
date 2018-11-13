@@ -1,3 +1,31 @@
+def params_quara():
+    train_params = {
+        'num_threads': -1,
+        'metric': 'binary_logloss',
+        'objective': 'binary',
+        'boosting_type':'gbdt',
+        'bagging_freq': 1,
+        'sigmoid': 1.1,
+        'subsample': 0.9,
+        'colsample_bytree': 0.2,
+        'lambda_l1': 1,
+        'lambda_l2': 5,
+        'learning_rate': 0.1,
+        #  'max_bin': 500,
+        #  'min_child_samples': 90,
+        #  'min_child_weight': 160,
+        #  'min_data_in_bin': 40,
+        #  'min_split_gain': 0,
+        'num_leaves': 100,
+        'max_depth': 9,
+        'bagging_seed': 1208,
+        'data_random_seed': 1208,
+        'feature_fraction_seed': 1208,
+        'random_seed': 1208,
+        'verbose': 1
+    }
+    return train_params
+
 def params_home_credit():
 
     # 81354, 8040 AUC AVG 0.809672
@@ -50,32 +78,6 @@ def train_params_nlp():
     }
     return train_params
 
-
-def train_params_0815():
-    train_params = {
-        'bagging_freq': 1,
-        'bagging_seed': 1208,
-        'colsample_bytree': 0.2,
-        'data_random_seed': 1208,
-        'feature_fraction_seed': 1208,
-        'lambda_l1': 2.6,
-        'lambda_l2': 2.9000000000000004,
-        'learning_rate': 0.02,
-        'max_bin': 1100,
-        'max_depth': -1,
-        'metric': 'auc',
-        'min_child_samples': 90,
-        'min_child_weight': 160,
-        'min_data_in_bin': 40,
-        'min_split_gain': 0,
-        'num_leaves': 4,
-        'objective': 'binary',
-        'random_seed': 1208,
-        'sigmoid': 1.1,
-        'subsample': 0.9,
-        'verbose': 1
-    }
-    return train_params
 
 #  0.80028
 def train_params_0816():

@@ -354,10 +354,12 @@ class Model(metaclass=ABCMeta):
     def cross_prediction(self, train, test, key, target, fold_type='stratified', fold=5, group_col_name='', params={}, num_boost_round=0, early_stopping_rounds=0, oof_flg=True):
 
         self.target = target
-        self.cv_feim = pd.DataFrame([])
-        self.prediction = np.array([])
         list_score = []
-        val_stack = pd.DataFrame()
+        self.fold_pred_list = []
+        self.fold_val_list = []
+        #  self.cv_feim = pd.DataFrame([])
+        #  self.prediction = np.array([])
+        #  val_stack = pd.DataFrame()
 
         # Y Setting
         if params['objective'] == 'regression':
@@ -383,8 +385,11 @@ class Model(metaclass=ABCMeta):
         use_cols = [f for f in train.columns if f not in self.ignore_list]
         self.use_cols = sorted(use_cols)  # カラム名をソートし、カラム順による学習への影響をなくす
 
-        train.set_index(key, inplace=True)
-        test.set_index(key, inplace=True)
+        if len(key)>0:
+            train.set_index(key, inplace=True)
+            test.set_index(key, inplace=True)
+        else:
+            oof_flg = False
 
         for n_fold, (trn_idx, val_idx) in enumerate(kfold):
 
@@ -422,9 +427,9 @@ class Model(metaclass=ABCMeta):
                 gbdt_args=gbdt_args
             )
             y_pred = self.estimator.predict(x_val)
-
+            self.fold_pred_list.append(y_pred)
+            self.fold_val_list.append(y_val)
             self.fold_model_list.append(self.estimator)
-
             sc_score = self.sc_metrics(y_val, y_pred)
 
             list_score.append(sc_score)
