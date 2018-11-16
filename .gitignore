@@ -9,6 +9,7 @@ output/
 valid/
 model/
 feim/
+deep-learning-from-scratch-2/
 
 *.yaml
 *.config
