@@ -357,9 +357,9 @@ class Model(metaclass=ABCMeta):
         list_score = []
         self.fold_pred_list = []
         self.fold_val_list = []
-        #  self.cv_feim = pd.DataFrame([])
-        #  self.prediction = np.array([])
-        #  val_stack = pd.DataFrame()
+        self.cv_feim = pd.DataFrame([])
+        self.prediction = np.array([])
+        val_stack = pd.DataFrame()
 
         # Y Setting
         if params['objective'] == 'regression':
