@@ -396,22 +396,8 @@ class Model(metaclass=ABCMeta):
             x_train, y_train = train[self.use_cols].iloc[trn_idx, :], y.iloc[trn_idx].values
             x_val, y_val = train[self.use_cols].iloc[val_idx, :], y.iloc[val_idx].values
 
-            if self.model_type.count('xgb'):
-                " XGBは'[]'と','と'<>'がNGなのでreplace "
-                if i == 0:
-                    test = test[self.use_cols]
-                use_cols = []
-                for col in x_train.columns:
-                    use_cols.append(col.replace(
-                        "[", "-q-").replace("]", "-p-").replace(",", "-o-"))
-                use_cols = sorted(use_cols)
-                x_train.columns = use_cols
-                x_val.columns = use_cols
-                test.columns = use_cols
-                self.use_cols = use_cols
-
             if n_fold == 0:
-                test = test[self.use_cols]
+                x_test = test[self.use_cols]
 
             # GBDTのみ適用するargs
             gbdt_args = {}
@@ -447,6 +433,8 @@ class Model(metaclass=ABCMeta):
                     elif self.objective=='multiclass':
                         y_pred_max = np.argmax(y_pred, axis=1)  # 最尤と判断したクラスの値にする
                         tmp['prediction'] = y_pred_max
+                        tmp_stack = pd.DataFrame(y_pred, columns=np.arange(params['num_class']))
+                        tmp = pd.concat([tmp, tmp_stack], axis=1)
 
                     val_stack = pd.concat([val_stack, tmp], axis=0)
                 else:
@@ -457,11 +445,10 @@ class Model(metaclass=ABCMeta):
                     elif self.objective=='multiclass':
                         y_pred_max = np.argmax(y_pred, axis=1)  # 最尤と判断したクラスの値にする
                         val_stack['prediction'] = y_pred_max
+                        tmp_stack = pd.DataFrame(y_pred, columns=np.arange(params['num_class']))
+                        val_stack = pd.concat([val_stack, tmp_stack], axis=1)
 
-            if not(self.model_type.count('xgb')):
-                test_pred = self.estimator.predict(test)
-            elif self.model_type.count('xgb'):
-                test_pred = self.estimator.predict(xgb.DMatrix(test))
+            test_pred = self.estimator.predict(x_test)
 
             if params['objective']=='regression':
                 test_pred = np.expm1(test_pred)
@@ -522,14 +509,16 @@ class Model(metaclass=ABCMeta):
             ' fold数で平均をとる '
             self.multi_pred = self.prediction / fold
             self.prediction = np.argmax(self.multi_pred, axis=1)  # 最尤と判断したクラスの値にする
-            self.multiclass = pd.DataFrame(self.multi_pred, columns=np.arange(params['num_class']))
 
 
         ' OOF for Stackng '
         if oof_flg:
-            pred_stack = test.reset_index()[key].to_frame()
+            pred_stack = test.reset_index()[[key, target]]
             pred_stack['prediction'] = self.prediction
-            result_stack = pd.concat([val_stack, pred_stack], axis=0)
+            tmp_pred = pd.DataFrame(self.multi_pred, columns=np.arange(params['num_class']))
+            pred_stack = pd.concat([pred_stack, tmp_pred], axis=1)
+
+            result_stack = pd.concat([val_stack, pred_stack], axis=0).sort_values(by=key)
             self.logger.info(
                 f'result_stack shape: {result_stack.shape} | cnt_id: {len(result_stack[key].drop_duplicates())}')
         else:
