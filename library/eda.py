@@ -44,11 +44,12 @@ def df_info(target_df, topN=10):
     for c in df.index:
         try:
             z_plus = len(target_df[c][(target_df[c]-df.loc[c, 'Mean'])/df.loc[c, 'Std']>=1.96])
+            df.loc[c, f'z 1.96 cnt'] = z_plus
             z_minus = len(target_df[c][(target_df[c]-df.loc[c, 'Mean'])/df.loc[c, 'Std']<=-1.96])
+            df.loc[c, f'z -1.96 cnt'] = z_minus
         except TypeError:
             print(f'Categorical: {c}')
-        df.loc[c, f'z 1.96 cnt'] = z_plus
-        df.loc[c, f'z -1.96 cnt'] = z_minus
+
         vc = target_df[c].value_counts().head(topN)
         val = list(vc.index)
         cnt = list(vc.values)

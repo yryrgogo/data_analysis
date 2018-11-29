@@ -360,6 +360,7 @@ class Model(metaclass=ABCMeta):
         self.cv_feim = pd.DataFrame([])
         self.prediction = np.array([])
         val_stack = pd.DataFrame()
+        self.val_pred = np.zeros((len(train), 13))
 
         # Y Setting
         if params['objective'] == 'regression':
@@ -413,6 +414,7 @@ class Model(metaclass=ABCMeta):
                 gbdt_args=gbdt_args
             )
             y_pred = self.estimator.predict(x_val)
+            self.val_pred[val_idx, :] = y_pred
             self.fold_pred_list.append(y_pred)
             self.fold_val_list.append(y_val)
             self.fold_model_list.append(self.estimator)
