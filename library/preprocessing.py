@@ -283,12 +283,12 @@ def ordinal_encode(df, to_cat_list):
     '''
     Explain:
     Args:
-        to_cat_list: Eoncodeしたい列をリストで指定。もちろん複数指定可能。
+        to_cat_list: Eoncodeしたい列をリストで指定。複数指定可能。
     Return:
     '''
 
     # 序数をカテゴリに付与して変換
-    ce_oe = ce.OrdinalEncoder(cols=to_cat_list,handle_unknown='impute')
+    ce_oe = ce.OrdinalEncoder(cols=to_cat_list, handle_unknown='impute')
     return ce_oe.fit_transform(df), ce_oe
 
 
