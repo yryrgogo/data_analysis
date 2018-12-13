@@ -42,7 +42,7 @@ def get_filename(path, delimiter='gz'):
     filename = re.search(rf'/([^/.]*).{delimiter}', path).group(1)
     return filename
 
-def pararell_load_data(path_list):
+def parallel_load_data(path_list):
     p = Pool(multiprocessing.cpu_count())
     p_list = p.map(load_file, path_list)
     p.close
@@ -52,7 +52,7 @@ def load_file_wrapper(args):
     return load_file(*args)
 
 
-def pararell_process(func, arg_list, cpu_cnt=multiprocessing.cpu_count()):
+def parallel_process(func, arg_list, cpu_cnt=multiprocessing.cpu_count()):
     process = Pool(cpu_cnt)
     #  p = Pool(len(arg_list))
     callback = process.map(func, arg_list)

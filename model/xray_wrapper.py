@@ -8,15 +8,14 @@ import sys
 import os
 HOME = os.path.expanduser('~')
 sys.path.append(f"{HOME}/kaggle/data_analysis/library/")
-from pararell_utils import pararell_process
-from caliculate_utils import round_size
+from parallel_utils import parallel_process
+from calculate_utils import round_size
 import concurrent.futures
 
 class Xray_Cal:
 
-    def __init__(self, logger, model, ignore_list=[]):
+    def __init__(self, logger, ignore_list=[]):
         self.logger = logger
-        self.model = model
         self.ignore_list = ignore_list
         self.df_xray=[]
         self.xray_list=[]
@@ -24,7 +23,7 @@ class Xray_Cal:
         self.N_dict = {}
         self.fold_num = None
 
-    def pararell_xray_caliculation(self, args):
+    def parallel_xray_calculation(self, args):
         col = args[0]
         val = args[1]
         N = args[2]
@@ -39,16 +38,15 @@ class Xray_Cal:
 #========================================================================''')
         del dataset
         gc.collect()
-        self.xray_list.append({
-            'feature':col,
-            'value'  :val,
-            'xray'   :p_avg,
-            'N'      :N
-        })
+        return {'feature':col,
+                'value'  :val,
+                'xray'   :p_avg,
+                'N'      :N
+                }
 
 
 
-    def single_xray_caliculation(self, col, val, N):
+    def single_xray_calculation(self, col, val, N):
 
         dataset = self.df_xray.copy()
         dataset[col] = val
@@ -56,10 +54,10 @@ class Xray_Cal:
         gc.collect()
         p_avg = np.mean(pred)
 
-        self.logger.info(f'''
-#========================================================================
-# CALCULATION PROGRESS... COLUMN: {col} | VALUE: {val} | X-RAY: {p_avg}
-#========================================================================''')
+#          self.logger.info(f'''
+#  #========================================================================
+#  # CALCULATION PROGRESS... COLUMN: {col} | VALUE: {val} | X-RAY: {p_avg}
+#  #========================================================================''')
         return {
             'feature':col,
             'value'  :val,
@@ -68,11 +66,11 @@ class Xray_Cal:
         }
 
 
-    def get_xray(self, base_xray, fold_num, col_list=[], max_point=30, N_sample=300000, ex_feature_list=[], Pararell=False, cpu_cnt=multiprocessing.cpu_count()):
+    def get_xray(self, base_xray, fold_num, col_list=[], max_point=30, N_sample=300000, ex_feature_list=[], parallel=False, cpu_cnt=multiprocessing.cpu_count()):
         '''
         Explain:
         Args:
-            model  : 何番目のfoldsのモデルから出力するか
+            fold_num  : CVの場合、外部からfold番号をこのメソッドに渡す必要がある
             col_list  : x-rayを出力したいカラムリスト.引数なしの場合はデータセットの全カラム
             max_point : x-rayを可視化するデータポイント数
             ex_feature: データポイントの取得方法が特殊なfeature_list
@@ -82,12 +80,10 @@ class Xray_Cal:
         self.fold_num = fold_num
 
         if len(col_list)==0:
-            col_list = base_xray.columns
+            col_list = [col for col in base_xray.columns if col not in self.ignore_list]
         for i, col in enumerate(col_list):
 
-            # ignore_listにあるfeatureはcontinue
-            if col in self.ignore_list: continue
-
+            # CVなどで複数モデルの結果を平均する場合は、最初のみ行う処理
             if fold_num==0:
                 null_values = base_xray[col][base_xray[col].isnull()].values
                 if len(null_values)>0:
@@ -132,7 +128,7 @@ class Xray_Cal:
                     data_N = list(np.hstack((mode_points['N'], np.zeros(len(percentiles_points))+np.nan )))
                 else:
                     length = len(val_cnt)
-                    data_points = list(val_cnt.head(length).index.values) # indexにデータポイント, cntにサンプル数が入ってる
+                    data_points = list(val_cnt.head(length)[col].values) # indexにデータポイント, cntにサンプル数が入ってる
                     data_N = list(val_cnt['cnt'].head(length).values) # indexにデータポイント, cntにサンプル数が入ってる
 
                 if len(null_values)>0:
@@ -153,23 +149,22 @@ class Xray_Cal:
             # multi_processにするとprocess数分のデータセットをメモリに乗せる必要が
             # あり, Overheadがめちゃでかく大量のメモリを食う。また、各データポイントに
             # ついてpredictを行うので、毎回全CPUを使っての予測が行われる。
-            # また、modelオブジェクトも重いらしく引数にmodelを載せて並列すると死ぬ
-            # データセットを逐一更新して予測を行うので、データセットの非同期並列必須
-            # TODO DataFrameでなくnumpyでデータセットをattributeに持たせてみる?
+            # また、modelオブジェクトが重いのか引数にmodelを載せて並列すると死ぬ
             #========================================================================
-            if Pararell:
+            # Multi threading
+            if parallel:
                 arg_list = []
                 for point, N in zip(self.point_dict[col], self.N_dict[col]):
                     arg_list.append([col, point, N])
 
                 for args in arg_list:
                     executor = concurrent.futures.ThreadPoolExecutor(max_workers=max_point)
-                    executor.submit(self.pararell_xray_caliculation, args)
+                    executor.submit(self.parallel_xray_calculation, args)
                 executor.shutdown()
 
             else:
                 for point, N in zip(self.point_dict[col], self.N_dict[col]):
-                    one_xray = self.single_xray_caliculation(col=col, val=point, N=N)
+                    one_xray = self.single_xray_calculation(col=col, val=point, N=N)
                     self.xray_list.append(one_xray)
             #========================================================================
             # 各featureのX-RAYの結果を統合
