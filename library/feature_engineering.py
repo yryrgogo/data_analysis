@@ -274,39 +274,38 @@ def target_encoding(logger, train, test, key, target, level, method='mean',fold_
         #  folds = KFold(n_splits=fold)
         #  kfold = folds.split(train.drop(target, axis=1), train[target].values)
 
-    base_train = train[key].to_frame()
-    result = pd.DataFrame()
+    base_train = train[[key]+level]
+    logger.info(f"Base Train Shape: {base_train.shape}")
+
     # Train内のTE
+    oof_value = np.zeros(len(train))
     for n_fold, (trn_idx, val_idx) in enumerate(kfold):
 
         x_train = train.iloc[trn_idx, :]
-        x_val = train.iloc[val_idx, :]
+        x_val = train.iloc[val_idx, :][[key]+level]
 
         x_train = x_train.groupby(level)[target].agg({f'TE_{target}@{level}':f'{method}'}).reset_index()
-        tmp_result = x_val.drop(target, axis=1).merge(x_train, on=level, how='left')
-
-        if len(result) == 0:
-            result = tmp_result.copy()
-        else:
-            result = pd.concat([result, tmp_result], axis=0)
+        tmp_result = x_val.merge(x_train, on=level, how='left')
+        oof_value[val_idx] = tmp_result[f'TE_{target}@{level}'].values
 
         gc.collect()
 
-    result = base_train.merge(result, on=key, how='inner')
+    base_train[f'TE_{target}@{level}'] = oof_value
 
     # Train内のTE
     train = train.groupby(level)[target].agg({f'TE_{target}@{level}':f'{method}'}).reset_index()
-    test_result = test.merge(train, on=level, how='left')
+    test_result = test[[key]+level].merge(train, on=level, how='left')
 
     logger.info(f'''
 #========================================================================
 # COMPLETE TARGET ENCODING!!
-# FEATURE : TE_{target}@{level}
-# LENGTH  : Train{len(result)} / Test{len(test_result)}
+# FEATURE     : TE_{target}@{level}
+# BEFORE LEN  : Train{len(base_train)} / Test{len(test)}
+# AFTER LEN   : Train{len(base_train)} / Test{len(test_result)}
 #========================================================================''')
 
     # arrayで返すか、keyの入ったDFを返すか
     if return_df:
-        return result[[key, f'TE_{target}@{level}']], test_result[[key, f'TE_{target}@{level}']]
+        return base_train[[key, f'TE_{target}@{level}']], test_result[[key, f'TE_{target}@{level}']]
     else:
-        return result[f'TE_{target}@{level}'].values, test_result[f'TE_{target}@{level}'].values
+        return base_train[f'TE_{target}@{level}'].values, test_result[f'TE_{target}@{level}'].values
