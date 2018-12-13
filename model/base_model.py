@@ -246,7 +246,7 @@ class Model(metaclass=ABCMeta):
         return train, test, drop_list
 
 
-    def cross_validation(self, train, key, target, fold_type='stratified', fold=5, group_col_name='', params={}, num_boost_round=0, early_stopping_rounds=0):
+    def cross_validation(self, train, key, target, fold_type='stratified', fold=5, group_col_name='', params={}, num_boost_round=0, early_stopping_rounds=0, self_kfold=False):
 
         # Result Variables
         list_score = []
