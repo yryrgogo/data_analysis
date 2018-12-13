@@ -270,11 +270,12 @@ class Model(metaclass=ABCMeta):
 
         use_cols = [f for f in train.columns if f not in self.ignore_list]
         self.use_cols = sorted(use_cols)  # カラム名をソートし、カラム順による学習への影響をなくす
+        self.kfold = list(kfold)
 
         if len(key):
             train.set_index(key, inplace=True)
 
-        for n_fold, (trn_idx, val_idx) in enumerate(kfold):
+        for n_fold, (trn_idx, val_idx) in enumerate(self.kfold):
 
             x_train, y_train = train[self.use_cols].iloc[trn_idx, :], y.iloc[trn_idx].values
             x_val, y_val = train[self.use_cols].iloc[val_idx, :], y.iloc[val_idx].values
@@ -372,6 +373,7 @@ class Model(metaclass=ABCMeta):
 
         use_cols = [f for f in train.columns if f not in self.ignore_list]
         self.use_cols = sorted(use_cols)  # カラム名をソートし、カラム順による学習への影響をなくす
+        self.kfold = kfold
 
         if len(key)>0:
             train.set_index(key, inplace=True)
