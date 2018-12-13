@@ -253,11 +253,7 @@ class Model(metaclass=ABCMeta):
         self.cv_feim = pd.DataFrame([])
 
         # Y Setting
-        if params['objective'] == 'regression':
-            y = train[target].astype('float64')
-            y = np.log1p(y)
-        else:
-            y = train[target]
+        y = train[target]
 
         ' KFold '
         if fold_type == 'stratified':
@@ -282,17 +278,6 @@ class Model(metaclass=ABCMeta):
 
             x_train, y_train = train[self.use_cols].iloc[trn_idx, :], y.iloc[trn_idx].values
             x_val, y_val = train[self.use_cols].iloc[val_idx, :], y.iloc[val_idx].values
-
-            if self.model_type.count('xgb'):
-                " XGBは'[]'と','と'<>'がNGなのでreplace "
-                use_cols = []
-                for col in x_train.columns:
-                    use_cols.append(col.replace(
-                        "[", "-q-").replace("]", "-p-").replace(",", "-o-"))
-                use_cols = sorted(use_cols)
-                x_train.columns = use_cols
-                x_val.columns = use_cols
-                self.use_cols = use_cols
 
             # GBDTのみ適用するargs
             gbdt_args = {}
@@ -351,7 +336,7 @@ class Model(metaclass=ABCMeta):
         return self
 
 
-    def cross_prediction(self, train, test, key, target, fold_type='stratified', fold=5, group_col_name='', params={}, num_boost_round=0, early_stopping_rounds=0, oof_flg=True):
+    def cross_prediction(self, train, test, key, target, fold_type='stratified', fold=5, group_col_name='', params={}, num_boost_round=0, early_stopping_rounds=0, oof_flg=True, self_kfold=False):
 
         self.target = target
         list_score = []
@@ -360,15 +345,15 @@ class Model(metaclass=ABCMeta):
         self.cv_feim = pd.DataFrame([])
         self.prediction = np.array([])
         val_stack = pd.DataFrame()
-        self.val_pred = np.zeros((len(train), 13))
+
+        self.objective = params['objective']
+        if self.objective=='multiclass':
+            self.val_pred = np.zeros((len(train), 13))
+        else:
+            self.val_pred = np.zeros(len(train))
 
         # Y Setting
-        if params['objective'] == 'regression':
-            y = train[target].astype('float64')
-            y = np.log1p(y)
-        else:
-            y = train[target]
-        self.objective = params['objective']
+        y = train[target]
 
         ' KFold '
         if fold_type == 'stratified':
@@ -382,6 +367,8 @@ class Model(metaclass=ABCMeta):
         elif fold_type == 'kfold':
             folds = KFold(n_splits=fold, shuffle=True, random_state=self.seed)  # 1
             kfold = folds.split(train, y)
+        elif fold_type == 'self':
+            kfold = self_kfold
 
         use_cols = [f for f in train.columns if f not in self.ignore_list]
         self.use_cols = sorted(use_cols)  # カラム名をソートし、カラム順による学習への影響をなくす
@@ -413,8 +400,13 @@ class Model(metaclass=ABCMeta):
                 params=params,
                 gbdt_args=gbdt_args
             )
+
+            # Tmp Result
             y_pred = self.estimator.predict(x_val)
-            self.val_pred[val_idx, :] = y_pred
+            if self.objective=='multiclass':
+                self.val_pred[val_idx, :] = y_pred
+            else:
+                self.val_pred[val_idx] = y_pred
             self.fold_pred_list.append(y_pred)
             self.fold_val_list.append(y_val)
             self.fold_model_list.append(self.estimator)
@@ -430,30 +422,27 @@ class Model(metaclass=ABCMeta):
                     tmp[target] = y_val
 
                     # Multi-Classは全クラスに対する確率がカラム別に出力される
-                    if self.objective=='binary':
-                        tmp['prediction'] = y_pred
-                    elif self.objective=='multiclass':
+                    if self.objective=='multiclass':
                         y_pred_max = np.argmax(y_pred, axis=1)  # 最尤と判断したクラスの値にする
                         tmp['prediction'] = y_pred_max
                         tmp_stack = pd.DataFrame(y_pred, columns=np.arange(params['num_class']))
                         tmp = pd.concat([tmp, tmp_stack], axis=1)
+                    else:
+                        tmp['prediction'] = y_pred
 
                     val_stack = pd.concat([val_stack, tmp], axis=0)
                 else:
                     val_stack = x_val.reset_index()[key].to_frame()
                     val_stack[target] = y_val
-                    if self.objective=='binary':
-                        val_stack['prediction'] = y_pred
-                    elif self.objective=='multiclass':
+                    if self.objective=='multiclass':
                         y_pred_max = np.argmax(y_pred, axis=1)  # 最尤と判断したクラスの値にする
                         val_stack['prediction'] = y_pred_max
                         tmp_stack = pd.DataFrame(y_pred, columns=np.arange(params['num_class']))
                         val_stack = pd.concat([val_stack, tmp_stack], axis=1)
+                    else:
+                        val_stack['prediction'] = y_pred
 
             test_pred = self.estimator.predict(x_test)
-
-            if params['objective']=='regression':
-                test_pred = np.expm1(test_pred)
 
             if len(self.prediction) == 0:
                 self.prediction = test_pred
@@ -479,25 +468,8 @@ class Model(metaclass=ABCMeta):
             self.train_stack = val_stack
             self.sc_confusion_matrix(y_train, y_allval)
 
-        if self.objective=='binary':
-            self.logger.info(f'''
-#========================================================================
-# Train End.''')
-            [self.logger.info(f'''
-# Validation No: {i} | {self.metric}: {score}''') for i, score in enumerate(list_score)]
-            self.logger.info(f'''
-# Params   : {params}
-# CV score : {self.cv_score}
-# Accuracy : {self.accuracy}  {self.true}/{len(test)}
-# F1 score : {self.f1}
-# TP:{self.cmx[0]}  FP:{self.cmx[2]}
-# FN:{self.cmx[1]}  TN:{self.cmx[3]}
-#======================================================================== ''')
 
-            ' fold数で平均をとる '
-            self.prediction = self.prediction / fold
-
-        elif self.objective=='multiclass':
+        if self.objective=='multiclass':
             self.logger.info(f'''
 #========================================================================
 # Train End.''')
@@ -511,14 +483,37 @@ class Model(metaclass=ABCMeta):
             ' fold数で平均をとる '
             self.multi_pred = self.prediction / fold
             self.prediction = np.argmax(self.multi_pred, axis=1)  # 最尤と判断したクラスの値にする
+        else:
+            self.logger.info(f'''
+#========================================================================
+# Train End.''')
+            [self.logger.info(f'''
+# Validation No: {i} | {self.metric}: {score}''') for i, score in enumerate(list_score)]
+            self.logger.info(f'''
+# Params   : {params}
+# CV score : {self.cv_score}
+#======================================================================== ''')
+            if self.objective=='binary':
+                self.logger.info(f'''
+# Accuracy : {self.accuracy}  {self.true}/{len(test)}
+# F1 score : {self.f1}
+# TP:{self.cmx[0]}  FP:{self.cmx[2]}
+# FN:{self.cmx[1]}  TN:{self.cmx[3]}
+#======================================================================== ''')
+
+            ' fold数で平均をとる '
+            self.prediction = self.prediction / fold
 
 
         ' OOF for Stackng '
         if oof_flg:
             pred_stack = test.reset_index()[[key, target]]
             pred_stack['prediction'] = self.prediction
-            tmp_pred = pd.DataFrame(self.multi_pred, columns=np.arange(params['num_class']))
-            pred_stack = pd.concat([pred_stack, tmp_pred], axis=1)
+
+            # multiclassの場合は各クラスに対する予測値もJoinする
+            if self.objective=='multiclass':
+                tmp_pred = pd.DataFrame(self.multi_pred, columns=np.arange(params['num_class']))
+                pred_stack = pd.concat([pred_stack, tmp_pred], axis=1)
 
             result_stack = pd.concat([val_stack, pred_stack], axis=0).sort_values(by=key)
             self.logger.info(
