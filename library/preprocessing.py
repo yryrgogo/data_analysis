@@ -3,7 +3,7 @@ import numpy as np
 import sys, re, glob
 import gc
 from sklearn.model_selection import StratifiedKFold
-from utils import pararell_load_data
+from utils import parallel_load_data
 from multiprocessing import Pool
 import multiprocessing
 from sklearn.preprocessing import StandardScaler, MinMaxScaler

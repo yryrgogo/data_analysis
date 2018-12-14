@@ -1,4 +1,4 @@
-Pararell=True
+parallel=True
 from abc import ABCMeta, abstractmethod
 import numpy as np
 import pandas as pd
@@ -14,8 +14,8 @@ import sys
 import os
 HOME = os.path.expanduser('~')
 sys.path.append(f"{HOME}/kaggle/data_analysis/library/")
-from pararell_utils import pararell_process
-from caliculate_utils import round_size
+from parallel_utils import parallel_process
+from calculate_utils import round_size
 from preprocessing import factorize_categoricals, get_dummies, ordinal_encode, get_ordinal_mapping
 import category_encoders as ce
 
@@ -373,7 +373,7 @@ class Model(metaclass=ABCMeta):
 
         use_cols = [f for f in train.columns if f not in self.ignore_list]
         self.use_cols = sorted(use_cols)  # カラム名をソートし、カラム順による学習への影響をなくす
-        self.kfold = kfold
+        self.kfold = list(kfold)
 
         if len(key)>0:
             train.set_index(key, inplace=True)
@@ -381,7 +381,7 @@ class Model(metaclass=ABCMeta):
         else:
             oof_flg = False
 
-        for n_fold, (trn_idx, val_idx) in enumerate(kfold):
+        for n_fold, (trn_idx, val_idx) in enumerate(self.kfold):
 
             x_train, y_train = train[self.use_cols].iloc[trn_idx, :], y.iloc[trn_idx].values
             x_val, y_val = train[self.use_cols].iloc[val_idx, :], y.iloc[val_idx].values
