@@ -5,7 +5,7 @@ import os
 HOME = os.path.expanduser('~')
 import sys
 sys.path.append(f"{HOME}/kaggle/data_analysis/library/")
-from pararell_utils import pararell_process
+from parallel_utils import parallel_process
 
 
 class lightgbm_ex(Model):
