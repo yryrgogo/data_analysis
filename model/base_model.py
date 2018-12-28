@@ -375,11 +375,9 @@ class Model(metaclass=ABCMeta):
         self.use_cols = sorted(use_cols)  # カラム名をソートし、カラム順による学習への影響をなくす
         self.kfold = list(kfold)
 
-        if len(key)>0:
+        if key in train.columns:
             train.set_index(key, inplace=True)
             test.set_index(key, inplace=True)
-        else:
-            oof_flg = False
 
         for n_fold, (trn_idx, val_idx) in enumerate(self.kfold):
 
