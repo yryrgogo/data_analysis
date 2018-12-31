@@ -461,6 +461,7 @@ class Model(metaclass=ABCMeta):
         #========================================================================
         # CV SCORE & F1SCORE
         #========================================================================
+        self.val_score_list = list_score
         self.cv_score = np.mean(list_score)
         if oof_flg:
             y_train = val_stack[target].values
