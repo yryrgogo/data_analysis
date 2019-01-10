@@ -52,6 +52,8 @@ class Model(metaclass=ABCMeta):
                 score = r2_score(y_test, y_pred)
             elif self.metric=='rmse':
                 score = np.sqrt(mean_squared_error(y_test, y_pred))
+            elif self.metric=='mse':
+                score = np.sqrt(mean_squared_error(y_test, y_pred))
             elif self.metric=='accuracy':
                 y_pred_max = np.argmax(y_pred, axis=1)  # 最尤と判断したクラスの値にする
                 score = sum(y_test == y_pred_max) / len(y_test)
@@ -165,14 +167,14 @@ class Model(metaclass=ABCMeta):
     def df_feature_importance(self, feim_name):
         ' Feature Importance '
         if self.model_type.count('lgb'):
-            tmp_feim = pd.Series(self.estimator.feature_importance(), name=feim_name)
+            tmp_feim = pd.Series(self.estimator.feature_importance(importance_type='gain'), name=feim_name)
             feature_name = pd.Series(self.use_cols, name='feature')
             feim = pd.concat([feature_name, tmp_feim], axis=1)
         elif self.model_type.count('xgb'):
             tmp_feim = self.estimator.get_fscore()
             feim = pd.Series(tmp_feim,  name=feim_name).to_frame().reset_index().rename(columns={'index':'feature'})
         elif self.model_type.count('ext'):
-            tmp_feim = self.estimator.feature_importance_()
+            tmp_feim = self.estimator.feature_importance_(importance_type='gain')
             feim = pd.Series(tmp_feim,  name=feim_name).to_frame().reset_index().rename(columns={'index':'feature'})
         return feim
 
@@ -246,112 +248,11 @@ class Model(metaclass=ABCMeta):
         return train, test, drop_list
 
 
-    def cross_validation(self, train, key, target, fold_type='stratified', fold=5, group_col_name='', params={}, num_boost_round=0, early_stopping_rounds=0, self_kfold=False):
+    def cross_validation(self, train, key, target, fold_type='stratified', fold=5, group_col_name='', params={}, num_boost_round=0, early_stopping_rounds=0, self_kfold=False, self_stop=[], params_tune=False):
 
         # Result Variables
         list_score = []
         self.cv_feim = pd.DataFrame([])
-
-        # Y Setting
-        y = train[target]
-
-        ' KFold '
-        if fold_type == 'stratified':
-            folds = StratifiedKFold(n_splits=fold, shuffle=True, random_state=self.seed)  # 1
-            kfold = folds.split(train, y)
-        elif fold_type == 'group':
-            if group_col_name == '':
-                raise ValueError(f'Not exist group_col_name.')
-            folds = GroupKFold(n_splits=fold)
-            kfold = folds.split(train, y, groups=train[group_col_name].values)
-        elif fold_type == 'kfold':
-            folds = KFold(n_splits=fold, shuffle=True, random_state=self.seed)  # 1
-            kfold = folds.split(train, y)
-
-        use_cols = [f for f in train.columns if f not in self.ignore_list]
-        self.use_cols = sorted(use_cols)  # カラム名をソートし、カラム順による学習への影響をなくす
-        self.kfold = list(kfold)
-
-        if len(key):
-            train.set_index(key, inplace=True)
-
-        for n_fold, (trn_idx, val_idx) in enumerate(self.kfold):
-
-            x_train, y_train = train[self.use_cols].iloc[trn_idx, :], y.iloc[trn_idx].values
-            x_val, y_val = train[self.use_cols].iloc[val_idx, :], y.iloc[val_idx].values
-
-            # GBDTのみ適用するargs
-            gbdt_args = {}
-            if num_boost_round:
-                gbdt_args['num_boost_round'] = num_boost_round
-                gbdt_args['early_stopping_rounds'] = early_stopping_rounds
-            self.estimator = self.train(
-                x_train=x_train,
-                y_train=y_train,
-                x_val=x_val,
-                y_val=y_val,
-                params=params,
-                gbdt_args=gbdt_args
-            )
-            y_pred = self.estimator.predict(x_val)
-
-            self.fold_model_list.append(self.estimator)
-
-            sc_score = self.sc_metrics(y_val, y_pred)
-
-            list_score.append(sc_score)
-            self.logger.info(f'Fold No: {n_fold} | {self.metric}: {sc_score}')
-
-            ' Feature Importance '
-            feim_name = f'{n_fold}_importance'
-            feim = self.df_feature_importance(feim_name=feim_name)
-
-            if len(self.cv_feim) == 0:
-                self.cv_feim = feim.copy()
-            else:
-                self.cv_feim = self.cv_feim.merge(feim, on='feature', how='inner')
-
-        self.cv_score = np.mean(list_score)
-        self.logger.info(f'''
-#========================================================================
-# Train End.''')
-        [self.logger.info(f'''
-# Validation No: {i} | {self.metric}: {score}''') for i, score in enumerate(list_score)]
-        self.logger.info(f'''
-# Params   : {params}
-# CV score : {self.cv_score}
-#======================================================================== ''')
-
-        importance = []
-        for fold_no in range(fold):
-            if len(importance) == 0:
-                importance = self.cv_feim[f'{fold_no}_importance'].values.copy()
-            else:
-                importance += self.cv_feim[f'{fold_no}_importance'].values
-
-        self.cv_feim['avg_importance'] = importance / fold
-        self.cv_feim.sort_values(by=f'avg_importance',
-                            ascending=False, inplace=True)
-        self.cv_feim['rank'] = np.arange(len(self.cv_feim))+1
-
-        return self
-
-
-    def cross_prediction(self, train, test, key, target, fold_type='stratified', fold=5, group_col_name='', params={}, num_boost_round=0, early_stopping_rounds=0, oof_flg=True, self_kfold=False):
-
-        self.target = target
-        list_score = []
-        self.fold_pred_list = []
-        self.fold_val_list = []
-        self.cv_feim = pd.DataFrame([])
-        self.prediction = np.array([])
-        val_stack = pd.DataFrame()
-
-        self.objective = params['objective']
-        if self.objective=='multiclass':
-            self.val_pred = np.zeros((len(train), 13))
-        else:
-            self.val_pred = np.zeros(len(train))
 
         # Y Setting
         y = train[target]
@@ -377,15 +278,13 @@ class Model(metaclass=ABCMeta):
 
         if key in train.columns:
             train.set_index(key, inplace=True)
-            test.set_index(key, inplace=True)
+
+        pred_val = train[target].copy()
 
         for n_fold, (trn_idx, val_idx) in enumerate(self.kfold):
 
             x_train, y_train = train[self.use_cols].iloc[trn_idx, :], y.iloc[trn_idx].values
             x_val, y_val = train[self.use_cols].iloc[val_idx, :], y.iloc[val_idx].values
-
-            if n_fold == 0:
-                x_test = test[self.use_cols]
 
             # GBDTのみ適用するargs
             gbdt_args = {}
@@ -400,9 +299,151 @@ class Model(metaclass=ABCMeta):
                 params=params,
                 gbdt_args=gbdt_args
             )
+            y_pred = self.estimator.predict(x_val)
+            pred_val.iloc[val_idx] = y_pred
+
+            self.fold_model_list.append(self.estimator)
+
+            sc_score = self.sc_metrics(y_val, y_pred)
+
+            stop_cnt = 0
+            stop_score_list = []
+            if len(self_stop)>0:
+                if sc_score > self_stop[n_fold]:
+                    stop_cnt+=1
+                    stop_score_list.append(sc_score)
+                if stop_cnt==3:
+                    self.cv_score = np.mean(stop_score_list)
+                    return self
+
+            list_score.append(sc_score)
+            self.logger.info(f'Fold No: {n_fold} | {self.metric}: {sc_score}')
+
+            ' Feature Importance '
+            feim_name = f'{n_fold}_importance'
+            feim = self.df_feature_importance(feim_name=feim_name)
+
+            if len(self.cv_feim) == 0:
+                self.cv_feim = feim.copy()
+            else:
+                self.cv_feim = self.cv_feim.merge(feim, on='feature', how='inner')
+
+        self.cv_score = np.mean(list_score)
+        self.val_score_list = list_score
+        self.prediction = pred_val.values
+
+        self.logger.info(f'''
+#========================================================================
+# Train End.''')
+        [self.logger.info(f'''
+# Validation No: {i} | {self.metric}: {score}''') for i, score in enumerate(list_score)]
+        self.logger.info(f'''
+# Params   : {params}
+# CV score : {self.cv_score}
+#======================================================================== ''')
+
+        # Parameter Tuningの場合はscoreがあればOK
+        if params_tune:
+            return self
+
+        importance = []
+        for fold_no in range(fold):
+            if len(importance) == 0:
+                importance = self.cv_feim[f'{fold_no}_importance'].values.copy()
+            else:
+                importance += self.cv_feim[f'{fold_no}_importance'].values
+
+        self.cv_feim['avg_importance'] = importance / fold
+        self.cv_feim.sort_values(by=f'avg_importance',
+                            ascending=False, inplace=True)
+        self.cv_feim['rank'] = np.arange(len(self.cv_feim))+1
+
+        return self
+
+
+    def cross_prediction(self, train, test, key, target, fold_type='stratified', fold=5, group_col_name='', params={}, num_boost_round=0, early_stopping_rounds=0, oof_flg=True, self_kfold=False, self_stop=[], comp_name='', scaler=False):
+
+        self.target = target
+        list_score = []
+        self.fold_pred_list = []
+        self.fold_val_list = []
+        self.cv_feim = pd.DataFrame([])
+        self.prediction = np.array([])
+        val_stack = pd.DataFrame()
+
+        self.objective = params['objective']
+        if self.objective=='multiclass':
+            self.val_pred = np.zeros((len(train), 13))
+        else:
+            self.val_pred = np.zeros(len(train))
+
+        # Y Setting
+        y = train[target].copy()
+        #  if self.objective.count('reg'):
+        #      y_min = y.min()
+        #      y -= y_min
+        #      y = np.log1p(y)
+
+        ' KFold '
+        if fold_type == 'stratified':
+            folds = StratifiedKFold(n_splits=fold, shuffle=True, random_state=self.seed)  # 1
+            kfold = folds.split(train, y)
+        elif fold_type == 'group':
+            if group_col_name == '':
+                raise ValueError(f'Not exist group_col_name.')
+            folds = GroupKFold(n_splits=fold)
+            kfold = folds.split(train, y, groups=train[group_col_name].values)
+        elif fold_type == 'kfold':
+            folds = KFold(n_splits=fold, shuffle=True, random_state=self.seed)  # 1
+            kfold = folds.split(train, y)
+        elif fold_type == 'self':
+            kfold = self_kfold
+
+        use_cols = [f for f in train.columns if f not in self.ignore_list]
+        self.use_cols = sorted(use_cols)  # カラム名をソートし、カラム順による学習への影響をなくす
+        self.kfold = list(kfold)
+
+        if key in train.columns:
+            train.set_index(key, inplace=True)
+        if key in test.columns:
+            test.set_index(key, inplace=True)
+
+        for n_fold, (trn_idx, val_idx) in enumerate(self.kfold):
+
+            if 'column_1' in train.columns:
+                x_train, y_train = train[['column_0'] + self.use_cols].iloc[trn_idx, :], y.iloc[trn_idx].values
+                x_val, y_val = train[['column_0'] + self.use_cols].iloc[val_idx, :], y.iloc[val_idx].values
+            else:
+                x_train, y_train = train[self.use_cols].iloc[trn_idx, :], y.iloc[trn_idx].values
+                x_val, y_val = train[self.use_cols].iloc[val_idx, :], y.iloc[val_idx].values
+
+            if n_fold == 0:
+                x_test = test[self.use_cols]
+
+            # GBDTのみ適用するargs
+            gbdt_args = {}
+            if num_boost_round:
+                gbdt_args['num_boost_round'] = num_boost_round
+                gbdt_args['early_stopping_rounds'] = early_stopping_rounds
+
+            self.estimator = self.train(
+                x_train=x_train,
+                y_train=y_train,
+                x_val=x_val,
+                y_val=y_val,
+                params=params,
+                gbdt_args=gbdt_args
+            )
 
             # Tmp Result
             y_pred = self.estimator.predict(x_val)
+
+            # 対数化
+            #  if self.objective.count('reg'):
+                #  y_pred = np.expm1(y_pred)
+                #  y_val = np.expm1(y_val)
+                #  y_val += y_min
+
             if self.objective=='multiclass':
                 self.val_pred[val_idx, :] = y_pred
             else:
@@ -410,7 +451,13 @@ class Model(metaclass=ABCMeta):
             self.fold_pred_list.append(y_pred)
             self.fold_val_list.append(y_val)
             self.fold_model_list.append(self.estimator)
-            sc_score = self.sc_metrics(y_val, y_pred)
+
+            if scaler:
+                y_val = scaler.inverse_transform(y_val.reshape(-1, 1)).ravel()
+                y_pred = scaler.inverse_transform(y_pred.reshape(-1, 1)).ravel()
+                sc_score = self.sc_metrics(y_val, y_pred)
+            else:
+                sc_score = self.sc_metrics(y_val, y_pred)
 
             list_score.append(sc_score)
             self.logger.info(f'Fold No: {n_fold} | {self.metric}: {sc_score}')
@@ -444,6 +491,14 @@ class Model(metaclass=ABCMeta):
 
             test_pred = self.estimator.predict(x_test)
 
+            if scaler:
+                test_pred = scaler.inverse_transform(test_pred.reshape(-1, 1)).ravel()
+
+            # 対数化を解除
+            #  if self.objective.count('reg'):
+            #      test_pred = np.expm1(test_pred)
+            #      test_pred += y_min + 5
+
             if len(self.prediction) == 0:
                 self.prediction = test_pred
             else:
@@ -463,6 +518,7 @@ class Model(metaclass=ABCMeta):
         #========================================================================
         self.val_score_list = list_score
         self.cv_score = np.mean(list_score)
+
         if oof_flg:
             y_train = val_stack[target].values
             y_allval = val_stack['prediction'].values
