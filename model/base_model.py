@@ -365,6 +365,7 @@ class Model(metaclass=ABCMeta):
 
         self.target = target
         list_score = []
+        best_iter_list = []
         self.fold_pred_list = []
         self.fold_val_list = []
         self.cv_feim = pd.DataFrame([])
@@ -437,6 +438,7 @@ class Model(metaclass=ABCMeta):
 
             # Tmp Result
             y_pred = self.estimator.predict(x_val)
+            best_iter_list.append(self.estimator.best_iteration)
 
             # 対数化
             #  if self.objective.count('reg'):
@@ -518,6 +520,7 @@ class Model(metaclass=ABCMeta):
         #========================================================================
         self.val_score_list = list_score
         self.cv_score = np.mean(list_score)
+        self.iter_avg = np.mean(best_iter_list)
 
         if oof_flg:
             y_train = val_stack[target].values
