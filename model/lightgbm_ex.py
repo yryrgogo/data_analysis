@@ -19,6 +19,7 @@ class lightgbm_ex(Model):
         self.seed = seed
         self.ignore_list = ignore_list
         self.fold_model_list = []
+        self.viz_detail = False
         #  self.cv_feim = []
         #  self.prediction = []
         #  self.result_stack = []
@@ -41,7 +42,7 @@ class lightgbm_ex(Model):
         lgb_train = self.__model.Dataset(data=x_train, label=y_train)
         lgb_eval = self.__model.Dataset(data=x_val, label=y_val)
 
-        self.logger.info(params)
+        #  self.logger.info(params)
         estimator = self.__model.train(
             train_set=lgb_train,
             valid_sets=lgb_eval,

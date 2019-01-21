@@ -228,11 +228,11 @@ class Model(metaclass=ABCMeta):
         else:
             train = df
         ' Testsetで値のユニーク数が1のカラムを除外する '
-        drop_list = []
+        drop_list = dt_list
         if len(test):
             for col in test.columns:
                 length = test[col].nunique()
-                if length <=1 and col not in self.ignore_list:
+                if length <=1 and col not in self.ignore_list and col!=target:
                     self.logger.info(f'''
 ***********WARNING************* LENGTH {length} COLUMN: {col}''')
                     self.move_feature(feature_name=col)
@@ -411,12 +411,8 @@ class Model(metaclass=ABCMeta):
 
         for n_fold, (trn_idx, val_idx) in enumerate(self.kfold):
 
-            if 'column_1' in train.columns:
-                x_train, y_train = train[['column_0'] + self.use_cols].iloc[trn_idx, :], y.iloc[trn_idx].values
-                x_val, y_val = train[['column_0'] + self.use_cols].iloc[val_idx, :], y.iloc[val_idx].values
-            else:
-                x_train, y_train = train[self.use_cols].iloc[trn_idx, :], y.iloc[trn_idx].values
-                x_val, y_val = train[self.use_cols].iloc[val_idx, :], y.iloc[val_idx].values
+            x_train, y_train = train[self.use_cols].iloc[trn_idx, :], y.iloc[trn_idx].values
+            x_val, y_val = train[self.use_cols].iloc[val_idx, :], y.iloc[val_idx].values
 
             if n_fold == 0:
                 x_test = test[self.use_cols]
@@ -462,7 +458,8 @@ class Model(metaclass=ABCMeta):
                 sc_score = self.sc_metrics(y_val, y_pred)
 
             list_score.append(sc_score)
-            self.logger.info(f'Fold No: {n_fold} | {self.metric}: {sc_score}')
+            if self.viz_detail:
+                self.logger.info(f'Fold No: {n_fold} | {self.metric}: {sc_score}')
 
             ' OOF for Stackng '
             if oof_flg:
