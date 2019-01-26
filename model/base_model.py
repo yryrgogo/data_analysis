@@ -572,7 +572,7 @@ class Model(metaclass=ABCMeta):
                 tmp_pred = pd.DataFrame(self.multi_pred, columns=np.arange(params['num_class']))
                 pred_stack = pd.concat([pred_stack, tmp_pred], axis=1)
 
-            result_stack = pd.concat([val_stack, pred_stack], axis=0).sort_values(by=key)
+            result_stack = pd.concat([val_stack, pred_stack], axis=0, ignore_index=True)
             self.logger.info(
                 f'result_stack shape: {result_stack.shape} | cnt_id: {len(result_stack[key].drop_duplicates())}')
         else:
