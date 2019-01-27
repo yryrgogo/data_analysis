@@ -363,6 +363,7 @@ class Model(metaclass=ABCMeta):
 
     def cross_prediction(self, train, test, key, target, fold_type='stratified', fold=5, group_col_name='', params={}, num_boost_round=0, early_stopping_rounds=0, oof_flg=True, self_kfold=False, self_stop=[], comp_name='', scaler=False):
 
+        df_base_id = pd.concat([train.reset_index()[key].to_frame(), test.reset_index()[key].to_frame()], axis=0)
         self.target = target
         list_score = []
         best_iter_list = []
@@ -413,6 +414,7 @@ class Model(metaclass=ABCMeta):
 
             x_train, y_train = train[self.use_cols].iloc[trn_idx, :], y.iloc[trn_idx].values
             x_val, y_val = train[self.use_cols].iloc[val_idx, :], y.iloc[val_idx].values
+            print(x_train.shape, x_val.shape)
 
             if n_fold == 0:
                 x_test = test[self.use_cols]
@@ -573,6 +575,7 @@ class Model(metaclass=ABCMeta):
                 pred_stack = pd.concat([pred_stack, tmp_pred], axis=1)
 
             result_stack = pd.concat([val_stack, pred_stack], axis=0, ignore_index=True)
+            result_stack = df_base_id.merge(result_stack, how='inner', on=key)
             self.logger.info(
                 f'result_stack shape: {result_stack.shape} | cnt_id: {len(result_stack[key].drop_duplicates())}')
         else:
