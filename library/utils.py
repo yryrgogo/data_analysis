@@ -598,12 +598,14 @@ def impute_feature(df, col):
             if not(val_max==val_max) or val_max==np.inf:
                 continue
             feature = np.where(feature==inf_max, val_max, feature)
+            break
 
     if inf_min == -np.inf:
         for val_min in np.sort(feature):
             if not(val_min==val_min) or val_min==-np.inf:
                 continue
             feature = np.where(feature==inf_min, val_min, feature)
+            break
 
     length = len(feature)
     null_len = len(feature[feature==feature])
