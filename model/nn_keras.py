@@ -16,7 +16,7 @@ from sklearn.utils import class_weight
 # Keras
 from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation
-from keras.layers.advanced_activations import PReLU
+from keras.layers.advanced_activations import PReLU, ELU
 from keras.layers.normalization import BatchNormalization
 from keras.layers import LSTM
 from keras import backend as K
@@ -36,7 +36,7 @@ def timer(title):
 #========================================================================
 # For Elo Competition
 def RMSE(y_true, y_pred):
-        return K.sqrt(K.mean(K.square(y_pred - y_true), axis=-1)) 
+        return K.sqrt(K.mean(K.square(y_pred - y_true), axis=-1))
 
 
 #========================================================================
@@ -44,59 +44,87 @@ def RMSE(y_true, y_pred):
 # https://www.kaggle.com/shixw125/1st-place-nn-model-public-0-507-private-0-513
 def elo_build_NN(input_rows, input_cols):
     model = Sequential()
+
+    #========================================================================
+    #  model.add(Dense(512))
+    #  model.add(BatchNormalization())
+    #  model.add(Dense(1, activation='linear'))
+    #========================================================================
+
+    #========================================================================
+    # LSTM
+
+    def tanh(x):
+        return K.tanh(x)
+
+    act_func = PReLU()
+    act_func = ELU()
+    act_func = Activation(tanh)
+
     model.add(LSTM(512, input_shape=(input_rows, input_cols)))
     model.add(BatchNormalization())
     model.add(Dropout(.2))
 
     model.add(Dense(256))
-    model.add(PReLU())
+    model.add(act_func)
     model.add(BatchNormalization())
     model.add(Dropout(.1))
 
     model.add(Dense(256))
-    model.add(PReLU())
+    model.add(act_func)
     model.add(BatchNormalization())
     model.add(Dropout(.1))
 
     model.add(Dense(128))
-    model.add(PReLU())
+    model.add(act_func)
     model.add(BatchNormalization())
     model.add(Dropout(.05))
 
     # original
     model.add(Dense(64))
-    model.add(PReLU())
+    model.add(act_func)
     model.add(BatchNormalization())
     model.add(Dropout(.05))
 
     model.add(Dense(32))
-    model.add(PReLU())
+    model.add(act_func)
     model.add(BatchNormalization())
     model.add(Dropout(.05))
 
     model.add(Dense(16))
-    model.add(PReLU())
+    model.add(act_func)
     model.add(BatchNormalization())
     model.add(Dropout(.05))
 
     model.add(Dense(1))
+    #========================================================================
 
     return model
 
 
-def elo_build_linear_NN(input_cols, first_neuron=1024, drop_rate=0.7):
+def elo_build_linear_NN(input_cols, first_neuron=512, drop_rate=0.2):
 
     #the model is just a sequence of fully connected layers, batch normalization and dropout using ELUs as activation functions
     model = Sequential()
-    model.add(Dense(first_neuron, input_dim=input_cols, activation='elu'))
+
+    #  model.add(Dense(first_neuron, input_dim=input_cols, activation='elu'))
+    #  model.add(BatchNormalization())
+    #  model.add(Dropout(drop_rate))
+    #  model.add(Dense(first_neuron*2, activation='elu'))
+    #  model.add(BatchNormalization())
+    #  model.add(Dropout(drop_rate))
+    #  model.add(Dense(first_neuron*2, activation='elu'))
+    #  model.add(Dense(first_neuron, activation='elu'))
+    #  model.add(Dense(1, activation='linear'))
+
+
+    #========================================================================
+    # 
+    model.add(Dense(first_neuron, input_dim=input_cols, activation='linear'))
     model.add(BatchNormalization())
     model.add(Dropout(drop_rate))
-    model.add(Dense(first_neuron*2, activation='elu'))
-    model.add(BatchNormalization())
-    model.add(Dropout(drop_rate))
-    model.add(Dense(first_neuron*2, activation='elu'))
-    model.add(Dense(first_neuron, activation='elu'))
     model.add(Dense(1, activation='linear'))
+    #========================================================================
     return model
 
 
