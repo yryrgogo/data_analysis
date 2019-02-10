@@ -84,15 +84,19 @@ def elo_build_NN(input_rows, input_cols):
     return model
 
 
-def elo_build_linear_NN(input_rows, input_cols):
+def elo_build_linear_NN(input_cols, first_neuron=1024, drop_rate=0.7):
+
+    #the model is just a sequence of fully connected layers, batch normalization and dropout using ELUs as activation functions
     model = Sequential()
-    model.add(LSTM(512, input_shape=(input_rows, input_cols)))
-    model.add(PReLU())
+    model.add(Dense(first_neuron, input_dim=input_cols, activation='elu'))
     model.add(BatchNormalization())
-    model.add(Dropout(.05))
-
-    model.add(Dense(1))
-
+    model.add(Dropout(drop_rate))
+    model.add(Dense(first_neuron*2, activation='elu'))
+    model.add(BatchNormalization())
+    model.add(Dropout(drop_rate))
+    model.add(Dense(first_neuron*2, activation='elu'))
+    model.add(Dense(first_neuron, activation='elu'))
+    model.add(Dense(1, activation='linear'))
     return model
 
 
@@ -100,15 +104,15 @@ def elo_build_linear_NN(input_rows, input_cols):
 def basic_build():
     models = Sequential()
     models.add(Dense(output_dim=1024, input_dim=input_d, init='lecun_uniform')) 
-    models.add(Activation('relu')) 
-    models.add(BatchNormalization())    
-    models.add(Dropout(0.5))  
+    models.add(Activation('relu'))
+    models.add(BatchNormalization())
+    models.add(Dropout(0.5))
     models.add(Dense(512, activation='relu',init='lecun_uniform'))
-    models.add(Activation('relu')) 
-    models.add(BatchNormalization())    
-    models.add(Dropout(0.4))  
+    models.add(Activation('relu'))
+    models.add(BatchNormalization())
+    models.add(Dropout(0.4))
     models.add(Dense(2, init='lecun_uniform'))
-    models.add(Activation('softmax'))    
+    models.add(Activation('softmax'))
     opt = optimizers.Adam(lr=learning_rate)
     models.compile(loss='binary_crossentropy', optimizer=opt)
 
