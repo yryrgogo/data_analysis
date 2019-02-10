@@ -594,11 +594,16 @@ def impute_feature(df, col):
     inf_min = np.sort(feature)[0]
 
     if inf_max == np.inf:
-        v_max = np.max(np.where(feature==inf_max, np.median(feature), feature))
-        feature = np.where(feature==inf_max, v_max, feature)
+        for val_max in np.sort(feature)[::-1]:
+            if not(val_max==val_max) or val_max==np.inf:
+                continue
+            feature = np.where(feature==inf_max, val_max, feature)
+
     if inf_min == -np.inf:
-        v_min = np.min(np.where(feature==inf_min, np.median(feature), feature))
-        feature = np.where(feature==inf_min, v_min, feature)
+        for val_min in np.sort(feature):
+            if not(val_min==val_min) or val_min==-np.inf:
+                continue
+            feature = np.where(feature==inf_min, val_min, feature)
 
     length = len(feature)
     null_len = len(feature[feature==feature])
