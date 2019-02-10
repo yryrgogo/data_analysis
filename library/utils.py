@@ -36,6 +36,10 @@ COMPETITION_NAME = 'elo-merchant-category-recommendation'
 # =============================================================================
 # def
 # =============================================================================
+
+
+
+
 @contextmanager
 def timer(name):
     """
@@ -507,3 +511,117 @@ def round_size(value, max_val, min_val):
         raise ValueError('date type is int or float or decimal.')
 
     return dec_size
+
+
+
+#========================================================================
+# Kaggle Elo
+#========================================================================
+def elo_save_feature(prefix, df_feat, dir_path='../features/1_first_valid', feat_check=False):
+
+    ignore_features = ['first_active_month', 'card_id', 'target', 'index']
+    length = len(df_feat)
+    if feat_check:
+        for col in df_feat.columns:
+            if col in ignore_features:
+                continue
+            null_len = df_feat[col].dropna().shape[0]
+            if length - null_len>0:
+                print(f"{col}  | null shape: {length - null_len}")
+
+            max_val = df_feat[col].max()
+            min_val = df_feat[col].min()
+            if max_val==np.inf or min_val==-np.inf:
+                print(f"{col} | max: {max_val} | min: {min_val}")
+        sys.exit()
+
+    for col in df_feat.columns:
+        if col in ignore_features: continue
+        if (col.count('feature_')):continue
+        if (col.count('purchase_date_min')):continue
+        if (col.count('purchase_date_max')):continue
+
+        feature = df_feat[col].values.astype('float32')
+
+        if prefix[0]=='4':
+
+            inf_max = np.max(feature)
+            inf_min = np.min(feature)
+
+            if inf_max == np.inf:
+                v_max = np.max(np.where(feature==inf_max, np.mean(feature), feature))
+                feature = np.where(feature==inf_max, v_max, feature)
+            if inf_min == -np.inf:
+                v_min = np.min(np.where(feature==inf_min, np.mean(feature), feature))
+                feature = np.where(feature==inf_min, v_min, feature)
+
+            feature = pd.Series(feature)
+            length = len(feature)
+            null_len = feature.dropna().shape[0]
+            if length - null_len==0:
+                pass
+
+            else:
+                if col.count('month_lag'):
+                    val_min = np.min(feature)
+                    feature = np.where(feature!=feature, val_min-1, feature)
+                elif col.count('month_diff'):
+                    val_max = np.max(feature)
+                    feature = np.where(feature!=feature, val_max-1, feature)
+                else:
+                    for val_min in np.sort(feature):
+                        if not(val_min==val_min):
+                            continue
+                        else:
+                            break
+                    feature = np.where(feature!=feature, val_min-1, feature)
+
+
+        if feature.shape[0] != 325540:
+            print(col)
+            sys.exit()
+        col = col.replace('.', '_')
+        to_pkl_gzip(path = f'{dir_path}/{prefix}_{col}@', obj=feature)
+
+
+
+
+def impute_feature(df, col):
+
+    feature = df[col].values.astype('float32')
+
+    inf_max = np.sort(feature)[::-1][0]
+    inf_min = np.sort(feature)[0]
+
+    if inf_max == np.inf:
+        v_max = np.max(np.where(feature==inf_max, np.median(feature), feature))
+        feature = np.where(feature==inf_max, v_max, feature)
+    if inf_min == -np.inf:
+        v_min = np.min(np.where(feature==inf_min, np.median(feature), feature))
+        feature = np.where(feature==inf_min, v_min, feature)
+
+    length = len(feature)
+    null_len = len(feature[feature==feature])
+
+    inf_max = feature.max()
+    inf_min = feature.min()
+
+    if length - null_len==0:
+        pass
+
+    else:
+        if col.count('month_diff'):
+
+            for val_max in np.sort(feature)[::-1]:
+                if not(val_max==val_max):
+                    continue
+                feature = np.where(feature!=feature, val_max-1, feature)
+                break
+        else:
+            for val_min in np.sort(feature):
+                if not(val_min==val_min):
+                    continue
+                feature = np.where(feature!=feature, val_min-1, feature)
+                break
+
+    return feature

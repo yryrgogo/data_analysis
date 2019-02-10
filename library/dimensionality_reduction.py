@@ -1,19 +1,26 @@
-from sklearn.cluster import KMeans
-# UMAP
-import umap
+"""
+@package
+@brief
+@author stfate
+"""
+
+import scipy as sp
 from scipy.sparse.csgraph import connected_components
+import sklearn.base
+from sklearn.cluster import KMeans
+from sklearn.manifold import TSNE
+import bhtsne
+import umap
 
 #  TSNE
-from MulticoreTSNE import MulticoreTSNE as TSNE
+#  from MulticoreTSNE import MulticoreTSNE as TSNE
 import numpy as np
 import pandas as pd
 import time, datetime
 import sys, re
 
 sys.path.append('../../../github/module/')
-from preprocessing import factorize_categoricals
-from make_file import make_npy, make_feature_set
-from utils import get_categorical_features, get_numeric_features, logger_func
+from utils import get_categorical_features, get_numeric_features
 
 
 start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
@@ -23,6 +30,41 @@ unique_id = 'SK_ID_CURR'
 target = 'TARGET'
 
 ignore_features = [unique_id, target, 'valid_no', 'is_train', 'is_test']
+
+
+
+class BHTSNE(sklearn.base.BaseEstimator, sklearn.base.TransformerMixin):
+    def __init__(self, dimensions=2, perplexity=30.0, theta=0.5, rand_seed=-1):
+        self.dimensions = dimensions
+        self.perplexity = perplexity
+        self.theta = theta
+        self.rand_seed = rand_seed
+
+
+    def fit_transform(self, X):
+        return bhtsne.tsne(
+            X.astype(sp.float64),
+            dimensions=self.dimensions,
+            perplexity=self.perplexity,
+            theta=self.theta,
+            rand_seed=self.rand_seed,
+        )
+
+
+def go_bhtsne(logger, data, D):
+
+    params = {'dimensions':D, 'perplexity':30.0, 'theta':0.5, 'rand_seed':1208}
+    start_time = time.time()
+    logger.info(f't_SNE train start: {start_time}')
+
+    # t-SNE
+    #  bhtsne = BHTSNE(dimensions=2, perplexity=30.0, theta=0.5, rand_seed=-1, max_iter=10000)
+    bhtsne = BHTSNE(**params)
+    embedding = bhtsne.fit_transform(data)
+
+    logger.info(f't_SNE train end: {time.time() - start_time}')
+
+    return embedding
 
 
 def kmeans(df, cluster=10):
@@ -49,7 +91,7 @@ def kmeans(df, cluster=10):
     return df
 
 
-def t_SNE(data, D):
+def t_SNE(logger, data, D):
 
     params = {'n_jobs':-1, 'n_components':D}
     start_time = time.time()
@@ -58,79 +100,26 @@ def t_SNE(data, D):
     tsne_model = TSNE(**params)
     embedding = tsne_model.fit_transform(data)
 
-    print(f't_SNE train end: {time.time() - start_time}')
+    logger.info(f't_SNE train end: {time.time() - start_time}')
 
     return embedding
 
 
-def UMAP(df, D):
+def UMAP(logger, data, D):
 
     params = {'n_components':D}
     start_time = time.time()
-    print(f'UMAP train starttime: {start_time}')
+    logger.info(f'UMAP train starttime: {start_time}')
     # UMAP
-    embedding = umap.UMAP(**params).fit_transform(df)
+    embedding = umap.UMAP(**params).fit_transform(data)
 
-    print(f'UMAP train end. caliculation time: {time.time() - start_time}')
+    logger.info(f'UMAP train end. caliculation time: {time.time() - start_time}')
 
     return embedding
 
 
 def main():
-
-    #  df = pd.read_csv(f'../output/embedding/umap_kmeans_3D_10cluster.csv', index_col=unique_id)
-    #  print(df.drop_duplicates())
-    #  sys.exit()
-
-    base = pd.read_csv('../data/base.csv')
-
-    ' 学習に使うfeature_setをmerge '
-    prefix = 'AREA_'
-    #  path = '../features/embedding/*.npy'
-    path = '../features/3_winner/*.npy'
-    data = make_feature_set(base, path)
-    data.set_index(unique_id, inplace=True)
-    data.drop(['is_train', 'is_test', 'valid_no', target], axis=1, inplace=True)
-
-    logger.info(f'\nconcat end\ndata shape: {data.shape}')
-
-    categorical = get_categorical_features(data, [])
-    categorical.remove('a_ORGANIZATION_TYPE')
-    data = factorize_categoricals(data, categorical)
-    data.fillna(-1, inplace=True)
-    data = data.replace(np.inf, np.nan)
-    data = data.replace(-1*np.inf, np.nan)
-    for col in data.columns:
-        if col=='a_ORGANIZATION_TYPE':continue
-        data[col].fillna(data[col].mean(), inplace=True)
-
-    data_list = [data.copy()]
-
-    for i, df in enumerate(data_list):
-
-        D = 3
-        cluster = 15
-
-        mean = df.groupby('a_ORGANIZATION_TYPE').mean()
-        std = df.groupby('a_ORGANIZATION_TYPE').std()
-        mean.columns = [col+'_mean' for col in mean.columns]
-        std.columns = [col+'_std' for col in std.columns]
-        df = mean.join(std)
-
-        result = UMAP(df, D)
-        logger.info(f'UMAP result shape: {result.shape}')
-
-        #  data = pd.DataFrame(data, columns=['x', 'y'])
-        df_emb = pd.DataFrame(result, columns=['x', 'y', 'z'], index=df.index)
-        df_emb['a_ORGANIZATION_TYPE'] = df.index
-        df_emb = data.reset_index()[[unique_id, 'a_ORGANIZATION_TYPE']].merge(df_emb, on='a_ORGANIZATION_TYPE', how='inner').drop('a_ORGANIZATION_TYPE', axis=1).set_index(unique_id)
-
-        result = kmeans(df_emb, cluster)
-
-        result.rename(columns={'cluster':f'{prefix}{D}D_embd_{cluster}cluster@'}, inplace=True)
-
-        make_npy(result, ignore_list = ignore_features)
-        sys.exit()
+    pass
 
 
 if __name__ == "__main__":
