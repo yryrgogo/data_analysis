@@ -592,7 +592,6 @@ def impute_feature(df, col):
 
     inf_max = np.sort(feature)[::-1][0]
     inf_min = np.sort(feature)[0]
-    print(inf_max, np.max(feature))
 
     if inf_max == np.inf:
         for val_max in np.sort(feature)[::-1]:

@@ -100,21 +100,21 @@ def max_min_regularize(df, ignore_feature_list=[], logger=False):
 
 
 ' 外れ値除去 '
-def outlier(df, value=False, out_range=1.96, print_flg=False, replace_value=False, drop=False, replace_inner=False, logger=False, plus_replace=True, minus_replace=True, plus_limit=False, minus_limit=False, z_replace=False):
+def outlier(df, col=False, out_range=1.64, print_flg=False, replace_value=False, drop=False, replace_inner=False, logger=False, plus_replace=True, minus_replace=True, plus_limit=False, minus_limit=False, z_replace=False):
     '''
     Explain:
     Args:
         df(DF)        : 外れ値を除外したいデータフレーム
-        value(float)    : 標準偏差を計算する値
-        out_range(float): 外れ値とするZ値の範囲.初期値は1.64としている
+        col(float)    : 標準偏差を計算する値
+        out_range(float): 外れ値とするZ値の範囲.初期値は1.96としている
     Return:
         df(DF): 入力データフレームから外れ値を外したもの
     '''
 
-    std = df[value].std()
-    avg = df[value].mean()
+    std = df[col].std()
+    avg = df[col].mean()
 
-    tmp_val = df[value].values
+    tmp_val = df[col].values
     z_value = (tmp_val - avg)/std
     df['z'] = z_value
 
@@ -127,7 +127,7 @@ def outlier(df, value=False, out_range=1.96, print_flg=False, replace_value=Fals
         in_len = len(inner)
         logger.info(f'''
 #==========================================
-# value         : {value}
+# column        : {col}
 # out_range     : {out_range}
 # replace_value : {replace_value}
 # plus_replace  : {plus_replace}
@@ -136,10 +136,10 @@ def outlier(df, value=False, out_range=1.96, print_flg=False, replace_value=Fals
 # plus_limit    : {plus_limit}
 # minus_limit   : {minus_limit}
 # drop          : {drop}
-# all max       : {df[value].max()}
-# inner  max    : {inner[value].max()}
-# all min       : {df[value].min()}
-# inner  min    : {inner[value].min()}
+# all max       : {df[col].max()}
+# inner  max    : {inner[col].max()}
+# all min       : {df[col].min()}
+# inner  min    : {inner[col].min()}
 # all length    : {length}
 # inner length  : {in_len}
 # diff length   : {length-in_len}
@@ -152,13 +152,13 @@ def outlier(df, value=False, out_range=1.96, print_flg=False, replace_value=Fals
     if replace_value:
         if z_replace:
             if plus_replace:
-                df[value] = df[value].where(df['z']<=out_range, replace_value)
+                df[col] = df[col].where(df['z']<=out_range, replace_value)
             if minus_replace:
-                df[value] = df[value].where(df['z']>=-out_range, replace_value)
+                df[col] = df[col].where(df['z']>=-out_range, replace_value)
         if plus_limit:
-            df[value] = df[value].where(df['z']<=plus_limit, replace_value)
+            df[col] = df[col].where(df['z']<=plus_limit, replace_value)
         if minus_limit:
-            df[value] = df[value].where(df['z']>=-minus_limit, replace_value)
+            df[col] = df[col].where(df['z']>=-minus_limit, replace_value)
 
 
     # 外れ値を除去する場合
@@ -169,20 +169,38 @@ def outlier(df, value=False, out_range=1.96, print_flg=False, replace_value=Fals
             df = df[df['z']<=out_range]
     # replace_valueを指定せず、innerのmax, minを使い有意水準の外を置換する場合
     elif replace_inner:
-        inner_max = inner[value].max()
-        inner_min = inner[value].min()
+        inner_max = inner[col].max()
+        inner_min = inner[col].min()
         if plus_replace:
-            df[value] = df[value].where(df['z']<=out_range, inner_max)
+            df[col] = df[col].where(df['z']<=out_range, inner_max)
         elif minus_replace:
-            df[value] = df[value].where(df['z']>=-out_range, inner_min)
+            df[col] = df[col].where(df['z']>=-out_range, inner_min)
 
-    plus_out_val  = df[df['z']>out_range][value].drop_duplicates().values
-    minus_out_val = df[df['z']<-1*out_range][value].drop_duplicates().values
-    logger.info(f'''
+    plus_out_val  = df[df['z']>out_range][col].drop_duplicates().values
+    minus_out_val = df[df['z']<-1*out_range][col].drop_duplicates().values
+    if logger:
+        if df[col].max() > inner[col].max() and df[col].min() < inner[col].min():
+            logger.info(f'''
 #==========================================
 # RESULT
-# plus out value  : {plus_out_val}
-# minus out value : {minus_out_val}
+# plus out value  : {np.max(plus_out_val)}
+# minus out value : {np.min(minus_out_val)}
+#==========================================
+    ''')
+        elif df[col].max() == inner[col].max() and df[col].min() < inner[col].min():
+            logger.info(f'''
+#==========================================
+# RESULT
+# plus out value  : Nothing
+# minus out value : {np.min(minus_out_val)}
+#==========================================
+    ''')
+        elif df[col].max() > inner[col].max() and df[col].min() == inner[col].min():
+            logger.info(f'''
+#==========================================
+# RESULT
+# plus out value  : {np.max(plus_out_val)}
+# minus out value : Nothing
 #==========================================
     ''')
 
