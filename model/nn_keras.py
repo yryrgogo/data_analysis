@@ -84,6 +84,19 @@ def elo_build_NN(input_rows, input_cols):
     return model
 
 
+def elo_build_linear_NN(input_rows, input_cols):
+    model = Sequential()
+    model.add(LSTM(512, input_shape=(input_rows, input_cols)))
+    model.add(PReLU())
+    model.add(BatchNormalization())
+    model.add(Dropout(.05))
+
+    model.add(Dense(1))
+
+    return model
+
+
+
 def basic_build():
     models = Sequential()
     models.add(Dense(output_dim=1024, input_dim=input_d, init='lecun_uniform')) 
