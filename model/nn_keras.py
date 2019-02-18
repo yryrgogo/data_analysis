@@ -14,6 +14,8 @@ from sklearn.utils import class_weight
 
 #========================================================================
 # Keras
+#  import keras
+from keras import layers, Model, Input
 from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation
 from keras.layers.advanced_activations import PReLU, ELU
@@ -42,107 +44,110 @@ def RMSE(y_true, y_pred):
 #========================================================================
 # Corporación Favorita Grocery Sales Forecasting 1st Place NN Model
 # https://www.kaggle.com/shixw125/1st-place-nn-model-public-0-507-private-0-513
-def elo_build_NN(input_rows, input_cols):
+def corp_1st_LSTM(input_rows, input_cols):
     model = Sequential()
-
-    #========================================================================
-    #  model.add(Dense(512))
-    #  model.add(BatchNormalization())
-    #  model.add(Dense(1, activation='linear'))
-    #========================================================================
-
-    #========================================================================
-    # LSTM
-
-    def tanh(x):
-        return K.tanh(x)
-
-    act_func = PReLU()
-    act_func = ELU()
-    act_func = Activation(tanh)
-
     model.add(LSTM(512, input_shape=(input_rows, input_cols)))
     model.add(BatchNormalization())
     model.add(Dropout(.2))
 
     model.add(Dense(256))
-    model.add(act_func)
+    model.add(PReLU())
     model.add(BatchNormalization())
     model.add(Dropout(.1))
 
     model.add(Dense(256))
-    model.add(act_func)
+    model.add(PReLU())
     model.add(BatchNormalization())
     model.add(Dropout(.1))
 
     model.add(Dense(128))
-    model.add(act_func)
+    model.add(PReLU())
     model.add(BatchNormalization())
     model.add(Dropout(.05))
 
-    # original
     model.add(Dense(64))
-    model.add(act_func)
+    model.add(PReLU())
     model.add(BatchNormalization())
     model.add(Dropout(.05))
 
     model.add(Dense(32))
-    model.add(act_func)
+    model.add(PReLU())
     model.add(BatchNormalization())
     model.add(Dropout(.05))
 
     model.add(Dense(16))
-    model.add(act_func)
+    model.add(PReLU())
     model.add(BatchNormalization())
     model.add(Dropout(.05))
 
     model.add(Dense(1))
-    #========================================================================
 
     return model
 
 
-def elo_build_linear_NN(input_cols, first_neuron=512, drop_rate=0.2):
+def mercari_1st_NN(input_cols):
+
+    activation = 'relu'
+    #  activation = 'elu'
+    model_in = Input(shape=(input_cols,), dtype='float32')
+    out = layers.Dense(64, activation=activation)(model_in)
+    out = layers.Dense(64, activation=activation)(out)
+
+    #  Overfit?
+    #  out = keras.layers.Dense(192, activation=activation)(model_in)
+    #  out = keras.layers.Dense(64, activation=activation)(out)
+    #  out = keras.layers.Dense(64, activation=activation)(out)
+
+    out = layers.Dense(1)(out)
+    model = Model(model_in, out)
+
+    return model
+
+
+def elo_build_linear_NN(input_cols):
 
     #the model is just a sequence of fully connected layers, batch normalization and dropout using ELUs as activation functions
     model = Sequential()
-
-    #  model.add(Dense(first_neuron, input_dim=input_cols, activation='elu'))
-    #  model.add(BatchNormalization())
-    #  model.add(Dropout(drop_rate))
-    #  model.add(Dense(first_neuron*2, activation='elu'))
-    #  model.add(BatchNormalization())
-    #  model.add(Dropout(drop_rate))
-    #  model.add(Dense(first_neuron*2, activation='elu'))
-    #  model.add(Dense(first_neuron, activation='elu'))
-    #  model.add(Dense(1, activation='linear'))
-
-
-    #========================================================================
-    # 
-    model.add(Dense(first_neuron, input_dim=input_cols, activation='linear'))
+    model.add(Dense(512, input_dim=input_cols, activation='linear'))
     model.add(BatchNormalization())
     model.add(Dropout(drop_rate))
     model.add(Dense(1, activation='linear'))
-    #========================================================================
     return model
 
+def clf_NN(input_cols, dropout_rate=0.25,activation='relu'):
+    # create model
+    activation = 'relu'
+    #  activation = 'elu'
+    #  model_in = Input(shape=(input_cols,), dtype='float32')
+    #  out = layers.Dense(64, activation=activation)(model_in)
+    #  out = layers.Dense(64, activation=activation)(out)
+    #  out = layers.Dense(1, activation='softmax')(out)
+    #  model = Model(model_in, out)
+    print( 'Setting up neural network...' )
+    model = Sequential()
+    model.add(Dense(units = 400 , kernel_initializer = 'normal', input_dim = input_cols))
+    model.add(PReLU())
+    model.add(Dropout(.3))
+    model.add(Dense(units = 160 , kernel_initializer = 'normal'))
+    model.add(PReLU())
+    model.add(BatchNormalization())
+    model.add(Dropout(.3))
+    model.add(Dense(units = 64 , kernel_initializer = 'normal'))
+    model.add(PReLU())
+    model.add(BatchNormalization())
+    model.add(Dropout(.3))
+    model.add(Dense(units = 26, kernel_initializer = 'normal'))
+    model.add(PReLU())
+    model.add(BatchNormalization())
+    model.add(Dropout(.3))
+    model.add(Dense(units = 12, kernel_initializer = 'normal'))
+    model.add(PReLU())
+    model.add(BatchNormalization())
+    model.add(Dropout(.3))
+    model.add(Dense(1, kernel_initializer='normal', activation='sigmoid'))
 
+    return model
 
-def basic_build():
-    models = Sequential()
-    models.add(Dense(output_dim=1024, input_dim=input_d, init='lecun_uniform')) 
-    models.add(Activation('relu'))
-    models.add(BatchNormalization())
-    models.add(Dropout(0.5))
-    models.add(Dense(512, activation='relu',init='lecun_uniform'))
-    models.add(Activation('relu'))
-    models.add(BatchNormalization())
-    models.add(Dropout(0.4))
-    models.add(Dense(2, init='lecun_uniform'))
-    models.add(Activation('softmax'))
-    opt = optimizers.Adam(lr=learning_rate)
-    models.compile(loss='binary_crossentropy', optimizer=opt)
 
 #========================================================================
 
