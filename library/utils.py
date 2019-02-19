@@ -581,7 +581,16 @@ def elo_save_feature(prefix, df_feat, dir_path='../features/1_first_valid', feat
             print(col)
             sys.exit()
         col = col.replace('.', '_')
-        to_pkl_gzip(path = f'{dir_path}/{prefix}_{col}@', obj=feature)
+        feat_path = f'{dir_path}/{prefix}_{col}@'
+        if os.path.exists(feat_path): continue
+        elif os.path.exists( f'../features/2_second_valid/{prefix}_{col}@'): continue
+        elif os.path.exists( f'../features/3_third_valid/{prefix}_{col}@'): continue
+        elif os.path.exists( f'../features/4_winner/{prefix}_{col}@'): continue
+        elif os.path.exists( f'../features/5_tmp/{prefix}_{col}@'): continue
+        elif os.path.exists( f'../features/9_gdrive/{prefix}_{col}@'): continue
+        elif os.path.exists( f'../features/all_features/{prefix}_{col}@'): continue
+        else:
+            to_pkl_gzip(path=feat_path, obj=feature)
 
 
 
