@@ -519,7 +519,7 @@ def round_size(value, max_val, min_val):
 #========================================================================
 def elo_save_feature(prefix, df_feat, dir_path='../features/1_first_valid', feat_check=False):
 
-    ignore_features = ['first_active_month', 'card_id', 'target', 'index']
+    ignore_features = ['first_active_month', 'card_id', 'target', 'index', 'clf_pred']
     length = len(df_feat)
     if feat_check:
         for col in df_feat.columns:
