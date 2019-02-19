@@ -44,7 +44,7 @@ class Model(metaclass=ABCMeta):
 
     def sc_metrics(self, y_test, y_pred):
         try:
-            if self.metric == 'logloss':
+            if self.metric.count('logloss'):
                 score = log_loss(y_test, y_pred)
             elif self.metric == 'auc':
                 score = roc_auc_score(y_test, y_pred)
@@ -414,18 +414,33 @@ class Model(metaclass=ABCMeta):
 
         use_cols = [f for f in train.columns if f not in self.ignore_list]
         self.use_cols = sorted(use_cols)  # カラム名をソートし、カラム順による学習への影響をなくす
-        self.kfold = list(kfold)
 
         if key in train.columns:
             train.set_index(key, inplace=True)
         if key in test.columns:
             test.set_index(key, inplace=True)
 
+        #  if sys.argv[4]=='ods':
+        if True:
+            self.kfold = zip(*kfold)
+        else:
+            self.kfold = list(kfold)
+        #  for n_fold, (trn_idx, val_idx) in enumerate(zip(*kfold)):
+
+        result_list = []
+
         for n_fold, (trn_idx, val_idx) in enumerate(self.kfold):
 
-            x_train, y_train = train[self.use_cols].iloc[trn_idx, :], y.iloc[trn_idx].values
-            x_val, y_val = train[self.use_cols].iloc[val_idx, :], y.iloc[val_idx].values
-            print(x_train.shape, x_val.shape)
+            # card_id split
+            #  if sys.argv[4]=='ods' or sys.argv[5]=='no_out':
+            if True:
+                x_train, y_train = train.loc[train.index.isin(trn_idx), :][use_cols], y.loc[train.index.isin(trn_idx)].values
+                x_val, y_val = train.loc[train.index.isin(val_idx), :][use_cols], y.loc[train.index.isin(val_idx)].values
+            else:
+                x_train, y_train = train[self.use_cols].iloc[trn_idx, :], y.iloc[trn_idx].values
+                x_val, y_val = train[self.use_cols].iloc[val_idx, :], y.iloc[val_idx].values
+            print(x_train.shape, x_val.shape, len(val_idx))
+            print(y_train.max(), y_train.min())
 
             if n_fold == 0:
                 x_test = test[self.use_cols]
@@ -488,15 +503,15 @@ class Model(metaclass=ABCMeta):
                 else:
                     base_train = self_predict[[key, target]]
                     val_stack = base_train.set_index(key).join(self_valid.copy())
+
                 print(f"Train Valid Stack: {val_stack.shape}")
 
 
             else:
+                x_val['prediction'] = y_pred
+                x_val[target] = y_val
+                result_list.append(x_val.reset_index()[[key, 'prediction', target]])
 
-                if self.objective=='multiclass':
-                    self.val_pred[val_idx, :] = y_pred
-                else:
-                    self.val_pred[val_idx] = y_pred
                 self.fold_pred_list.append(y_pred)
                 self.fold_val_list.append(y_val)
                 self.fold_model_list.append(self.estimator)
@@ -511,33 +526,6 @@ class Model(metaclass=ABCMeta):
                 list_score.append(sc_score)
                 if self.viz_detail:
                     self.logger.info(f'Fold No: {n_fold} | {self.metric}: {sc_score}')
-
-                ' OOF for Stackng '
-                if oof_flg:
-                    if len(val_stack):
-                        tmp = x_val.reset_index()[key].to_frame()
-                        tmp[target] = y_val
-
-                        # Multi-Classは全クラスに対する確率がカラム別に出力される
-                        if self.objective=='multiclass':
-                            y_pred_max = np.argmax(y_pred, axis=1)  # 最尤と判断したクラスの値にする
-                            tmp['prediction'] = y_pred_max
-                            tmp_stack = pd.DataFrame(y_pred, columns=np.arange(params['num_class']))
-                            tmp = pd.concat([tmp, tmp_stack], axis=1)
-                        else:
-                            tmp['prediction'] = y_pred
-
-                        val_stack = pd.concat([val_stack, tmp], axis=0)
-                    else:
-                        val_stack = x_val.reset_index()[key].to_frame()
-                        val_stack[target] = y_val
-                        if self.objective=='multiclass':
-                            y_pred_max = np.argmax(y_pred, axis=1)  # 最尤と判断したクラスの値にする
-                            val_stack['prediction'] = y_pred_max
-                            tmp_stack = pd.DataFrame(y_pred, columns=np.arange(params['num_class']))
-                            val_stack = pd.concat([val_stack, tmp_stack], axis=1)
-                        else:
-                            val_stack['prediction'] = y_pred
 
             test_pred = self.estimator.predict(x_test)
 
@@ -573,62 +561,46 @@ class Model(metaclass=ABCMeta):
             pred_cols = [col for col in val_stack.columns if col.count('pred_')]
             val_stack['prediction'] = val_stack[pred_cols].mean(axis=1)
 
-        if oof_flg:
+        if params['objective']=='binary':
+            val_stack = pd.concat(result_list, axis=0)
             y_train = val_stack[target].values
             y_allval = val_stack['prediction'].values
             self.train_stack = val_stack
             self.sc_confusion_matrix(y_train, y_allval)
 
 
-        if self.objective=='multiclass':
-            self.logger.info(f'''
+        self.logger.info(f'''
 #========================================================================
 # Train End.''')
-            [self.logger.info(f'''
+        [self.logger.info(f'''
 # Validation No: {i} | {self.metric}: {score}''') for i, score in enumerate(list_score)]
-            self.logger.info(f'''
+        self.logger.info(f'''
 # Params   : {params}
 # CV score : {self.cv_score}
 #======================================================================== ''')
 
-            ' fold数で平均をとる '
-            self.multi_pred = self.prediction / fold
-            self.prediction = np.argmax(self.multi_pred, axis=1)  # 最尤と判断したクラスの値にする
-        else:
+        if self.objective=='binary':
             self.logger.info(f'''
-#========================================================================
-# Train End.''')
-            [self.logger.info(f'''
-# Validation No: {i} | {self.metric}: {score}''') for i, score in enumerate(list_score)]
-            self.logger.info(f'''
-# Params   : {params}
-# CV score : {self.cv_score}
-#======================================================================== ''')
-            if self.objective=='binary':
-                self.logger.info(f'''
 # Accuracy : {self.accuracy}  {self.true}/{len(test)}
 # F1 score : {self.f1}
 # TP:{self.cmx[0]}  FP:{self.cmx[2]}
 # FN:{self.cmx[1]}  TN:{self.cmx[3]}
 #======================================================================== ''')
 
-            ' fold数で平均をとる '
-            self.prediction = self.prediction / fold
+        ' fold数で平均をとる '
+        self.prediction = self.prediction / fold
 
 
         ' OOF for Stackng '
         if oof_flg:
             pred_stack = test.reset_index()[[key, target]]
             pred_stack['prediction'] = self.prediction
-
-            # multiclassの場合は各クラスに対する予測値もJoinする
-            if self.objective=='multiclass':
-                tmp_pred = pd.DataFrame(self.multi_pred, columns=np.arange(params['num_class']))
-                pred_stack = pd.concat([pred_stack, tmp_pred], axis=1)
+            result_list.append(pred_stack)
 
             if len(self_predict):
                 val_stack.reset_index(inplace=True)
-            result_stack = pd.concat([val_stack, pred_stack], axis=0, ignore_index=True)
+                result_list.append(val_stack[pred_stack.columns])
+            result_stack = pd.concat(result_list, axis=0, ignore_index=True)
             result_stack = df_base_id.merge(result_stack, how='inner', on=key)
             self.logger.info(
                 f'result_stack shape: {result_stack.shape} | cnt_id: {len(result_stack[key].drop_duplicates())}')
