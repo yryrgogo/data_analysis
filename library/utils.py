@@ -38,15 +38,8 @@ COMPETITION_NAME = 'elo-merchant-category-recommendation'
 # =============================================================================
 
 
-
-
 @contextmanager
 def timer(name):
-    """
-    Taken from Konstantin Lopuhin https://www.kaggle.com/lopuhin
-    in script named : Mercari Golf: 0.3875 CV in 75 LOC, 1900 s
-    https://www.kaggle.com/lopuhin/mercari-golf-0-3875-cv-in-75-loc-1900-s
-    """
     t0 = time.time()
     yield
     print(f'[{name}] done in {time.time() - t0:.0f} s')
@@ -201,7 +194,7 @@ def check_feature():
 
 def reduce_mem_usage(df, verbose=True):
     numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
-    start_mem = df.memory_usage().sum() / 1024**2    
+    start_mem = df.memory_usage().sum() / 1024**2
     for col in df.columns:
         col_type = df[col].dtypes
         if col_type in numerics:
@@ -215,71 +208,16 @@ def reduce_mem_usage(df, verbose=True):
                 elif c_min > np.iinfo(np.int32).min and c_max < np.iinfo(np.int32).max:
                     df[col] = df[col].astype(np.int32)
                 elif c_min > np.iinfo(np.int64).min and c_max < np.iinfo(np.int64).max:
-                    df[col] = df[col].astype(np.int64)  
+                    df[col] = df[col].astype(np.int64)
             else:
                 if c_min > np.finfo(np.float16).min and c_max < np.finfo(np.float16).max:
                     df[col] = df[col].astype(np.float16)
                 elif c_min > np.finfo(np.float32).min and c_max < np.finfo(np.float32).max:
                     df[col] = df[col].astype(np.float32)
                 else:
-                    df[col] = df[col].astype(np.float64)    
+                    df[col] = df[col].astype(np.float64)
     end_mem = df.memory_usage().sum() / 1024**2
     if verbose: print('Mem. usage decreased to {:5.2f} Mb ({:.1f}% reduction)'.format(end_mem, 100 * (start_mem - end_mem) / start_mem))
-    return df
-
-
-def old_reduce_mem_usage(df):
-    col_int8 = []
-    col_int16 = []
-    col_int32 = []
-    col_int64 = []
-    col_float16 = []
-    col_float32 = []
-    col_float64 = []
-    col_cat = []
-    for c in tqdm(df.columns, mininterval=20):
-        col_type = df[c].dtype
-
-        if col_type != object:
-            c_min = df[c].min()
-            c_max = df[c].max()
-            if str(col_type)[:3] == 'int':
-                if c_min > np.iinfo(np.int8).min and c_max < np.iinfo(np.int8).max:
-                    col_int8.append(c)
-
-                elif c_min > np.iinfo(np.int16).min and c_max < np.iinfo(np.int16).max:
-                    col_int16.append(c)
-                elif c_min > np.iinfo(np.int32).min and c_max < np.iinfo(np.int32).max:
-                    col_int32.append(c)
-                elif c_min > np.iinfo(np.int64).min and c_max < np.iinfo(np.int64).max:
-                    col_int64.append(c)
-            else:
-                if c_min > np.finfo(np.float16).min and c_max < np.finfo(np.float16).max:
-                    col_float16.append(c)
-                elif c_min > np.finfo(np.float32).min and c_max < np.finfo(np.float32).max:
-                    col_float32.append(c)
-                else:
-                    col_float64.append(c)
-        else:
-            col_cat.append(c)
-
-    if len(col_int8) > 0:
-        df[col_int8] = df[col_int8].astype(np.int8)
-    if len(col_int16) > 0:
-        df[col_int16] = df[col_int16].astype(np.int16)
-    if len(col_int32) > 0:
-        df[col_int32] = df[col_int32].astype(np.int32)
-    if len(col_int64) > 0:
-        df[col_int64] = df[col_int64].astype(np.int64)
-    if len(col_float16) > 0:
-        df[col_float16] = df[col_float16].astype(np.float16)
-    if len(col_float32) > 0:
-        df[col_float32] = df[col_float32].astype(np.float32)
-    if len(col_float64) > 0:
-        df[col_float64] = df[col_float64].astype(np.float64)
-    if len(col_cat) > 0:
-        df[col_cat] = df[col_cat].astype('category')
-
     return df
 
 
