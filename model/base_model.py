@@ -443,7 +443,12 @@ class Model(metaclass=ABCMeta):
             print(y_train.max(), y_train.min())
 
             if n_fold == 0:
-                x_test = test[self.use_cols]
+                if params['objective']=='lambdarank':
+                    test_cols = self.use_cols
+                    test_cols.remove('rank')
+                    x_test = test[test_cols]
+                else:
+                    x_test = test[self.use_cols]
 
             # GBDTのみ適用するargs
             gbdt_args = {}

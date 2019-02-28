@@ -26,6 +26,7 @@ import multiprocessing
 from contextlib import contextmanager
 
 from logging import StreamHandler, DEBUG, Formatter, FileHandler, getLogger
+from sklearn.model_selection import StratifiedKFold, KFold
 
 # =============================================================================
 # global variables
@@ -139,7 +140,8 @@ def to_df_pkl(df, path, fname='', split_size=3, index=False):
 
     ' データセットを切り分けて保存しておく '
     kf = KFold(n_splits=split_size)
-    for i, (train_index, val_index) in enumerate(tqdm(kf.split(df))):
+    #  for i, (train_index, val_index) in enumerate(tqdm(kf.split(df))):
+    for i, (train_index, val_index) in enumerate(kf.split(df)):
         df.iloc[val_index].to_pickle(f'{path}/{fname}{i:03d}.p')
     return
 
@@ -280,13 +282,18 @@ def __get_use_files__():
 # =============================================================================
 def submit(file_path, comment='from API'):
     os.system(f'kaggle competitions submit -c {COMPETITION_NAME} -f {file_path} -m "{comment}"')
-    sleep(20)  # tekito~~~~
+    sleep(30)  # tekito~~~~
     tmp = os.popen(f'kaggle competitions submissions -c {COMPETITION_NAME} -v | head -n 2').read()
     col, values = tmp.strip().split('\n')
     message = 'SCORE!!!\n'
     for i, j in zip(col.split(','), values.split(',')):
         message += f'{i}: {j}\n'
         print(f'{i}: {j}') # TODO: comment out later?
+        if i.count('public'):
+            lb = j
+        elif i.count('private'):
+            pb = j
+    return [lb, pb]
     #  send_line(message.rstrip())
 
 
@@ -579,3 +586,73 @@ def impute_feature(df, col):
                 break
 
     return feature
+
+
+def get_kfold(valid_list, fold_seed):
+
+    #========================================================================
+    # 1. Outlierの分類が困難なグループでKfoldを作る
+
+    key = 'card_id'
+    target = 'target'
+    kfold_trn_list = []
+    kfold_val_list = []
+
+    for base_valid in valid_list:
+
+        base_valid['rounded_target'] = base_valid['target'].round(0)
+        base_valid = base_valid.sort_values('rounded_target').reset_index(drop=True)
+        vc = base_valid['rounded_target'].value_counts()
+        vc = dict(sorted(vc.items()))
+        df = pd.DataFrame()
+        base_valid['indexcol'],idx = 0,1
+        for k,v in vc.items():
+            step = base_valid.shape[0]/v
+            indent = base_valid.shape[0]/(v+1)
+            df2 = base_valid[base_valid['rounded_target'] == k].sample(v, random_state=fold_seed).reset_index(drop=True)
+            for j in range(0, v):
+                df2.at[j, 'indexcol'] = indent + j*step + 0.000001*idx
+            df = pd.concat([df2,df])
+            idx+=1
+        base_valid = df.sort_values('indexcol', ascending=True).reset_index(drop=True)
+        del base_valid['indexcol'], base_valid['rounded_target']
+
+        folds = KFold(n_splits=6, shuffle=False, random_state=fold_seed)
+        kfold = list(folds.split(base_valid, base_valid[target].values))
+
+        # card_id listにする
+        trn_list = []
+        val_list = []
+        for trn, val in kfold:
+            trn_ids = base_valid.iloc[trn][key].values
+            val_ids = base_valid.iloc[val][key].values
+            trn_list.append(trn_ids)
+            val_list.append(val_ids)
+#         kfold_lazy = [trn_list, val_list]
+#         kfold_list.append([trn_list, val_list])
+        kfold_trn_list.append(trn_list)
+        kfold_val_list.append(val_list)
+    #========================================================================
+
+    #========================================================================
+    # kfoldの統合
+
+    trn_list = []
+    val_list = []
+    # trainのfoldを作る
+    for trn_fold in zip(*kfold_trn_list):
+        tmp_list = []
+        for tmp_fold in trn_fold:
+            tmp_list += list(tmp_fold)
+        trn_list.append(tmp_list)
+
+    for val_fold in zip(*kfold_val_list):
+        tmp_list = []
+        for tmp_fold in val_fold:
+            tmp_list += list(tmp_fold)
+        val_list.append(tmp_list)
+
+    kfold = [trn_list, val_list]
+    #========================================================================
+
+    return kfold
