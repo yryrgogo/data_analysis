@@ -91,7 +91,8 @@ def mercari_1st_NN(input_cols):
     #  activation = 'elu'
     model_in = Input(shape=(input_cols,), dtype='float32')
     out = layers.Dense(64, activation=activation)(model_in)
-    out = layers.Dense(64, activation=activation)(out)
+    #  out = layers.Dense(32, activation=activation)(model_in)
+    out = layers.Dense(32, activation=activation)(out)
 
     #  Overfit?
     #  out = keras.layers.Dense(192, activation=activation)(model_in)
