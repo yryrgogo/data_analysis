@@ -63,8 +63,7 @@ def timer(name):
 
 #========================================================================
 # make feature set
-def get_train_test(feat_path_list, base_path='../input/base_exclude*', target='target'):
-    base = utils.read_df_pkl(base_path)
+def get_train_test(feat_path_list, base=[], target='target'):
     print(base.shape)
     feature_list = utils.parallel_load_data(path_list=feat_path_list)
     df_feat = pd.concat(feature_list, axis=1)
