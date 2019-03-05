@@ -85,18 +85,18 @@ def corp_1st_LSTM(input_rows, input_cols):
     return model
 
 
-def mercari_1st_NN(input_cols):
+def MS_NN(input_cols):
 
     activation = 'relu'
     #  activation = 'elu'
     model_in = Input(shape=(input_cols,), dtype='float32')
-    out = layers.Dense(64, activation=activation)(model_in)
-    out = layers.Dense(64, activation=activation)(out)
+    #  out = layers.Dense(64, activation=activation)(model_in)
+    #  out = layers.Dense(64, activation=activation)(out)
 
     #  Overfit?
-    #  out = keras.layers.Dense(192, activation=activation)(model_in)
-    #  out = keras.layers.Dense(64, activation=activation)(out)
-    #  out = keras.layers.Dense(64, activation=activation)(out)
+    out = keras.layers.Dense(2**9, activation=activation)(model_in)
+    out = keras.layers.Dense(2**7, activation=activation)(out)
+    out = keras.layers.Dense(2**6, activation=activation)(out)
 
     out = layers.Dense(1)(out)
     model = Model(model_in, out)
