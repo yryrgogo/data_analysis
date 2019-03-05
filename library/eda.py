@@ -166,13 +166,21 @@ def feature_vs_y(feature, y, feature_name=None, kind='kde', bw_method=None, bins
     y1 = df[df.y == 1]
     y0[feature_name].name = 'Actual:0'
     y1[feature_name].name = 'Actual:1'
-    if kind == 'kde':
-        y0[feature_name].plot(kind='kde', legend=True, bw_method=bw_method)
-        y1[feature_name].plot(kind='kde', legend=True, bw_method=bw_method)
-    elif kind == 'hist':
-        y0[feature_name].plot(kind='hist', legend=True, bins=bins)
-        y1[feature_name].plot(kind='hist', legend=True, bins=bins)
+
+    fig = plt.figure(figsize=(20, 4))
+    fig.patch.set_facecolor('white')
+    sns.set_style("whitegrid")
+
+    sns.distplot(y0[feature_name])
+    sns.distplot(y1[feature_name])
+    #  if kind == 'kde':
+    #      y0[feature_name].plot(kind='kde', legend=True, bw_method=bw_method)
+    #      y1[feature_name].plot(kind='kde', legend=True, bw_method=bw_method)
+    #  elif kind == 'hist':
+    #      y0[feature_name].plot(kind='hist', legend=True, bins=bins)
+    #      y1[feature_name].plot(kind='hist', legend=True, bins=bins)
 
     plt.xlabel(f'{feature_name}')
     plt.title(f'{feature_name} Distribution', fontsize=13, alpha=0.5)
+    plt.savefig(f'../kde_{feature_name}.png')
     plt.show()

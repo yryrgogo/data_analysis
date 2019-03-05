@@ -7,7 +7,7 @@ import os
 HOME = os.path.expanduser('~')
 sys.path.append(f"{HOME}/kaggle/github/library/")
 import utils
-from utils import logger_func, get_categorical_features, get_numeric_features, pararell_process
+from utils import logger_func, get_categorical_features, get_numeric_features, parallel_process
 pd.set_option('max_columns', 200)
 pd.set_option('max_rows', 200)
 
@@ -239,7 +239,7 @@ def exclude_feature(col_name, feature):
     return False
 
 
-def target_encoding(logger, train, test, key, target, level, method='mean',fold_type='stratified', fold=5, group_col_name='', prefix='', select_list=[], ignore_list=[], seed=1208, return_df=False):
+def target_encoding(logger, train, test, key, target, level, method='mean',fold_type='stratified', fold=5, group_col_name='', prefix='', select_list=[], ignore_list=[], seed=1208, return_df=False, self_kfold=False):
     '''
     Explain:
         TARGET関連の特徴量をpartisionに分割したデータセットから作る.
@@ -255,7 +255,6 @@ def target_encoding(logger, train, test, key, target, level, method='mean',fold_
     Return:
         カラム名は{prefix}{target}@{level}
     '''
-    val_col = 'valid_no'
 
     ' levelはリストである必要がある '
     if str(type(level)).count('str'):
@@ -271,8 +270,8 @@ def target_encoding(logger, train, test, key, target, level, method='mean',fold_
         if group_col_name=='':raise ValueError(f'Not exist group_col_name.')
         folds = GroupKFold(n_splits=fold)
         kfold = folds.split(train.drop(target, axis=1), train[target].values, groups=train[group_col_name].values)
-        #  folds = KFold(n_splits=fold)
-        #  kfold = folds.split(train.drop(target, axis=1), train[target].values)
+    elif fold_type=='self':
+        kfold = zip(*self_kfold)
 
     base_train = train[[key]+level]
     logger.info(f"Base Train Shape: {base_train.shape}")
@@ -308,4 +307,5 @@ def target_encoding(logger, train, test, key, target, level, method='mean',fold_
     if return_df:
         return base_train[[key, f'TE_{target}@{level}']], test_result[[key, f'TE_{target}@{level}']]
     else:
-        return base_train[f'TE_{target}@{level}'].values, test_result[f'TE_{target}@{level}'].values
+        feature = np.hstack((base_train[f'TE_{target}@{level}'].values, test_result[f'TE_{target}@{level}'].values))
+        return feature

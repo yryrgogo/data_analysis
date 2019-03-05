@@ -1,73 +1,26 @@
 
-def params_elo():
-
-    #  kernel_params = {'num_threads': 20, 'num_leaves': 18, 'objective': 'regression', 'boosting': 'gbdt', 'max_depth': -1, 'learning_rate': 0.01, 'min_child_samples': 131, 'bagging_freq': 1, 'subsample': 0.9, 'colsample_bytree': 0.5, 'metric': 'rmse', 'lambda_l1': 0.1, 'lambda_l2':2.0, 'verbosity': -1, 'random_seed': 1208, 'bagging_seed': 1208, 'feature_fraction_seed': 1208, 'data_random_seed': 1208}
-    #  kernel_params = {'num_threads': 16, 'num_leaves': 27, 'objective': 'regression', 'boosting': 'gbdt', 'max_depth': -1, 'learning_rate': 0.01, 'min_child_samples': 96, 'bagging_freq': 1, 'subsample': 0.9, 'colsample_bytree': 0.627371397335292, 'metric': 'rmse', 'lambda_l1': 0.1, 'verbosity': -1, 'random_seed': 1208, 'bagging_seed': 1208, 'feature_fraction_seed': 1208, 'data_random_seed': 1208}
-    #  kernel_params = {'num_threads': 20, 'num_leaves': 27, 'objective': 'regression', 'boosting': 'gbdt', 'max_depth': -1, 'learning_rate': 0.01, 'min_child_samples': 68, 'bagging_freq': 1, 'subsample': 0.9, 'colsample_bytree': 0.6711777957199601, 'metric': 'rmse', 'lambda_l1': 0.1, 'verbosity': -1, 'random_seed': 1208, 'bagging_seed': 1208, 'feature_fraction_seed': 1208, 'data_random_seed': 1208}
-    #  kernel_params = { # LB3690 -> LB3692
-    #      'num_threads': -1,
-    #      'num_leaves': 24,
-    #      'objective':'regression',
-    #      "boosting": "gbdt",
-    #      'max_depth': -1,
-    #      'learning_rate': 0.01,
-    #      "min_child_samples": 24,
-    #      "bagging_freq": 1,
-    #      "subsample": 0.9 ,
-    #      "colsample_bytree": 0.8,
-    #      "metric": 'rmse',
-    #      "lambda_l1": 0.1,
-    #      'bagging_fraction': 0.5,
-    #      "lambda_l1": 10.0,
-    #      "lambda_l2": 10.0,
-    #      "verbosity": -1,
-    #      'random_seed': 1208,
-    #      'bagging_seed':1208,
-    #      'feature_fraction_seed':1208,
-    #      'data_random_seed':1208
-    #  }
-    kernel_params = {
-        'num_threads': -1,
-        'num_leaves': 31,
-        'objective':'regression',
+def params_MS():
+    params = {
+        "metric": 'logloss',
+        'objective':'binary',
         "boosting": "gbdt",
+        'num_threads': -1,
+        'num_leaves': 2**8-1,
         'max_depth': -1,
-        'learning_rate': 0.01,
-        "min_child_samples": 20,
-        "bagging_freq": 1,
+        'learning_rate': 0.05,
+        #  "min_child_samples": 20,
+        #  "bagging_freq": 1,
         "subsample": 0.9 ,
-        "colsample_bytree": 0.9,
-        "metric": 'rmse',
+        "colsample_bytree": 0.25,
         "lambda_l1": 0.1,
+        "lambda_l1": 1.5,
         "verbosity": -1,
         'random_seed': 1208,
         'bagging_seed':1208,
         'feature_fraction_seed':1208,
         'data_random_seed':1208
     }
-    #  kernel_params = {
-    #      'num_leaves': 129,
-    #      "boosting": "gbdt",
-    #      'min_data_in_leaf': 148,
-    #      'objective':'regression',
-    #      'max_depth': 9,
-    #      'learning_rate': 0.005,
-    #      "min_child_samples": 24,
-    #      "feature_fraction": 0.7202,
-    #      #  "feature_fraction": 0.7,
-    #      "bagging_freq": 1,
-    #      "bagging_fraction": 0.8125 ,
-    #      #  "subsample": 0.7,
-    #      "metric": 'rmse',
-    #      "lambda_l1": 0.3468,
-    #      "verbosity": -1,
-    #      'random_seed': 1208,
-    #      'bagging_seed':1208,
-    #      'feature_fraction_seed':1208,
-    #      'data_random_seed':1208
-    #  }
-
-    return train_params, kernel_params
+    return params
 
 
 def params_quara():
