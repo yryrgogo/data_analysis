@@ -33,6 +33,7 @@ from sklearn.model_selection import StratifiedKFold, KFold
 # =============================================================================
 COMPETITION_NAME = 'home-credit-default-risk'
 COMPETITION_NAME = 'elo-merchant-category-recommendation'
+COMPETITION_NAME = 'microsoft-malware-prediction'
 
 # =============================================================================
 # def
@@ -414,7 +415,7 @@ def row_number(df, level):
 
 #  カテゴリ変数を取得する関数
 def get_categorical_features(df, ignore_list=[]):
-    obj = [col for col in list(df.columns) if (df[col].dtype == 'object') and col not in ignore_list]
+    obj = [col for col in list(df.columns) if (str(df[col].dtype) == 'object' or str(df[col].dtype) == 'category' ) and col not in ignore_list]
     return obj
 
 #  カテゴリ変数を取得する関数
@@ -462,9 +463,9 @@ def round_size(value, max_val, min_val):
 #========================================================================
 # Kaggle Elo
 #========================================================================
-def elo_save_feature(prefix, df_feat, dir_path='../features/1_first_valid', feat_check=False):
+def santander_save_feature(prefix, df_feat, dir_path='../features/1_first_valid', feat_check=False):
 
-    ignore_features = ['first_active_month', 'card_id', 'target', 'index', 'clf_pred']
+    ignore_features = ['ID_code', 'target', 'index']
     length = len(df_feat)
     if feat_check:
         for col in df_feat.columns:
@@ -521,23 +522,23 @@ def elo_save_feature(prefix, df_feat, dir_path='../features/1_first_valid', feat
                             break
                     feature = np.where(feature!=feature, val_min-1, feature)
 
-
-        if feature.shape[0] != 325540:
+        if feature.shape[0] != 400000:
             print(col)
             sys.exit()
         col = col.replace('.', '_')
         feat_path = f'{dir_path}/{prefix}_{col}@'
         if os.path.exists(feat_path): continue
-        elif os.path.exists( f'../features/2_second_valid/{prefix}_{col}@'): continue
-        elif os.path.exists( f'../features/3_third_valid/{prefix}_{col}@'): continue
-        elif os.path.exists( f'../features/4_winner/{prefix}_{col}@'): continue
-        elif os.path.exists( f'../features/5_tmp/{prefix}_{col}@'): continue
-        elif os.path.exists( f'../features/9_gdrive/{prefix}_{col}@'): continue
-        elif os.path.exists( f'../features/all_features/{prefix}_{col}@'): continue
+        elif os.path.exists( f'../features/2_second_valid/{col}@'): continue
+        elif os.path.exists( f'../features/3_third_valid/{col}@'): continue
+        elif os.path.exists( f'../features/4_winner/{col}@'): continue
+        elif os.path.exists( f'../features/5_tmp/{col}@'): continue
+        elif os.path.exists( f'../features/6_subset/{col}@'): continue
+        elif os.path.exists( f'../features/7_escape/{col}@'): continue
+        elif os.path.exists( f'../features/8_ensemble/{col}@'): continue
+        elif os.path.exists( f'../features/9_gdrive/{col}@'): continue
+        elif os.path.exists( f'../features/all_features/{col}@'): continue
         else:
             to_pkl_gzip(path=feat_path, obj=feature)
-
-
 
 
 def impute_feature(df, col):
@@ -588,36 +589,17 @@ def impute_feature(df, col):
     return feature
 
 
-def get_kfold(valid_list, fold_seed):
+def get_kfold(valid_list, fold_seed, key='', target='', fold_n=5):
 
     #========================================================================
     # 1. Outlierの分類が困難なグループでKfoldを作る
 
-    key = 'card_id'
-    target = 'target'
     kfold_trn_list = []
     kfold_val_list = []
 
     for base_valid in valid_list:
 
-        base_valid['rounded_target'] = base_valid['target'].round(0)
-        base_valid = base_valid.sort_values('rounded_target').reset_index(drop=True)
-        vc = base_valid['rounded_target'].value_counts()
-        vc = dict(sorted(vc.items()))
-        df = pd.DataFrame()
-        base_valid['indexcol'],idx = 0,1
-        for k,v in vc.items():
-            step = base_valid.shape[0]/v
-            indent = base_valid.shape[0]/(v+1)
-            df2 = base_valid[base_valid['rounded_target'] == k].sample(v, random_state=fold_seed).reset_index(drop=True)
-            for j in range(0, v):
-                df2.at[j, 'indexcol'] = indent + j*step + 0.000001*idx
-            df = pd.concat([df2,df])
-            idx+=1
-        base_valid = df.sort_values('indexcol', ascending=True).reset_index(drop=True)
-        del base_valid['indexcol'], base_valid['rounded_target']
-
-        folds = KFold(n_splits=6, shuffle=False, random_state=fold_seed)
+        folds = KFold(n_splits=fold_n, shuffle=True, random_state=fold_seed)
         kfold = list(folds.split(base_valid, base_valid[target].values))
 
         # card_id listにする
