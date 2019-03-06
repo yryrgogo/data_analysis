@@ -4,7 +4,7 @@ import gc
 import sys
 import pickle
 import subprocess
-from glob import glob
+import glob
 from contextlib import contextmanager
 from datetime import datetime
 from time import time, sleep
