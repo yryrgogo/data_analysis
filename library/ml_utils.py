@@ -293,3 +293,25 @@ def display_importances(feim, viz_num = 100):
     plt.title('LightGBM Features (avg over folds)')
     plt.tight_layout()
     plt.savefig('lgb_importances.png')
+
+
+def get_feat_path_list(col_list, file_key=''):
+    '''
+    Explain:
+	カラム名の一部が入ったリストを受け取り、featureを検索して
+	featureのpathのリストを返す
+    Args:
+    Return:
+    '''
+
+    get_list = []
+    path_list = glob.glob('../features/all_features/*.gz')
+
+    for path in path_list:
+        filename = re.search(r'/([^/.]*).gz', path).group(1)
+        for col in col_list:
+            if filename.count(col) and filename[:3]==col[:3] and filename.count(file_key):
+                get_list.append(path)
+
+    get_list = list(set(get_list))
+    return get_list
