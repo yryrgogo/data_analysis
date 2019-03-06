@@ -271,7 +271,7 @@ def target_encoding(logger, train, test, key, target, level, method='mean',fold_
         folds = GroupKFold(n_splits=fold)
         kfold = folds.split(train.drop(target, axis=1), train[target].values, groups=train[group_col_name].values)
     elif fold_type=='self':
-        kfold = zip(*self_kfold)
+        kfold = self_kfold
 
     base_train = train[[key]+level]
     logger.info(f"Base Train Shape: {base_train.shape}")
