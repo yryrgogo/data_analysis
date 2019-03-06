@@ -16,7 +16,7 @@ HOSTNAME = gethostname()
 
 from tqdm import tqdm
 from sklearn.model_selection import KFold
-from time import time, sleep
+import time
 from datetime import datetime
 import gc
 import pickle
