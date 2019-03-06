@@ -295,7 +295,7 @@ def display_importances(feim, viz_num = 100):
     plt.savefig('lgb_importances.png')
 
 
-def get_feat_path_list(col_list, file_key=''):
+def get_feat_path_list(col_list, file_key='', feat_path='../features/all_features/*.gz'):
     '''
     Explain:
 	カラム名の一部が入ったリストを受け取り、featureを検索して
@@ -305,7 +305,7 @@ def get_feat_path_list(col_list, file_key=''):
     '''
 
     get_list = []
-    path_list = glob.glob('../features/all_features/*.gz')
+    path_list = glob.glob(feat_path)
 
     for path in path_list:
         filename = re.search(r'/([^/.]*).gz', path).group(1)
@@ -315,3 +315,9 @@ def get_feat_path_list(col_list, file_key=''):
 
     get_list = list(set(get_list))
     return get_list
+
+
+def split_train_test(df, target):
+    train = df[~df[target].isnull()]
+    test = df[df[target].isnull()]
+    return train, test
