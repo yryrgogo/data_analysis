@@ -283,7 +283,7 @@ def __get_use_files__():
 # =============================================================================
 def submit(file_path, comment='from API'):
     os.system(f'kaggle competitions submit -c {COMPETITION_NAME} -f {file_path} -m "{comment}"')
-    sleep(30)  # tekito~~~~
+    time.sleep(30)  # tekito~~~~
     tmp = os.popen(f'kaggle competitions submissions -c {COMPETITION_NAME} -v | head -n 2').read()
     col, values = tmp.strip().split('\n')
     message = 'SCORE!!!\n'
