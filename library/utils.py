@@ -606,10 +606,21 @@ def get_kfold(valid_list, fold_seed, key='', target='', fold_n=5):
         trn_list = []
         val_list = []
         for trn, val in kfold:
+
+            "id ver"
             trn_ids = base_valid.iloc[trn][key].values
             val_ids = base_valid.iloc[val][key].values
+            # idからindexを取得
+            trn_ids = base_valid[base_valid[key].isin(trn_ids)].index.tolist()
+            val_ids = base_valid[base_valid[key].isin(val_ids)].index.tolist()
+
             trn_list.append(trn_ids)
             val_list.append(val_ids)
+
+            "index ver"
+            #  trn_list.append(trn)
+            #  val_list.append(val)
+
 #         kfold_lazy = [trn_list, val_list]
 #         kfold_list.append([trn_list, val_list])
         kfold_trn_list.append(trn_list)
