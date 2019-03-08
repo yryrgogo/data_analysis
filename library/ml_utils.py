@@ -6,7 +6,7 @@ import pickle
 import subprocess
 import glob
 from contextlib import contextmanager
-from datetime import datetime
+import datetime
 from time import time, sleep
 import numpy as np
 import pandas as pd
@@ -32,6 +32,7 @@ HOME = os.path.expanduser('~')
 sys.path.append(f"{HOME}/kaggle/data_analysis/library/")
 import utils
 #========================================================================
+start_time = "{0:%Y%m%d_%H%M%S}".format(datetime.datetime.now())
 
 #  import eli5
 #  from eli5.sklearn import PermutationImportance
@@ -75,7 +76,7 @@ def get_train_test(feat_path_list, base=[], target='target'):
 #========================================================================
 
 
-def Regressor(model_type, x_train, x_val, y_train, y_val, x_test, params={}, seed=1208, get_score='rmse'):
+def Regressor(model_type, x_train, x_val, y_train, y_val, x_test, params={}, seed=1208, get_score='rmse', get_model=False):
 
     if model_type=='linear':
         estimator = LinearRegression(**params)
@@ -119,6 +120,7 @@ def Regressor(model_type, x_train, x_val, y_train, y_val, x_test, params={}, see
             ,categorical_feature = cat_cols
             ,verbose_eval = 200
         )
+
     #========================================================================
 
     #========================================================================
@@ -142,12 +144,15 @@ def Regressor(model_type, x_train, x_val, y_train, y_val, x_test, params={}, see
     # feature : {x_train.shape, x_val.shape}
     #========================================================================
 
+    if get_model:
+        utils.to_pkl_gzip(f'../model/{start_time[4:11]}_{model_type}_fold{get_model}_{get_score}-{score}')
+
     feim = get_tree_importance(estimator=estimator, use_cols=x_train.columns)
 
     return score, oof_pred, y_pred, feim
 
 
-def Classifier(model_type, x_train, x_val, y_train, y_val, x_test, params={}, seed=1208, get_score='auc'):
+def Classifier(model_type, x_train, x_val, y_train, y_val, x_test, params={}, seed=1208, get_score='auc', get_model=False):
 
     if model_type=='lgr':
         params['n_jobs'] = -1
@@ -220,6 +225,9 @@ def Classifier(model_type, x_train, x_val, y_train, y_val, x_test, params={}, se
     #  """)
 
     feim = get_tree_importance(estimator=estimator, use_cols=x_train.columns)
+
+    if get_model:
+        utils.to_pkl_gzip(f'../model/{start_time[4:11]}_{model_type}_fold{get_model}_{get_score}-{score}')
 
     return score, oof_pred, y_pred, feim
 
