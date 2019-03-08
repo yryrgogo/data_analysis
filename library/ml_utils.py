@@ -96,9 +96,9 @@ def Regressor(model_type, x_train, x_val, y_train, y_val, x_test, params={}, see
             params['colsample_bytree'] = 0.3
             params['lambda_l2'] = 1.0
             params['learning_rate'] = 0.01
-            params['objective'] = 'regression'
         early_stopping_rounds = 150
         num_boost_round = 30000
+        params['objective'] = 'regression'
 
     #========================================================================
     # Fitting
@@ -130,17 +130,21 @@ def Regressor(model_type, x_train, x_val, y_train, y_val, x_test, params={}, see
     #========================================================================
     # Scoring
     if get_score=='auc':
-        score = roc_auc_score(y_val, y_pred)
+        score = roc_auc_score(y_val, oof_pred)
     else:
-        score = np.sqrt(mean_squared_error(y_val, y_pred))
-    #  print(f"""
-    #  Model: {model_type}
-    #  feature: {x_train.shape, x_val.shape}
-    #  {get_score}: {score}
-    #  """)
+        from sklearn.metrics import roc_auc_score, log_loss, r2_score, mean_squared_error
+        score = np.sqrt(mean_squared_error(y_val, oof_pred))
+        r2_score = r2_score(y_val, oof_pred)
+        print(f"""
+        # R2 Score: {r2_score}
+        """)
+    # Model   : {model_type}
+    # feature : {x_train.shape, x_val.shape}
     #========================================================================
 
-    return score, oof_pred, y_pred
+    feim = get_tree_importance(estimator=estimator, use_cols=x_train.columns)
+
+    return score, oof_pred, y_pred, feim
 
 
 def Classifier(model_type, x_train, x_val, y_train, y_val, x_test, params={}, seed=1208, get_score='auc'):
@@ -293,6 +297,7 @@ def display_importances(feim, viz_num = 100):
     plt.title('LightGBM Features (avg over folds)')
     plt.tight_layout()
     plt.savefig('lgb_importances.png')
+    plt.show()
 
 
 def get_feat_path_list(col_list, file_key='', feat_path='../features/all_features/*.gz'):
