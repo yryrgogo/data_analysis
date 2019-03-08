@@ -144,12 +144,12 @@ def Regressor(model_type, x_train, x_val, y_train, y_val, x_test, params={}, see
     # feature : {x_train.shape, x_val.shape}
     #========================================================================
 
-    if get_model:
-        utils.to_pkl_gzip(f'../model/{start_time[4:11]}_{model_type}_fold{get_model}_{get_score}-{score}')
-
     feim = get_tree_importance(estimator=estimator, use_cols=x_train.columns)
 
-    return score, oof_pred, y_pred, feim
+    if get_model:
+        return score, oof_pred, y_pred, feim, estimator
+    else:
+        return score, oof_pred, y_pred, feim, 0
 
 
 def Classifier(model_type, x_train, x_val, y_train, y_val, x_test, params={}, seed=1208, get_score='auc', get_model=False):
@@ -227,9 +227,9 @@ def Classifier(model_type, x_train, x_val, y_train, y_val, x_test, params={}, se
     feim = get_tree_importance(estimator=estimator, use_cols=x_train.columns)
 
     if get_model:
-        utils.to_pkl_gzip(f'../model/{start_time[4:11]}_{model_type}_fold{get_model}_{get_score}-{score}')
-
-    return score, oof_pred, y_pred, feim
+        return score, oof_pred, y_pred, feim, estimator
+    else:
+        return score, oof_pred, y_pred, feim, 0
 
 
 def get_kfold(train, Y, fold_type='kfold', fold_n=5, seed=1208, shuffle=True):
