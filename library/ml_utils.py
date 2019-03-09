@@ -96,7 +96,7 @@ def Regressor(model_type, x_train, x_val, y_train, y_val, x_test, params={}, see
             params['colsample_bytree'] = 0.3
             params['lambda_l2'] = 1.0
             params['learning_rate'] = 0.01
-        early_stopping_rounds = 150
+        early_stopping_rounds = 100
         num_boost_round = 30000
         params['objective'] = 'regression'
 
