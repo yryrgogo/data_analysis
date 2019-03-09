@@ -91,13 +91,13 @@ def Regressor(model_type, x_train, x_val, y_train, y_val, x_test, params={}, see
     elif model_type=='lgb':
         if len(params.keys())==0:
             metric = 'auc'
-            params['n_jobs'] = -1
+            params['n_jobs'] = 32
             params['metric'] = metric
             params['num_leaves'] = 31
             params['colsample_bytree'] = 0.3
             params['lambda_l2'] = 1.0
             params['learning_rate'] = 0.01
-        early_stopping_rounds = 150
+        early_stopping_rounds = 100
         num_boost_round = 30000
         params['objective'] = 'regression'
 
