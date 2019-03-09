@@ -4,7 +4,6 @@ def params_lgb():
         'objective':'binary',
         "boosting": "gbdt",
         'num_threads': 36,
-        #  'num_leaves': 2**8-1,
         'num_leaves': 2**8-1,
         'max_depth': 8,
         'learning_rate': 0.05,
