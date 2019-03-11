@@ -4,7 +4,7 @@ def params_MS():
         "metric": 'logloss',
         'objective':'binary',
         "boosting": "gbdt",
-        'num_threads': -1,
+        'num_threads': 64,
         'num_leaves': 2**8-1,
         'max_depth': -1,
         'learning_rate': 0.05,
