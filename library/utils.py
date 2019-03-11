@@ -376,8 +376,8 @@ def get_filename(path, delimiter='gz'):
     filename = re.search(rf'/([^/.]*).{delimiter}', path).group(1)
     return filename
 
-def parallel_load_data(path_list, delimiter=False):
-    p = Pool(multiprocessing.cpu_count())
+def parallel_load_data(path_list, delimiter=False, n_cpu=multiprocessing.cpu_count()):
+    p = Pool(n_cpu)
     p_list = p.map(load_file, path_list)
     p.close
     return p_list
