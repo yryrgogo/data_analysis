@@ -25,6 +25,7 @@ from sklearn.metrics import roc_auc_score, log_loss, r2_score, mean_squared_erro
 from sklearn.model_selection import train_test_split, StratifiedKFold, KFold, GroupKFold
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.linear_model import LinearRegression, LogisticRegression, Ridge, Lasso
+from sklearn.preprocessing import LabelEncoder
 
 #========================================================================
 # original library 
@@ -104,7 +105,7 @@ def Regressor(model_type, x_train, x_val, y_train, y_val, x_test, params={}, see
     #========================================================================
     # Fitting
     if model_type!='lgb':
-        estimator.fit(x_train.values, y_train.values)
+        estimator.fit(x_train, y_train)
     else:
         lgb_train = lgb.Dataset(data=x_train, label=y_train)
         lgb_val = lgb.Dataset(data=x_val, label=y_val)
@@ -125,8 +126,8 @@ def Regressor(model_type, x_train, x_val, y_train, y_val, x_test, params={}, see
 
     #========================================================================
     # Prediction
-    oof_pred = estimator.predict(x_val.values)
-    y_pred = estimator.predict(x_test.values)
+    oof_pred = estimator.predict(x_val)
+    y_pred = estimator.predict(x_test)
     #========================================================================
 
     #========================================================================
@@ -152,7 +153,7 @@ def Regressor(model_type, x_train, x_val, y_train, y_val, x_test, params={}, see
         return score, oof_pred, y_pred, feim, 0
 
 
-def Classifier(model_type, x_train, x_val, y_train, y_val, x_test, params={}, seed=1208, get_score='auc', get_model=False):
+def Classifier(model_type, x_train, x_val, y_train, y_val, x_test, params={}, seed=1208, get_score='auc', get_model=False, get_feim=True):
 
     if model_type=='lgr':
         params['n_jobs'] = -1
@@ -181,7 +182,7 @@ def Classifier(model_type, x_train, x_val, y_train, y_val, x_test, params={}, se
     #========================================================================
     # Fitting
     if model_type!='lgb':
-        estimator.fit(x_train.values, y_train.values)
+        estimator.fit(x_train, y_train)
     else:
         lgb_train = lgb.Dataset(data=x_train, label=y_train)
         lgb_val = lgb.Dataset(data=x_val, label=y_val)
@@ -202,15 +203,15 @@ def Classifier(model_type, x_train, x_val, y_train, y_val, x_test, params={}, se
     #========================================================================
     # Prediction
     if model_type=='lgb':
-        oof_pred = estimator.predict(x_val.values)
+        oof_pred = estimator.predict(x_val)
         if len(x_test):
-            y_pred = estimator.predict(x_test.values)
+            y_pred = estimator.predict(x_test)
         else:
             y_pred = []
     else:
-        oof_pred = estimator.predict_proba(x_val.values)[:, 1]
+        oof_pred = estimator.predict_proba(x_val)[:, 1]
         if len(x_test):
-            y_pred = estimator.predict_proba(x_test.values)[:, 1]
+            y_pred = estimator.predict_proba(x_test)[:, 1]
         else:
             y_pred = []
 
@@ -224,7 +225,10 @@ def Classifier(model_type, x_train, x_val, y_train, y_val, x_test, params={}, se
     #  {get_score}: {score}
     #  """)
 
-    feim = get_tree_importance(estimator=estimator, use_cols=x_train.columns)
+    if get_feim:
+        feim = get_tree_importance(estimator=estimator, use_cols=x_train.columns)
+    else:
+        feim = []
 
     if get_model:
         return score, oof_pred, y_pred, feim, estimator
@@ -334,3 +338,28 @@ def split_train_test(df, target):
     train = df[~df[target].isnull()]
     test = df[df[target].isnull()]
     return train, test
+
+
+def get_oof_feature(oof_path='../oof_feature/*.gz', key='', pred_col='prediction'):
+    feat_path_list = glob.glob(oof_path)
+    oof_list = []
+    for path in feat_path_list:
+        oof = utils.read_pkl_gzip(path)
+        oof_name = oof.columns.tolist()[1]
+        oof = oof.set_index(key)[pred_col]
+        oof.name = "oof_" + oof_name
+        oof_list.append(oof)
+    df_oof = pd.concat(oof_list, axis=1)
+    return df_oof
+
+def get_label_feature(df, col):
+    le = LabelEncoder().fit(df[col])
+    df[col] = le.transform(df[col])
+    return df
+
+
+# カテゴリ変数をファクトライズ (整数に置換)する関数
+def factorize_categoricals(df, cats, is_sort=True):
+    for col in cats:
+        df[col], _ = pd.factorize(df[col], sort=is_sort)
+    return df
