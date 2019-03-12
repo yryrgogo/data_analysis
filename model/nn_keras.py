@@ -14,7 +14,7 @@ from sklearn.utils import class_weight
 
 #========================================================================
 # Keras
-#  import keras
+import keras
 from keras import layers, Model, Input
 from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation
@@ -87,19 +87,27 @@ def corp_1st_LSTM(input_rows, input_cols):
 
 def MS_NN(input_cols):
 
-    activation = 'relu'
-    #  activation = 'elu'
-    model_in = Input(shape=(input_cols,), dtype='float32')
-    #  out = layers.Dense(64, activation=activation)(model_in)
-    #  out = layers.Dense(64, activation=activation)(out)
+    #  activation = 'relu'
+    #  #  activation = 'elu'
+    #  model_in = Input(shape=(input_cols,), dtype='float32')
+    #  out = keras.layers.Dense(2**10, activation=activation)(model_in)
+    #  out = keras.layers.Dense(2**8, activation=activation)(out)
+    #  out = keras.layers.Dense(2**7, activation=activation)(out)
 
-    #  Overfit?
-    out = keras.layers.Dense(2**9, activation=activation)(model_in)
-    out = keras.layers.Dense(2**7, activation=activation)(out)
-    out = keras.layers.Dense(2**6, activation=activation)(out)
+    #  out = layers.Dense(1)(out)
+    #  model = Model(model_in, out)
 
-    out = layers.Dense(1)(out)
-    model = Model(model_in, out)
+    model = Sequential()
+    model.add(Dense(2 ** 10, input_dim = input_cols, activation='relu'))
+    model.add(Dropout(0.25))
+    model.add(BatchNormalization())
+    model.add(Dense(2 ** 9, activation='relu'))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.25))
+    model.add(Dense(2 ** 7, activation='relu'))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.25))
+    model.add(Dense(1, activation='sigmoid'))
 
     return model
 
