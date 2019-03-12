@@ -327,9 +327,9 @@ def get_ordinal_mapping(obj):
 
 
 # カテゴリ変数をファクトライズ (整数に置換)する関数
-def factorize_categoricals(df, cats):
+def factorize_categoricals(df, cats, is_sort=True):
     for col in cats:
-        df[col], _ = pd.factorize(df[col])
+        df[col], _ = pd.factorize(df[col], sort=is_sort)
     return df
 
 
