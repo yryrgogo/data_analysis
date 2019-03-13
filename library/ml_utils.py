@@ -177,7 +177,7 @@ def Classifier(model_type, x_train, x_val, y_train, y_val, x_test, params={}, se
             early_stopping_rounds = params['early_stopping_rounds']
         else:
             early_stopping_rounds = 100
-        num_boost_round = 30000
+        num_boost_round = 50000
 
     #========================================================================
     # Fitting
@@ -204,13 +204,13 @@ def Classifier(model_type, x_train, x_val, y_train, y_val, x_test, params={}, se
     # Prediction
     if model_type=='lgb':
         oof_pred = estimator.predict(x_val)
-        if len(x_test):
+        if x_test.shape[0]:
             y_pred = estimator.predict(x_test)
         else:
             y_pred = []
     else:
         oof_pred = estimator.predict_proba(x_val)[:, 1]
-        if len(x_test):
+        if x_test.shape[0]:
             y_pred = estimator.predict_proba(x_test)[:, 1]
         else:
             y_pred = []
