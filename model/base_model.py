@@ -19,7 +19,9 @@ from calculate_utils import round_size
 from preprocessing import factorize_categoricals, get_dummies, ordinal_encode, get_ordinal_mapping
 import category_encoders as ce
 
+
 kaggle = 'home-credit-default-risk'
+
 
 class Model(metaclass=ABCMeta):
     @abstractmethod
@@ -627,4 +629,3 @@ class Model(metaclass=ABCMeta):
         self.result_stack = result_stack
 
         return self
-

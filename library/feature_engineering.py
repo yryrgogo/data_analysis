@@ -12,38 +12,6 @@ pd.set_option('max_columns', 200)
 pd.set_option('max_rows', 200)
 
 
-def base_aggregation(df, level, feature, method, prefix='', suffix='', base=[]):
-    '''
-    Explain:
-        levelの粒度で集約を行う。この関数が受け取る集計対象カラムは一つなので、
-        複数カラムを集計する時はループで繰り返し引数を渡す
-    Args:
-        level: str/list/tuple。要素数は何個でもOK
-    Return:
-        集約したカラムとlevelの2カラムDF。
-        集約したカラム名は、{prefix}{元のカラム名}_{メソッド}@{粒度}となっている
-    '''
-
-    ' levelの型がlistでもtupleでもなければ単体カラムのはずなので、listにする '
-    if not(str(type(level)).count('tuple')) and not(str(type(level)).count('list')):
-        level = [level]
-    elif str(type(level)).count('tuple'):
-        level = list(level)
-
-    df = df[level+[feature]]
-
-    result = df.groupby(level)[feature].agg({'tmp': {method}})
-    result = result['tmp'].reset_index().rename(columns={f'{method}': f'{prefix}{feature}_{method}{suffix}@{level}'})
-    if len(base):
-        try:
-            result = base[level].to_frame().merge(result, on=level, how='left')[f'{prefix}{feature}_{method}{suffix}@{level}']
-        except AttributeError:
-            result = base[level].merge(result, on=level, how='left')[f'{prefix}{feature}_{method}{suffix}@{level}']
-
-
-    return result
-
-
 def diff_feature(df, first, second, only_feat=False):
     ' 大きい値がf1に来るようにする '
     #  if df[first].mean()<df[second].mean():
@@ -54,9 +22,9 @@ def diff_feature(df, first, second, only_feat=False):
     #      f2 = second
     f1 = first
     f2 = second
-    df[f'{f1}_diff_{f2}@'] = df[f1] - df[f2]
+    df[f'{f1}_diff_{f2}'] = df[f1] - df[f2]
     if only_feat:
-        return df[f'{f1}_diff_{f2}@']
+        return df[f'{f1}_diff_{f2}']
     return df
 
 
@@ -71,9 +39,9 @@ def division_feature(df, first, second, sort=1, only_feat=False):
     f1 = first
     f2 = second
     df[f2] = df[f2] + 1e8
-    df[f'{f1}_div_{f2}@'] = df[f1] / df[f2]
+    df[f'{f1}_div_{f2}'] = df[f1] / df[f2]
     if only_feat:
-        return df[f'{f1}_div_{f2}@']
+        return df[f'{f1}_div_{f2}']
     return df
 
 
@@ -87,9 +55,9 @@ def product_feature(df, first, second, only_feat=False):
     #      f2 = second
     f1 = first
     f2 = second
-    df[f'{f1}_pro_{f2}@'] = df[f1] * df[f2]
+    df[f'{f1}_pro_{f2}'] = df[f1] * df[f2]
     if only_feat:
-        return df[f'{f1}_pro_{f2}@']
+        return df[f'{f1}_pro_{f2}']
     return df
 
 
@@ -224,7 +192,7 @@ def select_category_value_agg(base, df, key, category_col, value, method, path='
 
 def cnt_encoding(df, category_col, ignore_list):
 
-    cnt_enc = df[category_col].value_counts().reset_index().rename(columns={'index':category_col, category_col:f'cnt_{category_col}@'})
+    cnt_enc = df[category_col].value_counts().reset_index().rename(columns={'index':category_col, category_col:f'cnt_{category_col}'})
     result = df.merge(cnt_enc, on=category_col, how='left').drop(category_col, axis=1)
     return result
 
