@@ -2,7 +2,7 @@ import os
 HOME = os.path.expanduser('~')
 import sys
 sys.path.append(f"{HOME}/kaggle/github/library/")
-from utils import pararell_process
+from utils import parallel_process
 #  import lightgbm as lgb
 
 
@@ -24,7 +24,7 @@ class multi_test:
     def com_wrapper(self, args):
         return self.multi_comment(*args)
 
-    def pararell_comment(self, c_list=[]):
-        #  pararell_process(self.comment, self.comment_list)
-        pararell_process(self.com_wrapper, c_list, cpu_cnt=2)
+    def parallel_comment(self, c_list=[]):
+        #  parallel_process(self.comment, self.comment_list)
+        parallel_process(self.com_wrapper, c_list, cpu_cnt=2)
 

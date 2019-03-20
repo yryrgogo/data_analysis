@@ -32,8 +32,8 @@ from sklearn.model_selection import StratifiedKFold, KFold
 # global variables
 # =============================================================================
 COMPETITION_NAME = 'home-credit-default-risk'
-COMPETITION_NAME = 'elo-merchant-category-recommendation'
-COMPETITION_NAME = 'microsoft-malware-prediction'
+#  COMPETITION_NAME = 'elo-merchant-category-recommendation'
+#  COMPETITION_NAME = 'microsoft-malware-prediction'
 
 # =============================================================================
 # def
@@ -281,7 +281,7 @@ def __get_use_files__():
 # =============================================================================
 # other API
 # =============================================================================
-def submit(file_path, comment='from API'):
+def submit(file_path, comment='from API', COMPETITION_NAME=''):
     os.system(f'kaggle competitions submit -c {COMPETITION_NAME} -f {file_path} -m "{comment}"')
     time.sleep(30)  # tekito~~~~
     tmp = os.popen(f'kaggle competitions submissions -c {COMPETITION_NAME} -v | head -n 2').read()
@@ -353,10 +353,10 @@ def load_file(path, delimiter='gz'):
         return pd.read_csv(path)
     filename = get_filename(path=path, delimiter=delimiter)
 
-    if filename.count('train'):
-        filename = filename[:8] + filename[14:]
-    elif filename.count('test'):
-        filename = filename[:8] + filename[13:]
+    if filename.count('train_'):
+        filename = filename[6:]
+    elif filename.count('test_'):
+        filename = filename[5:]
 
     if path[-3:]=='npy':
         tmp = pd.Series(np.load(path), name=filename)
@@ -463,87 +463,80 @@ def round_size(value, max_val, min_val):
 #========================================================================
 # Kaggle Elo
 #========================================================================
-def santander_save_feature(prefix, df_feat, dir_path='../features/1_first_valid', feat_check=False):
+def save_feature(prefix, df_feat, target, is_train, feat_check=False, ignore_list=[], is_viz=True):
 
-    ignore_features = ['ID_code', 'target', 'index']
-    length = len(df_feat)
-    if feat_check:
-        for col in df_feat.columns:
-            if col in ignore_features:
-                continue
-            null_len = df_feat[col].dropna().shape[0]
-            if length - null_len>0:
-                print(f"{col}  | null shape: {length - null_len}")
 
-            max_val = df_feat[col].max()
-            min_val = df_feat[col].min()
-            if max_val==np.inf or min_val==-np.inf:
-                print(f"{col} | max: {max_val} | min: {min_val}")
-        sys.exit()
+    if is_train==2:
+        is_train_list = [1, 0]
+    else:
+        is_train_list = [is_train]
 
-    for col in df_feat.columns:
-        if col in ignore_features: continue
-        if (col.count('feature_')):continue
-        if (col.count('purchase_date_min')):continue
-        if (col.count('purchase_date_max')):continue
+    for is_train in is_train_list:
 
-        feature = df_feat[col].values.astype('float32')
+        if is_train==1:
+            tmp = df_feat[~df_feat[target].isnull()]
+        elif is_train==0:
+            tmp = df_feat[df_feat[target].isnull()]
+        dir_path = '../features'
 
-        if prefix[0]=='4':
+        length = len(tmp)
+        if feat_check:
+            for col in tmp.columns:
+                if col in ignore_list:
+                    continue
 
-            inf_max = np.max(feature)
-            inf_min = np.min(feature)
+                # Nullがあるかどうか
+                null_len = tmp[col].dropna().shape[0]
+                if length - null_len>0:
+                    print(f"{col}  | null shape: {length - null_len}")
 
-            if inf_max == np.inf:
-                v_max = np.max(np.where(feature==inf_max, np.mean(feature), feature))
-                feature = np.where(feature==inf_max, v_max, feature)
-            if inf_min == -np.inf:
-                v_min = np.min(np.where(feature==inf_min, np.mean(feature), feature))
-                feature = np.where(feature==inf_min, v_min, feature)
-
-            feature = pd.Series(feature)
-            length = len(feature)
-            null_len = feature.dropna().shape[0]
-            if length - null_len==0:
-                pass
-
-            else:
-                if col.count('month_lag'):
-                    val_min = np.min(feature)
-                    feature = np.where(feature!=feature, val_min-1, feature)
-                elif col.count('month_diff'):
-                    val_max = np.max(feature)
-                    feature = np.where(feature!=feature, val_max-1, feature)
-                else:
-                    for val_min in np.sort(feature):
-                        if not(val_min==val_min):
-                            continue
-                        else:
-                            break
-                    feature = np.where(feature!=feature, val_min-1, feature)
-
-        if feature.shape[0] != 400000:
-            print(col)
+                # infがあるかどうか
+                max_val = tmp[col].max()
+                min_val = tmp[col].min()
+                if max_val==np.inf or min_val==-np.inf:
+                    print(f"{col} | max: {max_val} | min: {min_val}")
             sys.exit()
-        col = col.replace('.', '_')
-        feat_path = f'{dir_path}/{prefix}_{col}@'
-        if os.path.exists(feat_path): continue
-        elif os.path.exists( f'../features/2_second_valid/{col}@'): continue
-        elif os.path.exists( f'../features/3_third_valid/{col}@'): continue
-        elif os.path.exists( f'../features/4_winner/{col}@'): continue
-        elif os.path.exists( f'../features/5_tmp/{col}@'): continue
-        elif os.path.exists( f'../features/6_subset/{col}@'): continue
-        elif os.path.exists( f'../features/7_escape/{col}@'): continue
-        elif os.path.exists( f'../features/8_ensemble/{col}@'): continue
-        elif os.path.exists( f'../features/9_gdrive/{col}@'): continue
-        elif os.path.exists( f'../features/all_features/{col}@'): continue
-        else:
-            to_pkl_gzip(path=feat_path, obj=feature)
 
 
-def impute_feature(df, col):
+        for col in tmp.columns:
+            if col in ignore_list:
+                continue
 
-    feature = df[col].values.astype('float32')
+            feature = tmp[col].values.astype('float32')
+            if is_train==1:
+                feat_path = f'{dir_path}/train_{prefix}{col}'
+            else:
+                feat_path = f'{dir_path}/test_{prefix}{col}'
+
+            if os.path.exists(feat_path): continue
+            elif os.path.exists( f'../features/2_second_valid/{col}'): continue
+            elif os.path.exists( f'../features/3_third_valid/{col}'): continue
+            elif os.path.exists( f'../features/4_winner/{col}'): continue
+            elif os.path.exists( f'../features/5_tmp/{col}'): continue
+            elif os.path.exists( f'../features/6_subset/{col}'): continue
+            elif os.path.exists( f'../features/7_escape/{col}'): continue
+            elif os.path.exists( f'../features/8_ensemble/{col}'): continue
+            elif os.path.exists( f'../features/9_gdrive/{col}'): continue
+            elif os.path.exists( f'../features/all_features/{col}'): continue
+            elif os.path.exists( f'../features/2_second_valid/{prefix}{col}'): continue
+            elif os.path.exists( f'../features/3_third_valid/{prefix}{col}'): continue
+            elif os.path.exists( f'../features/4_winner/{prefix}{col}'): continue
+            elif os.path.exists( f'../features/5_tmp/{prefix}{col}'): continue
+            elif os.path.exists( f'../features/6_subset/{prefix}{col}'): continue
+            elif os.path.exists( f'../features/7_escape/{prefix}{col}'): continue
+            elif os.path.exists( f'../features/8_ensemble/{prefix}{col}'): continue
+            elif os.path.exists( f'../features/9_gdrive/{prefix}{col}'): continue
+            elif os.path.exists( f'../features/all_features/{prefix}{col}'): continue
+            else:
+                if is_viz:
+                    print(f"{feature.shape} | {col}")
+
+                to_pkl_gzip(path=feat_path, obj=feature)
+
+
+def replace_inf(df, col):
+
+    feature = df[col].values
 
     inf_max = np.sort(feature)[::-1][0]
     inf_min = np.sort(feature)[0]
@@ -563,28 +556,19 @@ def impute_feature(df, col):
             break
 
     length = len(feature)
-    null_len = len(feature[feature==feature])
 
+    #========================================================================
+    # infが消えたかチェック
     inf_max = feature.max()
     inf_min = feature.min()
-
-    if length - null_len==0:
-        pass
-
-    else:
-        if col.count('month_diff'):
-
-            for val_max in np.sort(feature)[::-1]:
-                if not(val_max==val_max):
-                    continue
-                feature = np.where(feature!=feature, val_max-1, feature)
-                break
-        else:
-            for val_min in np.sort(feature):
-                if not(val_min==val_min):
-                    continue
-                feature = np.where(feature!=feature, val_min-1, feature)
-                break
+    print(
+f"""
+#========================================================================
+# inf max: {inf_max}
+# inf min: {inf_min}
+#========================================================================
+""")
+    #========================================================================
 
     return feature
 
@@ -649,3 +633,9 @@ def get_kfold(valid_list, fold_seed, key='', target='', fold_n=5):
     #========================================================================
 
     return kfold
+
+
+def max_freq_impute(df, col):
+    max_freq = df[~df[col].isnull()][col].mode().values[0]
+    return df[col].fillna(max_freq)
+
