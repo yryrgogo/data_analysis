@@ -49,13 +49,16 @@ class FeatureManage():
         self.feature_path_list = feat_path_list
 
 
-    def select_feature(self, feim_path, rank):
+    def select_feature(self, feim_path, rank=50000, gain=0):
         '''
         Explain:
             feature importance fileを元にfeatureをselectする（作成中）
         '''
         feim = pd.read_csv(feim_path)
-        feim = feim[feim['rank']<=rank]
+        if gain:
+            feim = feim[feim['importance']>=gain]
+        else:
+            feim = feim[feim['rank']<=rank]
         select_list = feim['feature'].values.tolist()
 
         return select_list
@@ -73,7 +76,7 @@ class FeatureManage():
         if 'index' in self.base_test.columns:
             self.base_test.drop('index', axis=1, inplace=True)
 
-    def feature_matrix(self, feat_key_list=[], is_reduce=False, feim_path='', rank=50000):
+    def feature_matrix(self, feat_key_list=[], is_reduce=False, feim_path='', rank=50000, gain=0):
         '''
         Explain:
             feature_path_listからtrain, testを作成する。
@@ -95,7 +98,10 @@ class FeatureManage():
 
             if filename[:3] == 'tra':
                 if len(feim_path):
-                    select_list = self.select_feature(feim_path, rank)
+                    if gain:
+                        select_list = self.select_feature(feim_path, gain=gain)
+                    else:
+                        select_list = self.select_feature(feim_path, rank=rank)
                     trn_name = filename[6:]
                     if trn_name in select_list:
                         train_path_list.append(path)
