@@ -9,7 +9,8 @@ import sys
 import re
 from glob import glob
 import os
-from itertools import combinations
+from itertools import combinations, chain
+from joblib import Parallel, delayed
 HOME = os.path.expanduser('~')
 sys.path.append(f"{HOME}/kaggle/data_analysis/library/")
 #  sys.path.append(f"/mnt/c/Git/go/kaggle/github/library/")
@@ -160,35 +161,89 @@ class FeaturePack():
             return df_agg_cnt
 
 
-    def go_interact(self, combi_list=[], num_list=[], is_diff=True, is_div=True, is_pro=True, prefix=''):
+    def go_interact(self, combi_list=[], num_list=[], is_diff=False, is_div=False, is_pro=False, prefix='', n_jobs=0):
 
         with utils.timer(f"Calcurate Intaract"):
             if len(combi_list)==0:
-                combi_list = combinations(num_list, 2)
+                combi_list = list(combinations(num_list, 2))
 
             feature_list = []
-            for (f1, f2) in combi_list:
+
+            def calculate(f1, f2):
+                df = self.data[[f1, f2]]
                 if is_diff:
-                    diff_feat = diff_feature(df=self.data, first=f1, second=f2, only_feat=True)
-                    feature_list.append(diff_feat)
+                    feat = diff_feature(df=df, first=f1, second=f2, only_feat=True)
                 if is_div:
-                    div_feat = division_feature(df=self.data, first=f1, second=f2, only_feat=True)
-                    feature_list.append(div_feat)
+                    feat = division_feature(df=df , first=f1, second=f2, only_feat=True)
                 if is_pro:
-                    pro_feat = product_feature(df=self.data, first=f1, second=f2, only_feat=True)
-                    feature_list.append(pro_feat)
+                    feat = product_feature(df=df, first=f1, second=f2, only_feat=True)
 
-            df_feat = pd.concat(feature_list, axis=1)
+                return feat
 
-        self.data.drop(df_feat.columns, axis=1, inplace=True)
+            if n_jobs==0:
+                for (f1, f2) in combi_list:
+                    feature_list.append(diff_feature(f1, f2))
+            else:
+
+                length = len(combi_list)
+                p_num = int(length / n_jobs)
+                rem = length % n_jobs
+
+                for i in range(p_num):
+                    tmp_list = combi_list[i*n_jobs : (i+1)*n_jobs]
+
+                    p_list = Parallel(n_jobs=n_jobs)(
+                        [delayed(calculate)(f1, f2)
+                         for (f1, f2) in tmp_list
+                         ]
+                    )
+
+                    #  feature_list += list(chain(*p_list))
+                    if len(prefix):
+                        df_feat = pd.concat(p_list, axis=1)
+
+                        df_feat[self.key] = self.base.index.tolist()
+                        df_feat[self.target] = self.base[self.target].values
+
+                        self.save_feature(df_feat=df_feat, prefix=prefix, is_train=2)
+                        del p_list, df_feat
+                        gc.collect()
+                    else:
+                        feature_list += p_list
+
+                if rem>0:
+                    tmp_list = combi_list[p_num*n_jobs:]
+
+                    p_list = Parallel(n_jobs=-1)(
+                        [delayed(calculate)(f1, f2)
+                         for (f1, f2) in tmp_list
+                         ]
+                    )
+
+                    if len(prefix):
+                        df_feat = pd.concat(p_list, axis=1)
+
+                        df_feat[self.key] = self.base.index.tolist()
+                        df_feat[self.target] = self.base[self.target].values
+
+                        self.save_feature(df_feat=df_feat, prefix=prefix, is_train=2)
+                        del p_list, df_feat
+                        gc.collect()
+                    else:
+                        feature_list += p_list
+
+
+        if len(prefix):
+            return
+
+        df_feat = pd.concat(feature_list, axis=1)
         df_feat[self.key] = self.base.index.tolist()
         df_feat[self.target] = self.base[self.target].values
 
-        if len(prefix):
-            self.save_feature(df_feat=df_feat, prefix=prefix, is_train=2)
-            return df_feat
-        else:
-            return df_feat
+        if n_jobs==0:
+            self.data.drop(df_feat.columns, axis=1, inplace=True)
+
+        return df_feat
 
 
     def save_feature(self, df_feat, prefix, is_train=2):

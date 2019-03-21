@@ -38,8 +38,7 @@ def division_feature(df, first, second, sort=1, only_feat=False):
     #      f2 = second
     f1 = first
     f2 = second
-    df[f2] = df[f2] + 1e8
-    df[f'{f1}_div_{f2}'] = df[f1] / df[f2]
+    df[f'{f1}_div_{f2}'] = df[f1] / (df[f2]+1e5)
     if only_feat:
         return df[f'{f1}_div_{f2}']
     return df
