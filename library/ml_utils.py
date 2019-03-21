@@ -18,6 +18,8 @@ from joblib import Parallel, delayed
 
 import seaborn as sns
 from matplotlib import pyplot as plt
+from multiprocessing import Pool, cpu_count
+from functools import partial
 
 # Model
 import lightgbm as lgb
@@ -362,4 +364,23 @@ def get_label_feature(df, col):
 def factorize_categoricals(df, cats, is_sort=True):
     for col in cats:
         df[col], _ = pd.factorize(df[col], sort=is_sort)
+    return df
+
+
+def parallel_df(df, func, is_row=False):
+    num_partitions = cpu_count()
+    num_cores = cpu_count()
+    pool = Pool(num_cores)
+
+    if is_raw:
+        # 行分割の並列化
+        df_split = np.array_split(df, num_partitions) # arrayに変換して行分割する
+        df = pd.concat(pool.map(func, df_split))
+    else:
+        # 列分割の並列化
+        df_split = [df[col_name] for col_name in df.columns]
+        df = pd.concat(pool.map(func, df_split), axis=1)
+
+    pool.close()
+    pool.join()
     return df

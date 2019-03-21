@@ -12,13 +12,17 @@ bq_cmd = f"bq --location=US rm {new_dataset}"
 # Delete Table
 table = ""
 bq_cmd = f"bq --location=US rm {new_dataset}.{table}"
+
+# Save to GCloud Strage
+gst =  "gs://input_hori/"
+export_fname = ""
+ds_table = "hori.installment"
+bq_cmd = f"bq extract --destination_format CSV {ds_table} {gst}{export_fname}"
 #========================================================================
 
 
 #========================================================================
 # Create New Table from Local Dataset
-
-import os
 option = "--autodetect"
 dataset = 'hori'
 new_table = 'credit'
@@ -30,7 +34,6 @@ os.system(bq_cmd)
 
 #========================================================================
 # Create New Table from Query
-
 query = """ select * from `hori.installment` limit 10; """
 project = 'horikoshi-ml-224313'
 dataset = 'hori'
