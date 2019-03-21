@@ -509,24 +509,7 @@ def save_feature(prefix, df_feat, target, is_train, feat_check=False, ignore_lis
                 feat_path = f'{dir_path}/test_{prefix}{col}'
 
             if os.path.exists(feat_path): continue
-            elif os.path.exists( f'../features/2_second_valid/{col}'): continue
-            elif os.path.exists( f'../features/3_third_valid/{col}'): continue
-            elif os.path.exists( f'../features/4_winner/{col}'): continue
-            elif os.path.exists( f'../features/5_tmp/{col}'): continue
-            elif os.path.exists( f'../features/6_subset/{col}'): continue
-            elif os.path.exists( f'../features/7_escape/{col}'): continue
-            elif os.path.exists( f'../features/8_ensemble/{col}'): continue
-            elif os.path.exists( f'../features/9_gdrive/{col}'): continue
-            elif os.path.exists( f'../features/all_features/{col}'): continue
-            elif os.path.exists( f'../features/2_second_valid/{prefix}{col}'): continue
-            elif os.path.exists( f'../features/3_third_valid/{prefix}{col}'): continue
-            elif os.path.exists( f'../features/4_winner/{prefix}{col}'): continue
-            elif os.path.exists( f'../features/5_tmp/{prefix}{col}'): continue
-            elif os.path.exists( f'../features/6_subset/{prefix}{col}'): continue
-            elif os.path.exists( f'../features/7_escape/{prefix}{col}'): continue
-            elif os.path.exists( f'../features/8_ensemble/{prefix}{col}'): continue
-            elif os.path.exists( f'../features/9_gdrive/{prefix}{col}'): continue
-            elif os.path.exists( f'../features/all_features/{prefix}{col}'): continue
+            elif os.path.exists( f'../features/{col}'): continue
             else:
                 if is_viz:
                     print(f"{feature.shape} | {col}")

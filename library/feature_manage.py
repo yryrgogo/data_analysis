@@ -76,7 +76,7 @@ class FeatureManage():
         if 'index' in self.base_test.columns:
             self.base_test.drop('index', axis=1, inplace=True)
 
-    def feature_matrix(self, feat_key_list=[], is_reduce=False, feim_path='', rank=50000, gain=0):
+    def feature_matrix(self, feat_key_list=[], is_reduce=False, feim_path='', rank=50000, gain=0, limit=3000):
         '''
         Explain:
             feature_path_listからtrain, testを作成する。
@@ -89,7 +89,7 @@ class FeatureManage():
         '''
 
         if len(self.feature_path_list) == 0:
-            self.get_feature_path_list(feat_key_list=feat_key_list)
+            self.get_feature_path_list(feat_key_list=feat_key_list)[:limit]
 
         train_path_list = []
         test_path_list = []
