@@ -89,7 +89,9 @@ class FeatureManage():
         '''
 
         if len(self.feature_path_list) == 0:
-            self.get_feature_path_list(feat_key_list=feat_key_list)[:limit]
+            self.get_feature_path_list(feat_key_list=feat_key_list)
+
+        self.feature_path_list += glob.glob('../features/raw_feature/*.gz')
 
         train_path_list = []
         test_path_list = []
@@ -130,6 +132,13 @@ class FeatureManage():
             elif filename[:3] == 'tes':
                 test_path_list.append(path)
         #========================================================================
+
+        test_path_list = sorted(test_path_list)[:limit]
+        remove_list = []
+        for path in train_path_list:
+            if path.replace('train_', 'test_') not in test_path_list:
+                remove_list.append(path)
+        train_path_list = list( set(train_path_list) - set(remove_list) )
 
         train_list = utils.parallel_load_data(path_list=train_path_list)
         test_list = utils.parallel_load_data(path_list=test_path_list)
