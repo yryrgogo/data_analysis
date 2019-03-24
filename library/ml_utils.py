@@ -79,7 +79,7 @@ def get_train_test(feat_path_list, base=[], target='target'):
 #========================================================================
 
 
-def Regressor(model_type, x_train, x_val, y_train, y_val, x_test, params={}, seed=1208, get_score='rmse', get_model=False):
+def Regressor(model_type, x_train, x_val, y_train, y_val, x_test, params={}, seed=1208, get_score='rmse', get_model=False, early_stopping_rounds=100, num_boost_round=10000):
 
     if model_type=='linear':
         estimator = LinearRegression(**params)
@@ -100,9 +100,9 @@ def Regressor(model_type, x_train, x_val, y_train, y_val, x_test, params={}, see
             params['colsample_bytree'] = 0.3
             params['lambda_l2'] = 1.0
             params['learning_rate'] = 0.01
-        early_stopping_rounds = 100
-        num_boost_round = 30000
+        num_boost_round = num_boost_round
         params['objective'] = 'regression'
+        params['metric'] = 'mse'
 
     #========================================================================
     # Fitting
@@ -134,10 +134,10 @@ def Regressor(model_type, x_train, x_val, y_train, y_val, x_test, params={}, see
 
     #========================================================================
     # Scoring
+    from sklearn.metrics import roc_auc_score, log_loss, r2_score, mean_squared_error
     if get_score=='auc':
         score = roc_auc_score(y_val, oof_pred)
     else:
-        from sklearn.metrics import roc_auc_score, log_loss, r2_score, mean_squared_error
         score = np.sqrt(mean_squared_error(y_val, oof_pred))
         r2_score = r2_score(y_val, oof_pred)
         print(f"""
@@ -155,7 +155,21 @@ def Regressor(model_type, x_train, x_val, y_train, y_val, x_test, params={}, see
         return score, oof_pred, y_pred, feim, 0
 
 
-def Classifier(model_type, x_train, x_val, y_train, y_val, x_test, params={}, seed=1208, get_score='auc', get_model=False, get_feim=True):
+def Classifier(
+        model_type
+        , x_train
+        , x_val
+        , y_train
+        , y_val
+        , x_test
+        , params={}
+        , seed=1208
+        , get_score='auc'
+        , get_model=False
+        , get_feim=True
+        , early_stopping_rounds=100
+        , num_boost_round=10000
+):
 
     if model_type=='lgr':
         params['n_jobs'] = -1
@@ -175,11 +189,8 @@ def Classifier(model_type, x_train, x_val, y_train, y_val, x_test, params={}, se
             params['learning_rate'] = 0.01
             params['objective'] = 'binary'
 
-        if 'early_stopping_rounds' in list(params.keys()):
-            early_stopping_rounds = params['early_stopping_rounds']
-        else:
-            early_stopping_rounds = 100
-        num_boost_round = 50000
+        metric = 'auc'
+        num_boost_round = num_boost_round
 
     #========================================================================
     # Fitting
