@@ -58,52 +58,21 @@ The code in the directory is not organized at all. Please be patient while prepa
 
 ##### -EM Algorithm
 
-
 ### 3. Feature Selection
 
 #### Feature Importance (LGBM)
 
-#### Feature Impact (Decrease the Degree)
+#### Feature Permutation
 
-#### Feature Weight (about Fold)
+### 4. Feature Management
+
+### 5. Various Machine Learning Algorithm
+
+### 6. Explainer
 
 #### Shap
 
 #### LIME(Unexecuted)
-
-
-### 4. Feature Management
-
-#### Feature Table
-
-#### Feature Grouping
-
-#### Google Cloud Storage
-
-### 5. Machine Learning
-
-#### LightGBM
-
-##### -LightGBM Extension
-
-#### XGBoost
-
-#### ExtraTrees
-
-#### LogisticRegression
-
-#### Ridge
-
-#### Stan(Bayes)
-
-##### -Bayesian LogisticRegression
-
-#### Keras
-
-
-### 6. Prediction Management
-
-#### Sample Weight
 
 
 ### 99. Important
