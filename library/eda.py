@@ -3,12 +3,9 @@
 import numpy as np
 import pandas as pd
 import itertools
-try:
-    import seaborn as sns
-    from matplotlib import pyplot as plt
-    from matplotlib_venn import venn2
-except ImportError:
-    pass
+import seaborn as sns
+from matplotlib import pyplot as plt
+from matplotlib_venn import venn2
 
 
 def df_info(target_df, topN=10):
@@ -32,10 +29,10 @@ def df_info(target_df, topN=10):
     # describe
     #  perc = target_df.describe().T[['25%', '50%', '75%']]
     #  df = df.join(perc)
-    df['z 1.96 val'] = df['Std']*1.96+df['Mean']
-    df['z -1.96 val'] = df['Std']*-1.96+df['Mean']
-    df['z 1.96 cnt'] = 0
-    df['z -1.96 cnt'] = 0
+    df['z_1.96 val'] = df['Std']*1.96+df['Mean']
+    df['z_-1.96 val'] = df['Std']*-1.96+df['Mean']
+    df['z_1.96 cnt'] = 0
+    df['z_-1.96 cnt'] = 0
 
     # top 10 values
     df[f'top{topN} val'] = 0
