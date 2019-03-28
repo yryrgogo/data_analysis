@@ -19,7 +19,7 @@ class FeatureManage():
         self.feature_path_list = []
 
 
-    def get_feature_path_list(self, feat_key_list=[], feature_path='../features/*.gz'):
+    def get_feature_path_list(self, feat_key_list=[], feature_path='../features/winner/*.gz'):
         '''
         Explain:
             featureのpath_listを作成し、attributeにセットする.
