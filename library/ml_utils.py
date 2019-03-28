@@ -129,7 +129,10 @@ def Regressor(model_type, x_train, x_val, y_train, y_val, x_test, params={}, see
     #========================================================================
     # Prediction
     oof_pred = estimator.predict(x_val)
-    y_pred = estimator.predict(x_test)
+    if len(x_test):
+        y_pred = estimator.predict(x_test)
+    else:
+        y_pred = []
     #========================================================================
 
     #========================================================================
@@ -217,20 +220,20 @@ def Classifier(
     # Prediction
     if model_type=='lgb':
         oof_pred = estimator.predict(x_val)
-        if x_test.shape[0]:
+        if len(x_test):
             y_pred = estimator.predict(x_test)
         else:
             y_pred = []
     else:
         oof_pred = estimator.predict_proba(x_val)[:, 1]
-        if x_test.shape[0]:
+        if len(x_test):
             y_pred = estimator.predict_proba(x_test)[:, 1]
         else:
             y_pred = []
 
-    if get_score=='auc':
+    if metric=='auc':
         score = roc_auc_score(y_val, oof_pred)
-    elif get_score=='logloss':
+    elif metric=='logloss':
         score = log_loss(y_val, oof_pred)
     #  print(f"""
     #  Model: {model_type}
