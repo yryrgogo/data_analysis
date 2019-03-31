@@ -62,10 +62,10 @@ def product_feature(df, first, second, only_feat=False):
 
 def cat_to_target_bin_enc(df, category, bins=10, target='TARGET'):
     ' カテゴリ変数の種類が多い場合、ターゲットエンコーディングしてからその近さでbinにして数を絞る '
-    target_avg = df.groupby(category)['TARGET'].mean().reset_index()
+    target_avg = df.groupby(category)[target].mean().reset_index()
 
     ' positive率でカテゴリをビンにする '
-    bin_list = ['TARGET']
+    bin_list = [target]
     for col in bin_list:
         target_avg[target] = pd.qcut(x=target_avg[col], q=bins, duplicates='drop')
         target_avg.set_index(category, inplace=True)
@@ -206,7 +206,7 @@ def exclude_feature(col_name, feature):
     return False
 
 
-def target_encoding(logger, train, test, key, target, level, method='mean',fold_type='stratified', fold=5, group_col_name='', prefix='', select_list=[], ignore_list=[], seed=1208, return_df=False, self_kfold=False):
+def target_encoding(train, test, key, target, level, method='mean',fold_type='stratified', fold=5, group_col_name='', prefix='', select_list=[], ignore_list=[], seed=1208, return_df=False, self_kfold=False):
     '''
     Explain:
         TARGET関連の特徴量をpartisionに分割したデータセットから作る.
@@ -241,7 +241,7 @@ def target_encoding(logger, train, test, key, target, level, method='mean',fold_
         kfold = self_kfold
 
     base_train = train[[key]+level]
-    logger.info(f"Base Train Shape: {base_train.shape}")
+    print(f"Base Train Shape: {base_train.shape}")
 
     # Train内のTE
     oof_value = np.zeros(len(train))
@@ -262,7 +262,7 @@ def target_encoding(logger, train, test, key, target, level, method='mean',fold_
     train = train.groupby(level)[target].agg({f'TE_{target}@{level}':f'{method}'}).reset_index()
     test_result = test[[key]+level].merge(train, on=level, how='left')
 
-    logger.info(f'''
+    print(f'''
 #========================================================================
 # COMPLETE TARGET ENCODING!!
 # FEATURE     : TE_{target}@{level}
