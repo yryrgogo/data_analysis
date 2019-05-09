@@ -28,6 +28,9 @@ deep-learning-from-scratch-2/
 *.txt
 *.db
 
+*.xml
+*.iml
+
 # C extensions
 *.so
 
