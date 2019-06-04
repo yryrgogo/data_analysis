@@ -622,3 +622,10 @@ def max_freq_impute(df, col):
     max_freq = df[~df[col].isnull()][col].mode().values[0]
     return df[col].fillna(max_freq)
 
+
+def listify(o):
+    if o is None: return []
+    if isinstance(o, list): return o
+    if isinstance(o, str): return [o]
+    if isinstance(o, Iterable): return list(o)
+    return [o]
