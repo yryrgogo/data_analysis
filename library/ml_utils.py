@@ -164,7 +164,7 @@ def Classifier(
         , x_val
         , y_train
         , y_val
-        , x_test
+        , x_test = []
         , params={}
         , seed=1208
         , get_score='auc'
