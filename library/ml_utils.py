@@ -172,6 +172,7 @@ def Classifier(
         , get_feim=True
         , early_stopping_rounds=100
         , num_boost_round=10000
+        , weight_list=[]
 ):
 
     if model_type=='lgr':
@@ -200,8 +201,12 @@ def Classifier(
     if model_type!='lgb':
         estimator.fit(x_train, y_train)
     else:
-        lgb_train = lgb.Dataset(data=x_train, label=y_train)
-        lgb_val = lgb.Dataset(data=x_val, label=y_val)
+        if len(weight_list):
+            lgb_train = lgb.Dataset(data=x_train, label=y_train, weight=weight_list[0])
+            lgb_val = lgb.Dataset(data=x_val, label=y_val, weight=weight_list[1])
+        else:
+            lgb_train = lgb.Dataset(data=x_train, label=y_train)
+            lgb_val = lgb.Dataset(data=x_val, label=y_val)
         #  cat_cols = utils.get_categorical_features(df=x_train)
         cat_cols = []
 
@@ -221,15 +226,15 @@ def Classifier(
     if model_type=='lgb':
         oof_pred = estimator.predict(x_val)
         if len(x_test):
-            y_pred = estimator.predict(x_test)
+            test_pred = estimator.predict(x_test)
         else:
-            y_pred = []
+            test_pred = []
     else:
         oof_pred = estimator.predict_proba(x_val)[:, 1]
         if len(x_test):
-            y_pred = estimator.predict_proba(x_test)[:, 1]
+            test_pred = estimator.predict_proba(x_test)[:, 1]
         else:
-            y_pred = []
+            test_pred = []
 
     if metric=='auc':
         score = roc_auc_score(y_val, oof_pred)
@@ -247,9 +252,9 @@ def Classifier(
         feim = []
 
     if get_model:
-        return score, oof_pred, y_pred, feim, estimator
+        return score, oof_pred, test_pred, feim, estimator
     else:
-        return score, oof_pred, y_pred, feim, 0
+        return score, oof_pred, test_pred, feim, 0
 
 
 def get_kfold(train, Y, fold_type='kfold', fold_n=5, seed=1208, shuffle=True):
