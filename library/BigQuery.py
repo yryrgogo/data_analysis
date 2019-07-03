@@ -3,7 +3,6 @@ from google.cloud import bigquery
 from google.cloud.exceptions import NotFound
 from logging import StreamHandler, DEBUG, Formatter, FileHandler, getLogger
 
-
 def mkdir_func(path):
     try:
         os.stat(path)
@@ -32,9 +31,10 @@ def logger_func(OUTPUT_DIR='../output'):
 
 class BigQuery:
 
-    def __init__(self, dataset_name, is_create=False, OUTPUT_DIR='../output'):
+    def __init__(self, credentials, dataset_name, is_create=False, OUTPUT_DIR='../output'):
         self.logger = logger_func(OUTPUT_DIR=OUTPUT_DIR)
-        self.client = bigquery.Client()
+        # self.client = bigquery.Client()
+        self.client = bigquery.Client.from_service_account_json(credentials)
         self.dataset_name = dataset_name
         if not is_create:
             self._set_dataset()
@@ -64,6 +64,12 @@ class BigQuery:
         self.table_dict[table_name] = self.client.create_table(table)
 
         self.logger.info('Table {} created.'.format(self.table_dict[table_name].table_id))
+
+    def create_schema(self, column_names, column_types):
+        schema = []
+        for col_name, col_type in zip(column_names, column_types):
+            schema.append(bigquery.SchemaField(col_name, col_type, mode='REQUIRED'))
+        return schema
 
     def insert_rows(self, table_name, insert_rows):
         res = self.client.insert_rows(self.table_dict[table_name], insert_rows)
