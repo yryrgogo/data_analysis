@@ -137,49 +137,25 @@ def Regressor(model_type, x_train, x_val, y_train, y_val, x_test,
     # Prediction
     oof_pred = estimator.predict(x_val)
     if len(x_test):
-<<<<<<< HEAD
-        y_pred = estimator.predict(x_test)
-    else:
-        y_pred = []
-=======
         test_pred = estimator.predict(x_test)
     else:
         test_pred = []
->>>>>>> fde380a99392eaa293822870b31ccae640b04c15
     #========================================================================
 
     #========================================================================
     # Scoring
-<<<<<<< HEAD
-    from sklearn.metrics import roc_auc_score, log_loss, r2_score, mean_squared_error
-=======
->>>>>>> fde380a99392eaa293822870b31ccae640b04c15
     if get_score=='auc':
         score = roc_auc_score(y_val, oof_pred)
     else:
         score = np.sqrt(mean_squared_error(y_val, oof_pred))
-<<<<<<< HEAD
-        r2_score = r2_score(y_val, oof_pred)
-        print(f"""
-        # R2 Score: {r2_score}
-=======
         r2    = r2_score(y_val, oof_pred)
         print(f"""
         # R2 Score: {r2}
->>>>>>> fde380a99392eaa293822870b31ccae640b04c15
         """)
     # Model   : {model_type}
     # feature : {x_train.shape, x_val.shape}
     #========================================================================
 
-<<<<<<< HEAD
-    feim = get_tree_importance(estimator=estimator, use_cols=x_train.columns)
-
-    if get_model:
-        return score, oof_pred, y_pred, feim, estimator
-    else:
-        return score, oof_pred, y_pred, feim, 0
-=======
     if model_type=='lgb':
         feim = get_tree_importance(estimator=estimator, use_cols=x_train.columns)
         feim.sort_values(by='importance', ascending=False, inplace=True)
@@ -191,7 +167,6 @@ def Regressor(model_type, x_train, x_val, y_train, y_val, x_test,
         return score, oof_pred, test_pred, feim, estimator
     else:
         return score, oof_pred, test_pred, feim, 0
->>>>>>> fde380a99392eaa293822870b31ccae640b04c15
 
 
 def Classifier(
