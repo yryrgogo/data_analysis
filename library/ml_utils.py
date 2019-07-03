@@ -79,9 +79,6 @@ def get_train_test(feat_path_list, base=[], target='target'):
 #========================================================================
 
 
-<<<<<<< HEAD
-def Regressor(model_type, x_train, x_val, y_train, y_val, x_test, params={}, seed=1208, get_score='rmse', get_model=False, early_stopping_rounds=100, num_boost_round=10000):
-=======
 def Regressor(model_type, x_train, x_val, y_train, y_val, x_test,
     params={}, seed=1208, get_score='rmse', get_model=False,
     early_stopping_rounds=100, num_boost_round=10000):
@@ -90,7 +87,6 @@ def Regressor(model_type, x_train, x_val, y_train, y_val, x_test,
         use_cols = x_train.columns
     else:
         use_cols = np.arange(x_train.shape[1]) + 1
->>>>>>> fde380a99392eaa293822870b31ccae640b04c15
 
     if model_type=='linear':
         estimator = LinearRegression(**params)
