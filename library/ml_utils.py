@@ -79,7 +79,14 @@ def get_train_test(feat_path_list, base=[], target='target'):
 #========================================================================
 
 
-def Regressor(model_type, x_train, x_val, y_train, y_val, x_test, params={}, seed=1208, get_score='rmse', get_model=False, early_stopping_rounds=100, num_boost_round=10000):
+def Regressor(model_type, x_train, x_val, y_train, y_val, x_test,
+    params={}, seed=1208, get_score='rmse', get_model=False,
+    early_stopping_rounds=100, num_boost_round=10000):
+
+    if str(type(x_train)).count('DataFrame'):
+        use_cols = x_train.columns
+    else:
+        use_cols = np.arange(x_train.shape[1]) + 1
 
     if model_type=='linear':
         estimator = LinearRegression(**params)
@@ -130,32 +137,36 @@ def Regressor(model_type, x_train, x_val, y_train, y_val, x_test, params={}, see
     # Prediction
     oof_pred = estimator.predict(x_val)
     if len(x_test):
-        y_pred = estimator.predict(x_test)
+        test_pred = estimator.predict(x_test)
     else:
-        y_pred = []
+        test_pred = []
     #========================================================================
 
     #========================================================================
     # Scoring
-    from sklearn.metrics import roc_auc_score, log_loss, r2_score, mean_squared_error
     if get_score=='auc':
         score = roc_auc_score(y_val, oof_pred)
     else:
         score = np.sqrt(mean_squared_error(y_val, oof_pred))
-        r2_score = r2_score(y_val, oof_pred)
+        r2    = r2_score(y_val, oof_pred)
         print(f"""
-        # R2 Score: {r2_score}
+        # R2 Score: {r2}
         """)
     # Model   : {model_type}
     # feature : {x_train.shape, x_val.shape}
     #========================================================================
 
-    feim = get_tree_importance(estimator=estimator, use_cols=x_train.columns)
+    if model_type=='lgb':
+        feim = get_tree_importance(estimator=estimator, use_cols=x_train.columns)
+        feim.sort_values(by='importance', ascending=False, inplace=True)
+    elif model_type=='lasso' or model_type=='ridge':
+        feim = pd.Series(estimator.coef_, index=use_cols, name='coef')
+        feim.sort_values(ascending=False, inplace=True)
 
     if get_model:
-        return score, oof_pred, y_pred, feim, estimator
+        return score, oof_pred, test_pred, feim, estimator
     else:
-        return score, oof_pred, y_pred, feim, 0
+        return score, oof_pred, test_pred, feim, 0
 
 
 def Classifier(
