@@ -1,4 +1,6 @@
 import os
+import numpy as np
+import pandas as pd
 from google.cloud import bigquery
 from google.cloud.exceptions import NotFound
 from logging import StreamHandler, DEBUG, Formatter, FileHandler, getLogger
@@ -126,3 +128,30 @@ class BigQuery:
         assert load_job.state == 'DONE'
         assert load_job.job_id.startswith(job_id_prefix)
 
+
+    def get_query_result(self, query):
+        query_job = self.client.query(query)
+        row_list = []
+        for row in query_job:
+            row_list.append([*list(row)])
+
+        if len(row_list) == 0:
+            return pd.DataFrame()
+
+        result = pd.DataFrame(row_list, columns=list(row.keys()))
+        result.reset_index(drop=True, inplace=True)
+        return result
+
+
+    def del_rows_query(self, query):
+        """
+        Sample Query:
+        query = (
+            f'''
+            DELETE FROM {dataset_name}.{table_name}
+            WHERE {column_name} in ('{delete_name}')
+            ''')
+       """
+
+        query_job = self.client.query(query)
+        print("Done! {query_job}")
