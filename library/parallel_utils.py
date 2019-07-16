@@ -12,21 +12,21 @@ from multiprocessing import Pool
 import multiprocessing
 
 
-def get_parallel_arg_list(N_JOBS, arg_list, uid_list=[]):
+def get_parallel_arg_list(n_jobs, arg_list, uid_list=[]):
 
     parallel_list = []
     length = len(arg_list)
 
-    for num in range(N_JOBS):
+    for num in range(n_jobs):
 
-        if num == N_JOBS - 1:
+        if num == n_jobs - 1:
             if len(uid_list):
-                tmp_key = uid_list[num * int(length/(N_JOBS)) :  ]
-            tmp_args = arg_list[num * int(length/(N_JOBS)) :  ]
+                tmp_key = uid_list[num * int(length/(n_jobs)) :  ]
+            tmp_args = arg_list[num * int(length/(n_jobs)) :  ]
         else:
             if len(uid_list):
-                tmp_key = uid_list[num * int(length/(N_JOBS)) : (num+1) * int(length/(N_JOBS)) ]
-            tmp_args = arg_list[num * int(length/(N_JOBS)) : (num+1) * int(length/(N_JOBS)) ]
+                tmp_key = uid_list[num * int(length/(n_jobs)) : (num+1) * int(length/(n_jobs)) ]
+            tmp_args = arg_list[num * int(length/(n_jobs)) : (num+1) * int(length/(n_jobs)) ]
 
         if len(uid_list):
             parallel_list.append([tmp_key, tmp_args])
