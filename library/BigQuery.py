@@ -4,46 +4,14 @@ import numpy as np
 import pandas as pd
 from google.cloud import bigquery
 from google.cloud.exceptions import NotFound
-from logging import StreamHandler, DEBUG, Formatter, FileHandler, getLogger
 
 
 HOME = os.path.expanduser('~')
 
 
-def mkdir_func(path):
-    try:
-        os.stat(path)
-    except:
-        os.mkdir(path)
-
-def logger_func(OUTPUT_DIR='../output'):
-    logger = getLogger(__name__)
-    log_fmt = Formatter('%(asctime)s %(name)s %(lineno)d [%(levelname)s]\
-    [%(funcName)s] %(message)s ')
-    handler = StreamHandler()
-    handler.setLevel('INFO')
-    handler.setFormatter(log_fmt)
-    logger.addHandler(handler)
-
-    mkdir_func(OUTPUT_DIR)
-    handler = FileHandler('{}/py_train.py.log'.format(OUTPUT_DIR), 'a')
-    handler.setLevel(DEBUG)
-    handler.setFormatter(log_fmt)
-    logger.setLevel(DEBUG)
-    logger.addHandler(handler)
-
-    logger.info('start')
-
-    return logger
-
-
 class BigQuery:
 
     def __init__(self, dataset_name='', is_create=False, OUTPUT_DIR='../output'):
-        try:
-            self.logger
-        except AttributeError:
-            self.logger = logger_func(OUTPUT_DIR=OUTPUT_DIR)
 
         # Config
         gcp_config_path = f'{HOME}/privacy/gcp.yaml'
@@ -63,19 +31,19 @@ class BigQuery:
     def _set_dataset(self):
         dataset_ref = self.client.dataset(self.dataset_name)
         self.dataset = self.client.get_dataset(dataset_ref)
-        self.logger.info('Setup Dataset {}.'.format(self.dataset.dataset_id))
+        print('Setup Dataset {}.'.format(self.dataset.dataset_id))
 
     def set_table(self, table_name):
         table_ref = self.dataset.table(table_name)
         self.table_dict[table_name] = self.client.get_table(table_ref)
-        self.logger.info('Setup Table {}.'.format(self.table_dict[table_name].table_id))
+        print('Setup Table {}.'.format(self.table_dict[table_name].table_id))
 
     def create_dataset(self):
         dataset_ref = self.client.dataset(self.dataset_name)
         dataset = bigquery.Dataset(dataset_ref)
         self.dataset = self.client.create_dataset(dataset)
 
-        self.logger.info('Dataset {} created.'.format(self.dataset.dataset_id))
+        print('Dataset {} created.'.format(self.dataset.dataset_id))
 
     def create_table(self, table_name, schema):
 
@@ -83,7 +51,7 @@ class BigQuery:
         table = bigquery.Table(table_ref, schema=schema)
         self.table_dict[table_name] = self.client.create_table(table)
 
-        self.logger.info('Table {} created.'.format(self.table_dict[table_name].table_id))
+        print('Table {} created.'.format(self.table_dict[table_name].table_id))
 
     def create_schema(self, column_names, column_types, column_modes):
         schema = []
@@ -94,14 +62,14 @@ class BigQuery:
     def insert_rows(self, table_name, insert_rows):
         res = self.client.insert_rows(self.table_dict[table_name], insert_rows)
         if res:
-            self.logger.info("Insert Error!!: {}".format(res))
+            print("Insert Error!!: {}".format(res))
 
     def del_table(self, table_name):
 
         dataset_ref = self.client.dataset(self.dataset_name)
         table_ref = self.dataset.table(table_name)
         res = self.client.delete_table(table_ref)
-        self.logger.info("del table: {} | Res: {}".format(table_ref, res))
+        print("del table: {} | Res: {}".format(table_ref, res))
 
     def del_dataset_all(self):
 
@@ -110,9 +78,9 @@ class BigQuery:
 
         for table_ref in table_ref_list:
             self.client.delete_table(table_ref)
-            self.logger.info("del table: {}".format(table_ref))
+            print("del table: {}".format(table_ref))
         self.client.delete_dataset(dataset_ref)
-        self.logger.info("del dataset: {}".format(dataset_ref))
+        print("del dataset: {}".format(dataset_ref))
 
     def insert_from_gcs(self, table_name, bucket_name, blob_name, source_format=bigquery.SourceFormat.CSV, skip_leading_rows=1):
 
