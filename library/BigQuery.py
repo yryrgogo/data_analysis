@@ -1,4 +1,5 @@
 import os
+import yaml
 from time import sleep
 import numpy as np
 import pandas as pd
@@ -25,8 +26,8 @@ class BigQuery:
         
         if dataset_name:
             self.dataset_name = dataset_name
-        if not is_create:
-            self._set_dataset()
+            if not is_create:
+                self._set_dataset()
 
     def _set_dataset(self):
         dataset_ref = self.client.dataset(self.dataset_name)
