@@ -5,7 +5,6 @@ import numpy as np
 import pandas as pd
 from google.cloud import bigquery
 from google.cloud.exceptions import NotFound
-from logging import StreamHandler, DEBUG, Formatter, FileHandler, getLogger
 
 
 HOME = os.path.expanduser('~')
@@ -20,11 +19,11 @@ class BigQuery:
         with open(gcp_config_path, 'r') as f:
             gcp_config = yaml.load(f)
         credentials  =  '../config/' + gcp_config['gcp_credentials']
-            
+
         # self.client = bigquery.Client()
         self.client = bigquery.Client.from_service_account_json(credentials)
         self.table_dict = {}
-        
+
         if dataset_name:
             self.dataset_name = dataset_name
             if not is_create:
