@@ -9,27 +9,27 @@ from google.cloud.exceptions import NotFound
 
 HOME = os.path.expanduser('~')
 
-
 class BigQuery:
 
-    def __init__(self, dataset_name='', is_create=False, OUTPUT_DIR='../output'):
+    def __init__(self, dataset_name='', gcp_config_path='', is_create=False, OUTPUT_DIR='../output'):
 
         # Config
-        gcp_config_path = f'{HOME}/privacy/gcp.yaml'
+        if len(gcp_config_path)==0:
+            gcp_config_path = f'{HOME}/privacy/gcp.yaml'
         with open(gcp_config_path, 'r') as f:
             gcp_config = yaml.load(f)
-        credentials  =  HOME + '/privacy/' + gcp_config['gcp_credentials']
-            
+        credentials  =  '../config/' + gcp_config['gcp_credentials']
+
         # self.client = bigquery.Client()
         self.client = bigquery.Client.from_service_account_json(credentials)
         self.table_dict = {}
-        
+
         if dataset_name:
             self.dataset_name = dataset_name
             if not is_create:
-                self._set_dataset()
+                self.set_dataset(dataset_name)
 
-    def _set_dataset(self):
+    def set_dataset(self, dataset_name):
         dataset_ref = self.client.dataset(self.dataset_name)
         self.dataset = self.client.get_dataset(dataset_ref)
         print('Setup Dataset {}.'.format(self.dataset.dataset_id))
