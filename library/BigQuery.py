@@ -18,7 +18,7 @@ class BigQuery:
             gcp_config_path = f'{HOME}/privacy/gcp.yaml'
         with open(gcp_config_path, 'r') as f:
             gcp_config = yaml.load(f)
-        credentials  =  '../config/' + gcp_config['gcp_credentials']
+        credentials  =  f'{HOME}/privacy/' + gcp_config['gcp_credentials']
 
         # self.client = bigquery.Client()
         self.client = bigquery.Client.from_service_account_json(credentials)
