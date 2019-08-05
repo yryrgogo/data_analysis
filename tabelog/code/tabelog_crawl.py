@@ -125,12 +125,15 @@ def get_soup(url, analysis, wait_time):
 def Google_Search(station):
 
     soup = get_soup(tb_search + station, lxml, 0)
-    link = soup.select(".r a")
     regex = re.compile(r'''https://(.*)rstLst''')
 
-    for i in range(len(link)):
-        if len(regex.findall(str(link[i].get('href')))) > 0:
-            return regex.findall(str(link[i].get('href')))
+    for atag in soup.find_all("a"):
+        #  print(regex.findall(str(atag.get('href'))))
+        return regex.findall(str(atag.get('href')))
+
+    #  for i in range(len(link)):
+    #      if len(regex.findall(str(link[i].get('href')))) > 0:
+    #          return regex.findall(str(link[i].get('href')))
     print('Page is not found')
     sys.exit()
 
@@ -143,7 +146,7 @@ def get_tb_page(page):
     soup = get_soup(page, lxml, 3)
     page_elems = soup.select('.c-pagination__item a')
     second_page = page_elems[0].get('href')
-    
+
     return get_tb_page_all(second_page)
 
 
@@ -153,36 +156,11 @@ def get_tb_page_all(page):
     limit=0
     regex_page_url = re.compile(r'''(.*?)rstLst/(\d+)/(.*)''')
     url_elem = regex_page_url.findall(page)
-    
+
     #page_list = [url_elem[0][0] + 'rstLst/' + str(j) +  '/' + url_elem[0][2] for j in range(1, 21, 1)]
     page_list = [url_elem[0][0] + 'rstLst/' + str(j) +  '/' for j in range(1, 60, 1)]
-    
-    return page_list
-    
-#     for i in [10, 15, 20, 25]:
-        
-#         url = url_elem[0][0] + 'rstLst/' + str(i) + '/' + url_elem[0][2]
-#         print(url)
-#         res = get_soup(url, lxml, 3)
-#         if res == 0:
-#             limit = i
-#             break
-#         page_list = [url_elem[0][0] + 'rstLst/' + str(j) +  '/' + url_elem[0][2] for j in range(1, i, 1)]
-#         [print(page_list[i]) for i in range(len(page_list))]
-    
-#     if limit==0:return page_list
-#     elif limit>0:
-#         for i in range(1, 5, 1):
-#             url = url_elem[0][0] + 'rstLst/' + str(limit-i) +  '/' + url_elem[0][2]
-#             res = get_soup(url)
-#             if res != 0:
-#                 limit -= i
-#                 break
-#                 return page_list
-            
-#     print('PAGE GET ERROR!!')
-#     sys.exit()
 
+    return page_list
 
 # page = 店舗一覧ページ
 def store_page_get(page):
@@ -366,17 +344,17 @@ def main():
     # 食べログのURLへ移動
     #「駅名 食べログ」で検索すればGoogle Searchの一番上に出てくるが、変わったら終わる。その時は要変更
     for station in station_list:
-        search_area_url = 'https://' + str(Google_Search(station)[0]) + 'rstLst/?LstRange=SG&svd=' + today + '&svt=2330&svps=2'
-        
+        search_area_url = 'https://' + str(Google_Search(station)) + 'rstLst/?LstRange=SG&svd=' + today + '&svt=2330&svps=2'
+
         page_list = get_tb_page(search_area_url)
-        
+
         print(station)
         print("Get {} pages. Probably {} stores exist.".format(len(page_list), len(page_list)*20))
 
         for i in range(len(page_list)):
-            
+
             print("Current page number {}/{}".format(i+1, len(page_list)))
-            
+
             # 取得した店舗一覧URLから、各店舗のURLを取得
             store_page_list = store_page_get(page_list[i])
             # 取得したstore_dataを格納していく
