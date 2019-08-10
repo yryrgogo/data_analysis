@@ -378,7 +378,6 @@ def get_filename(path, delimiter='gz'):
     return filename
 
 def parallel_load_data(path_list, feature_names, n_jobs=multiprocessing.cpu_count()):
-    sys.exit()
     p = Pool(n_jobs)
     p_list = p.map(load_file, path_list)
     p.close
