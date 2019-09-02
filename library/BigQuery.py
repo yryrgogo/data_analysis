@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 from google.cloud import bigquery
 from google.cloud.exceptions import NotFound
+from google.cloud import storage as gcs
+from logging import StreamHandler, DEBUG, Formatter, FileHandler, getLogger
 
 
 HOME = os.path.expanduser('~')
@@ -14,11 +16,17 @@ class BigQuery:
     def __init__(self, dataset_name='', gcp_config_path='', is_create=False, OUTPUT_DIR='../output'):
 
         # Config
-        if len(gcp_config_path)==0:
-            gcp_config_path = f'{HOME}/privacy/gcp.yaml'
-        with open(gcp_config_path, 'r') as f:
-            gcp_config = yaml.load(f)
-        credentials  =  f'{HOME}/privacy/' + gcp_config['gcp_credentials']
+        #  if len(gcp_config_path)==0:
+        #      gcp_config_path = f'{HOME}/privacy/gcp.yaml'
+        #  with open(gcp_config_path, 'r') as f:
+        #      gcp_config = yaml.load(f)
+
+        #  if os.path.isdir('../config'):
+        #      credentials  =  '../config/' + gcp_config['gcp_credentials']
+        #  else:
+        #      credentials   = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+#             credentials  =  f'{HOME}/privacy/' + gcp_config['gcp_credentials']
+        credentials   = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
 
         # self.client = bigquery.Client()
         self.client = bigquery.Client.from_service_account_json(credentials)
@@ -30,6 +38,7 @@ class BigQuery:
                 self.set_dataset(dataset_name)
 
     def set_dataset(self, dataset_name):
+        self.dataset_name = dataset_name
         dataset_ref = self.client.dataset(self.dataset_name)
         self.dataset = self.client.get_dataset(dataset_ref)
         print('Setup Dataset {}.'.format(self.dataset.dataset_id))
@@ -161,3 +170,51 @@ class BigQuery:
         for del_table_name in del_table_names:
             if del_table_name.startswith(del_startswith):
                 self.client.del_table(del_table_name)
+
+                
+    def create_table_from_query(self, dataset_name, table_name, query):
+        job_config = bigquery.QueryJobConfig()
+        table_ref = self.client.dataset(dataset_name).table(table_name)
+        job_config.destination = table_ref
+        
+        query_job = self.client.query(
+            query,
+            location='US',
+            job_config=job_config,
+        )
+        query_job.result()
+        print("* query result to: ", table_ref.path)
+
+
+    def create_table_from_local_file(self, df, project_name, bucket_name, credentials_path, dataset_name, new_table_name, file_path):
+        
+        storage_client = gcs.Client.from_service_account_json(
+            project=project_name,
+            json_credentials_path=credentials_path
+        )
+        
+        bucket = storage_client.get_bucket(bucket_name)
+        blob = bucket.blob(new_table_name)
+        blob.upload_from_filename(filename=file_path)
+        
+        blob_name = new_table_name
+        
+        self.set_dataset(dataset_name)
+        columns = df.columns
+        column_types = []
+        for col in df.dtypes.values:
+            if str(col).count('float'):
+                dtype = 'FLOAT'
+            elif str(col).count('int'):
+                dtype = 'NUMERIC'
+            elif str(col).count('date'):
+                dtype = 'DATE'
+            elif str(col).count('obj') or str(col).count('str'):
+                dtype = 'STRING'
+            column_types.append(dtype)
+        column_modes = ['NULLABLE'] * len(columns)
+
+        schema = self.create_schema(columns, column_types, column_modes)
+
+        self.create_table(new_table_name, schema)
+        self.insert_from_gcs(new_table_name, bucket_name, blob_name)
