@@ -10,7 +10,17 @@ from datetime import date, timedelta
 
 
 def diff_of_days(day1, day2):
-    days = (parse(day1) - parse(day2)).days
+    try:
+        days = (parse(day1) - parse(day2)).days
+    except TypeError:
+        days = (day1 - day2).days
+    return days
+
+def diff_of_times(day1, day2):
+    try:
+        days = (parse(day1) - parse(day2))
+    except TypeError:
+        days = (day1 - day2)
     return days
 
 def date_add_days(start_date, add_days):
