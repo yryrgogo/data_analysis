@@ -51,8 +51,16 @@ def get_label(df, end_date, n_day):
     return label
 
 def get_select_term_feat(df, base_key, base_date, end_date, n_day, value_name):
+    """Summary line.
+    end_date = base_dateとして使うのがメインだが、時々ずらしたいことがあるので
+    base_dateを別途用意している
+
+    Args:
+
+    Returns:
+    """
     start_date = date_add_days(end_date, -n_day)
-    df_tmp = df[(df.date < end_date) & (df.date > start_date)].copy()
+    df_tmp = df[ (start_date <= df.date) & (df.date <= end_date) ].copy()
     logger.info(f'''
 #========================================================================
 # base_key   : {base_key}
